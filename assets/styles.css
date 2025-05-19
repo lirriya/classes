@@ -149,3 +149,20 @@ h1 {
       background-color: #a3befa90;
       text-align: left;
     }
+
+    .homeBtn{
+      text-align: left;
+      background-color: #F2C1D1;
+      color:#2C2C34;
+      width: 100px;
+      align-items: center;
+      justify-content: center;
+      width: 100px; 
+      height: 30px;
+      margin-left: 10px;
+      border: none;
+      font-size: 14px;
+      transition: .5s;
+      border-radius: 5px;
+      box-shadow: 2px 2px 2px #86729a;
+    }
