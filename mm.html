@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Course Page – Alina’s Notes</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  
+</head>
+<body>
+  <div class="container">
+    <h1>Course: Memory Management using C</h1>
+
+    <div class="class-buttons">
+      <button onclick="showClass(0)" class="active">Class 1</button>
+      <button onclick="showClass(1)">Class 2</button>
+      <button onclick="showClass(2)">Class 3</button>
+      <button onclick="showClass(3)">Class 4</button>
+      <button onclick="showClass(4)">Class 5</button>
+    </div>
+
+    <div class="class-content">
+      <div class="class-section active">
+        <h2>Class 1: Memory, pointers and C</h2>
+      <h3>Basics of Memory</h3>
+        <h4>What is a bit and a byte?</h4>
+        <ul>
+            <li>1 bit = a binary digit, so it can be either 0 or 1</li>
+            <li>1 byte (aka 1 octet in French) = 8 bits. So something like <code>00111010</code></li>
+            <li>1 byte = 1 unit of memory</li>
+        </ul>
+        <h4>What is RAM?</h4>
+        <p>The main memory (aka RAM or mémoire vive in french) of a computer is made of billions of memory cells, where each cell stores 1 but and there cells are grouped into bytes(8 bits) for practical use </p>
+        <h4>Memory is addressed</h4>
+        <p>Each byte (octet) has a unique address, we can think of it as a house number, which is basically just a number</p>
+        <p>If a memory has 256 bytes, the addresses can go from 0 to 255</p>
+        <h4>So what happens when we declare a variable in C?</h4>
+        <p> First let's remember what Declaration is. Declaration of a variable is when we announce that now we have this variable with this particular type (usually int, string(char[] in C), float, char). It looks sommething like this <code>int a;</code></p>
+        <p>So what happens behind the scenes?</p>
+        <ol>
+            <li>The size is determined (we'll talk about it more indepth later). Int usually takes 4 bytes(32bits) </li>
+            <li>A memory zone is reserved, for example: Adresses 0xFF00, 0xFF01, 0xFF02, 0xFF03 are all reserved for out int a</li>
+            <li>A link is made between the variable name and the memory address in a register(which is a temporary storage in the CPU). So we can say that a refers to memory starting at 0xFF00</li>
+
+        </ol>
+        <p>How can we access or use the said varirable? well quite easy. We can either use the variable directly by it's name, in our case "a".</p>
+        <p>Or we can use its address with a pointer (more about pointers later!)</p>
+      <h3>Base of C</h3>
+        <h4>Let's start with Basic C Syntax</h4>
+        <ul>
+            <li>Every line ends with a semicolon ;</li>
+            <li>Instruction blocks use curly braces { }. So if it's "for/if/while/function" we put { after statement and } after the instructions.</li>
+        </ul>
+        <h4>The smallest C Code programme will look like:</h4>
+        <pre><code> 
+#include <stdlib.h>
+#include <stdio.h>
+
+int main(int argc, char * argv[]) {
+// code
+return EXIT_SUCCESS;
+}</code></pre>
+      <h3>Comments in C</h3>
+        <p>Two type of comments: // for a single line or /* multi-line comment */</p>
+        <p>Good habits to have:</p>
+        <ul>
+            <li>Comment each function's purpose</li>
+            <li>Complex logic</li>
+            <li>Memory operations (like <code>malloc, free, msgrcv</code>, etc)</li>
+        </ul>   
+      <h3>Variables</h3>
+            <p>So what is the variable? A variable is a memory slot created by the system to store a value.</p>
+            <p>Each variable has its own:</p>
+            <ul>
+            <li>Type (int, char, float, etc)</li>
+            <li>Name (a, b, c, etc)</li>
+            <li>Value (1, 2, 3, etc)</li>
+            <li>Address (0xFF00, 0xFF01, etc)</li>
+            </ul>
+        <h4>>Basic Data Types</h4>
+            <ul>
+            <li><code>char</code>: A single character: 1 byte (octet)</li>
+            <li><code>int</code>: An integer: 4 bytes (octet)</li>
+            <li><code>float</code>: A decimal number: 4 bytes (octet)</li>
+            <li><code>double</code>: A more precise float: 8 bytes</li>
+            </ul>
+        <h4>Characters <code>char</code></h4>
+            <p>A <code>char</code> stores the ASCII code of a character</p>
+            <p>so for "A" = 65, and for "a" = 97, etc</p>
+            <p>So basically it holds an integer (0 to 255)</p>
+            <p><code> char c = 'A'; // stores 65 in memory</code></p>
+        <h4>Integers</h4>
+            <p><code>signed char</code>: size 1 byte</p>
+            <p><code>unsigned char</code>: size 1 byte</p>
+            <p><code>short int</code>: size 2 bytes</p>
+            <p><code>unsigned short int</code>:  size 2 bytes</p>
+            <p><code>int</code>: size 4 bytes</p>
+            <p><code>unsigned int</code>: size 4 bytes</p>
+            <p><code>unsigned long int</code>: 8 bytes</p>
+        <h4>Floating-point numbers</h4>
+            <p><code>float</code>: size 4 bytes</p>
+            <p><code>double</code>: size 8 bytes</p>
+        <h4>Constants</h4>
+            <ol>
+                <li><code>const int max = 5;</code></li>
+                <li><code>#define MAX 100 // note how there's no ;</code></li>
+                <li><code> enum DIRECTIONS { NORTH, SOUTH, EAST, WEST };</code></li>
+            </ol>
+      <h3>Displaying with printf</h3>
+            <p>so we use format specifiers for each variable</p>
+            <ul>
+              <li>%d - signed int</li>
+              <li>%u - unsigned int</li>
+              <li>%f - float</li>
+              <li>%c - chatacter</li>
+              <li>%s - string</li>
+              <li>%p - pointer</li>
+              <li>%x - hexadecimal</li>
+            </ul>
+            <p> Also it's good to create a habbit to put \n to the end of sentences.</p>
+
+      <h3 class="exercise">Practice time!</h3>
+        <h4 class="exo">Exercise 1:</h4>
+          <p> <b>Context:</b> We have 32 Mo(megabytes) of memory.</p>
+          <p>We should remember that 1 Mo = 1 megaoctet = 1 million octets(bytes), but in computer memory, we use powers of 2.</p>
+          <p>So 1 Mo = 2^20 octets = 1.048.576 octets</p>
+          <p>So 32 Mo = 32 * 2^20 = 33.554.432 octets</p>
+          <p><b>Q1:</b>How many char can it store? </p>
+          <p>So lets walk through and approach it with logical thinking. "How big is a char?"</p>
+          <p>We know that unsigned and signed char both are the size of 1 byte. So if 32 Mo is equal to 33,554,432 bytes, then we can store exactly 33, 554,432 chars. </p>
+          <p><b>Q2:</b>How many int can it store?</p>
+          <p> So with the same logic. Size of int is 4 bytes. We can reconstruct the question to "How many 4-byte chunks can i fit in 33,554,432 bytes?". We just do 33,554,432/4=8388608</p>
+          <p><b>Q3:</b>How many float can it store?</p>
+          <p>The size of float is the same as an int, so the answer is the same.</p>
+          <p><b>Q4</b>: How many bits are needed to address all of memory.</p>
+          <p>This is a power of 2 problem.</p>
+          <p>We put 2 in a power of n >= 33,554,432. We do calculations and we get 2 in a power of 24. So the answer is: we need 25 bits to address this memory</p>
+      <h4 class="exo">Exercise 2:</h4>
+            <p><b>Context:</b> a variable int a is stored at address 0xFF00</p>
+            <p><b>Q1</b>What are the addresses used by a?</p>
+            <p>Think: "How many bytes does an int take?". The answer is 4 bytes. So "if a starts at 0xFF00, what are the next 4 consecutive addresses?" So we start at 0xFF00 and move forward.</p>
+            <p>The answer: 0xFF00, 0XFF01, 0XFF02 and 0XFF03</p>
+            <p><b>Q2</b>What is the address right after a?</p>
+            <p>We already used from 0xFF00 to 0xFF03, so the next free address is 0xFF04.</p>
+            <p><b>Q3</b>What is the maximum memory size of this computer?</p>
+            <p>Here the answer lies in address. We were given that a is stored at address 0xFF00.</p>
+            <p>Think: "What's the highest possible addressable memory if addresses go up to 0xFFFF?". So basicaly 0xFFFF in decimal is 65,535 bytes. So by using the exercise before, we can find that it's 2 in a power of 16 so it means 64Ko.</p>
+      <h4 class="exo">Exercise 3:</h4>
+            <p><b>Context:</b> We were given a variables that were declared as: <code>int a; a = 5; char b = 'c'; float = 1.25; int b = 6;</code></p>
+            <p>We also were given that First variable starts at 0xFF00 and all variables are stored consecutively without interruption.</p>
+            <ul>
+              <li><code>int a = 5;</code></li>
+              <ul>
+                <li> Size: 4 bytes;</li>
+                <li>Adress: 0xFF00 -> 0xFF03</li>
+                <li>Stored value: 5 in binary, across 4 bytes.</li>
+              </ul>
+              <li><code>char b = 'c';</code></li>
+              <ul>
+                <li> Size: 1 byte;</li>
+                <li>Adress: 0xFF04</li>
+                <li>Stored value: ASCII value of c is 99, across 1 byte.</li>
+            </ul>
+              <li><code>float f = 1.25;</code></li>
+              <ul>
+                <li>Size: 4 bytes</li>
+                <li>Adress: 0xFF05 ->0xFF08</li>
+              </ul>
+              <li><code>int b = 6;</code></li>
+              <ul>
+                <li>Size: 4 int;</li>
+                <li>Address: 0xFF09 -> 0xFF0C</li>
+              </ul>
+            </ul>
+      <h4 class="exo">Exercise 4:</h4>
+            <p><b>Context:</b> So we were given a, b as integers and c,b as characters. Give the C code for:</p>
+            <p><b>Q1:</b>Declare and initialize a and b</p>
+              <p><code>int a = x; int b = x;</code></p>
+            <p><b>Q2:</b>Show the values of a and b</p>
+            <p><code>printf("%d, %d\n", a, b);</code></p>
+            <p><b>Q3:</b>Initialize c and d with  letters from the alphabet.</p>
+            <p><code>char c = 'a'; char d = 'b';</code></p>
+            <p><b>Q4:</b>Show the values of c and d</p>
+            <p><code>printf("%c, %c\n", c, d);</code></p>
+            <p><b>Q5:</b>Show the points of code</p>
+            <p><code>printf("%d, %d\n", &a, &b);</code></p>
+            <p><b>Q6:</b>Can we put the value of c in a?</p>
+            <p>Yes, we can. It's because assentially char is just a small integer, so int can safely store char value.</p>
+            <p><b>Q7:</b>But can we do it backwards? So put value of a in c?</p>
+            <p>No.</p> 
+            
+</div>
+
+      <div class="class-section">
+        <h2>Class 2: Variables & Data Types</h2>
+        <p>Dive into <code>int</code>, <code>char</code>, <code>float</code>, and more. Learn how C handles memory.</p>
+      </div>
+      <div class="class-section">
+        <h2>Class 3: Conditions & Loops</h2>
+        <p>Use <code>if</code>, <code>switch</code>, <code>for</code>, and <code>while</code> to control your program’s flow.</p>
+      </div>
+      <div class="class-section">
+        <h2>Class 4: Functions</h2>
+        <p>Break down your code with reusable functions. Learn how to define, call, and pass parameters.</p>
+      </div>
+      <div class="class-section">
+        <h2>Class 5: Pointers & Memory</h2>
+        <p>Understand pointers, memory addresses, and how to use <code>malloc</code> and <code>free</code>.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/index.js"></script>
+
+</body>
+</html>

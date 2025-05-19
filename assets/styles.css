@@ -1,0 +1,151 @@
+body {
+  font-family: "Segoe UI", sans-serif;
+  margin: 0;
+  padding: 2rem;
+  background-color: #EDE9F5;
+  color: #2C2C34;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  text-align: center;
+}
+
+h1 {
+  font-size: 2rem;
+  color: #BFA2DB;
+  margin-bottom: 1rem;
+}
+
+.colors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.color-block {
+  padding: 1.2rem;
+  border-radius: 12px;
+  font-weight: bold;
+  color: #2C2C34;
+  text-align: center;
+}
+
+.lavender-mist { background-color: #BFA2DB; }
+.icy-lilac     { background-color: #EDE9F5; }
+.soft-charcoal { background-color: #2C2C34; color: #FFFFFF; }
+.frosted-rose  { background-color: #F2C1D1; }
+.winter-sky    { background-color: #A3BFFA; }
+.snow-white    { background-color: #FFFFFF; }
+
+.border {
+  border: 1px solid #2C2C34;
+}
+
+.note-card {
+  background-color: #FFFFFF;
+  border: 2px solid #BFA2DB;
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: left;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 10px rgba(191, 162, 219, 0.15);
+}
+
+.note-card h3 {
+  margin-top: 0;
+  color: #2C2C34;
+}
+
+.note-link {
+  display: inline-block;
+  margin-top: 1rem;
+  color: #A3BFFA;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.note-link:hover {
+  color: #BFA2DB;
+  text-decoration: underline;
+}
+
+.cta-button {
+  background-color: #F2C1D1;
+  color: #2C2C34;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cta-button:hover {
+  background-color: #E0AFC2;
+}
+
+.class-buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .class-buttons button {
+      background-color: #A3BFFA;
+      color: #2C2C34;
+      border: none;
+      padding: 0.8rem 1.2rem;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .class-buttons button.active,
+    .class-buttons button:hover {
+      background-color: #BFA2DB;
+    }
+
+    .class-content {
+      background-color: #FFFFFF;
+      border: 2px solid #BFA2DB;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 10px rgba(191, 162, 219, 0.15);
+    }
+
+    .class-section {
+      display: none;
+    }
+
+    .class-section.active {
+      display: block;
+    }
+
+    .class-content p, ul, ol, pre{
+      text-align: left;
+    }
+
+    .class-content h2{
+      background-color: #c0a2db85;
+
+    }
+
+    .class-content .exercise{
+      background-color: #F2C1D1;
+
+    }
+    .class-content h3{
+      background-color: #f2c1d19e;
+      
+
+    }
+    .class-content h4{
+      background-color: #a3befa90;
+      text-align: left;
+    }

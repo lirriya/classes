@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Course Page – Alina’s Notes</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  
+</head>
+<body>
+  <div class="container">
+    <h1>Web-dev</h1>
+
+    <div class="class-buttons">
+      <button onclick="showClass(0)" class="active">Class 1</button>
+      <button onclick="showClass(1)">Class 2</button>
+      <button onclick="showClass(2)">Class 3</button>
+      <button onclick="showClass(3)">Class 4</button>
+      <button onclick="showClass(4)">Class 5</button>
+    </div>
+     <div class="class-content">
+      <div class="class-section active">
+        <h2>Architecture and application of Web</h2>
+        <h3>Une application web</h3>
+        <p>C'est une application web est un logiciel accessible via un navigateur web. Elle fonctionne grace à une architecture répartie entre différents composants</p>
+        <ul> 
+            <li><b>Navigateur web(client):</b> Interface utiliseé par l'utilisateur. Envoie des requetes (souvent HTTP) au serveur</li>
+            <li><b>Serveur web:</b> Recoit les requetes, Traite les donneés et renvoie les réponses (pages HTML, JSON, etc.)</li>
+            <li><b>Serveur de base de données (SGBD):</b> stocke et gère les donneés</li>
+            <li><b>Serveur d'authetification:</b> vérifie l'identité de l'utilisateurs, souvent via LDAP</li>
+        </ul>
+        <h3>Architechture</h3>
+        <p>On utilise l'architecture client/serveur</p>
+        <h4>Déroulement:</h4>
+        <ol>
+            <li>Le client (navigateur) envoie une requete au serveur.</li>
+            <li>Le serveur traite la requete et envoie une réponse (souvent une page web ou des données)</li>
+            <li>Le serveur peut aussi agir en tant que client pour faire appel à un autre serveur (ex. une API, une base de données, etc)</li>
+        </ol>
+        <h3>HTTPD</h3>
+        <p><b>httpd = HyperText Transfer Protocol Daemon</b></p>
+        <p>C'est un programme serveur(souvent Apache ou Nginx) qui attend et traite les requetes HTTP venants des clients</p>
+        <p>Il tourne en tache de fond sur le serveur</p>
+        <p>Son role: recevoir des requetes HTTP(comme GET, POST), les analyser et répondre</p>
+        <h4>Que fait le client quand il clique sur un lien HTML?</h4>
+        <p><code>"a href="http://www.iro.umontreal.ca/~vaucher/test.html">Fichier /a"</code></p>
+</p>
+        <p>Cela déclanche un requete GET comprenant:</p>
+        <ul>
+            <li>Nom de la machine: www.iro.umontreal.ca</li>
+            <li>Chemin du fichier: ~vaucher/test.html</li>
+            <li>Protocole: http</li>
+        </ul>
+        <p>Le navigateur convertit cela en une requete GET HTTP, envoyée au serveur avec l'adresse, le chemin, et d'autres informations (comme le port défaut: 80)</p>
+        <h3>évolution vers le Web moderne</h3>
+        <h4>Web 3.0 et services en ligne</h4>
+        <p>Ajourd'hui, les applications web vont au-delà de simples pages HTML</p>
+        <p>On parle d'applications conectées à des bases de données avec des services en ligne: Banques, e-commerce, météo, réservations..</p>
+        <p>Ces applications:</p>
+        <ul>
+            <li>ont une interface fonctionnelle (frontend)</li>
+            <li>sont reliées à une base de données</li>
+            <li>offrent une interface d'administration(backend)</li>
+        </ul>
+        <h4>Pourquoi httpd seul ne suffit pas?</h4>
+        <ul>
+            <li>Les pages statistiqie ne suffisent plus</li>
+            <li>Il faut que la réponse du serveur soit dynamique (adaptée à l'utilisateur, etc)</li>
+            <li>Solution: ajout du CGI</li> 
+        </ul>
+        <h3>CGI</h3>
+        <p><b>CGI = Common Gateway Interface</b></p>
+        <p>CGI est une interface entre le serveur web (httpd) et des programmes externes</p>
+        <p>Cela permet de générer dynamiquement des pages</p>
+        <p> Par exemple:</p>
+        <p> Un utilisateur soumet un formulaire. Le serveur utilise CGI pour exécuter un script qui trtaite les données et retourne une page personnalisée</p>
+        <h4>CGI a été une étape importante vers les applications web dynamiques</h4>
+        <h3>Application Web: Avantages, Inconvénient et Fondements</h3>
+        <p><b>Avantages:</b></p>
+        <ul>
+            <li>Portabilité de la partie client</li>
+            <p>Fonctionne sur tout navigateur (indépendamment du système d'explotation)</p>
+            <li>Déploiement facilité</li>
+            <p>Pas besoin d'installer l'application sur chaque poste; langages web sont standards</p>
+            <li>Accès massif</li>
+            <p>Pas de limitation sur le nombre d'utilisateurs simultanés</p>
+            <li>Sécurité simplifiée</li>
+            <p>Un seul protocole d'accés: HTTP ou HTTPS, via une URL unique</p>
+        </ul>
+        <p><b>Inconvénient principal:</b></p>
+        <p>Difficile à tester et à mettre au point.</p>
+        <p>Pourquoi? En raison de l'interaction client-serveur asynchrone, des différences entre navigateurs, des dépendances réseau, etc</p>
+    </div>
+     <div class="class-section">
+     </div>
+      <div class="class-section">
+        </div>
+      <div class="class-section">
+        </div>
+      <div class="class-section">
+        </div>
+    </div>
+  </div>
+
+
+<script src="assets/index.js"></script>
+
+</body>
+</html>
