@@ -27,7 +27,7 @@ Technical Stack
     Motion: GSAP for major animations and page transitions, CSS transitions for small states (hovers, buttons).
     Icons and UI elements: inline SVG only. Never use PNG/JPEG/WebP raster assets for icons or UI.
     Content is data-driven: subjects live as typed data files in src/content/. Adding a subject must not require new components.
-    Color palette (CSS variables): #fff4eb (paper/base), #f6e0b6 (accent/tape), #a6bcc9 (muted/borders), #3e4b8e (primary/actions), #3d1534 (text). White only for sheets on top of the paper.
+    Color palette (CSS variables): #f5f7fa (paper/base), #ffffff (sheets), #e7ecf6 (hairlines/borders), #a6bcc9 (muted/inactive), #f6e0b6 (tape/yellow highlights: tagline pill, exercise + sub-section highlights, inline code), #e8dcae (muted yellow: "coming soon" badges, text on ink headings), #3e4b8e (primary: active tabs, kickers, section headings), #3d1534 (text, page-level class titles with tape-muted text). Bright primary shade --color-primary-bright #4a5ce0 is reserved for links and hover states. Do not use left-border accents on headings or nav items; nav items only get a full border on hover. Keep yellow usage restrained: pills, badges, exercises, and inline code only.
 
 Technical Documentation & Representation
 

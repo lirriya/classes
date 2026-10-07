@@ -1,10 +1,16 @@
 :root {
-  --color-paper: #fff4eb;
+  --color-paper: #f5f7fa;
   --color-tape: #f6e0b6;
+  --color-tape-muted: #e8dcae;
   --color-muted: #a6bcc9;
+  --color-line: #e7ecf6;
   --color-primary: #3e4b8e;
   --color-ink: #3d1534;
   --color-sheet: #ffffff;
+
+  --color-primary-bright: #4a5ce0;
+  --color-primary-soft: #7c88d6;
+  --color-primary-deep: #2f3866;
 
   --font-sans: "Inter", "Segoe UI", sans-serif;
 
@@ -65,7 +71,7 @@ ol {
 }
 
 a {
-  color: var(--color-primary);
+  color: var(--color-primary-bright);
   text-decoration: none;
 }
 

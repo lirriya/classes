@@ -12,21 +12,21 @@
 
 .blocks > h3.heading {
   margin-top: var(--space-4);
-  background-color: color-mix(in srgb, var(--color-muted) 45%, transparent);
-  border-left: 4px solid var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-sheet);
 }
 
 .blocks > h3.exerciseHeading {
   background-color: var(--color-tape);
-  border-left-color: var(--color-ink);
+  color: var(--color-ink);
 }
 
 .blocks > h4.heading {
-  background-color: color-mix(in srgb, var(--color-tape) 55%, transparent);
+  background-color: color-mix(in srgb, var(--color-tape) 35%, transparent);
 }
 
 .blocks > h4.subHeading {
-  background-color: color-mix(in srgb, var(--color-muted) 30%, transparent);
+  background-color: color-mix(in srgb, var(--color-tape) 20%, transparent);
 }
 
 .paragraph {
