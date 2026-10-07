@@ -1,0 +1,104 @@
+.subject {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  background-color: var(--color-sheet);
+  border: 2px solid var(--color-muted);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-6);
+  box-shadow: var(--shadow-sheet);
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.date {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-primary);
+}
+
+.title {
+  font-size: 1.75rem;
+}
+
+.summary {
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 60ch;
+}
+
+.soonBadge {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background-color: var(--color-tape);
+  color: var(--color-ink);
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.tab {
+  border: none;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  background-color: var(--color-muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.tab:hover {
+  transform: translateY(-2px);
+}
+
+.tabActive {
+  background-color: var(--color-primary);
+  color: var(--color-paper);
+}
+
+.sheet {
+  background-color: var(--color-sheet);
+  border: 2px solid var(--color-muted);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sheet);
+}
+
+.classTitle {
+  font-size: 1.3rem;
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-4);
+  background-color: color-mix(in srgb, var(--color-tape) 70%, transparent);
+  border-radius: var(--radius-sm);
+  text-align: left;
+}
+
+.empty {
+  text-align: left;
+  color: var(--color-primary);
+}

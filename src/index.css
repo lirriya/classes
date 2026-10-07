@@ -1,0 +1,86 @@
+:root {
+  --color-paper: #fff4eb;
+  --color-tape: #f6e0b6;
+  --color-muted: #a6bcc9;
+  --color-primary: #3e4b8e;
+  --color-ink: #3d1534;
+  --color-sheet: #ffffff;
+
+  --font-sans: "Inter", "Segoe UI", sans-serif;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  --shadow-sheet: 0 4px 14px rgba(61, 21, 52, 0.08);
+  --shadow-lifted: 0 8px 24px rgba(61, 21, 52, 0.12);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-ink);
+  background-color: var(--color-paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+p {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: inherit;
+}
+
+code {
+  font-family: "Cascadia Code", "Fira Code", monospace;
+  font-size: 0.9em;
+  background-color: var(--color-tape);
+  padding: 0.1em 0.35em;
+  border-radius: var(--radius-sm);
+}
