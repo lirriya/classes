@@ -1,6 +1,9 @@
-import { NavLink } from "react-router-dom";
+import { useRef } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { subjects } from "../content/subjects";
 import type { ReactNode } from "react";
+import { useGsapReveal } from "../hooks/useGsapReveal";
+import { BookmarkIcon, NotebookIcon } from "./icons";
 import styles from "./AppShell.module.css";
 
 interface AppShellProps {
@@ -8,31 +11,25 @@ interface AppShellProps {
 }
 
 export function AppShell({ children }: AppShellProps) {
+  const location = useLocation();
+  const mainRef = useRef<HTMLElement>(null);
+  useGsapReveal(mainRef, location.pathname);
+
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
         <NavLink to="/" className={styles.brand}>
-          <svg
-            className={styles.brandIcon}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17.5a2.5 2.5 0 0 1-2.5 2.5H6.5A2.5 2.5 0 0 1 4 19.5z" />
-            <path d="M4 17.5A2.5 2.5 0 0 1 6.5 15H20" />
-            <path d="M9 7h7" />
-          </svg>
+          <NotebookIcon className={styles.brandIcon} />
           Alina's notes
         </NavLink>
         <span className={styles.tagline}>study together</span>
       </header>
 
       <aside className={styles.rail}>
-        <p className={styles.railTitle}>Notebooks</p>
+        <p className={styles.railTitle}>
+          <BookmarkIcon className={styles.railTitleIcon} />
+          Notebooks
+        </p>
         <nav className={styles.railNav}>
           {subjects.map((subject) =>
             subject.status === "published" ? (
@@ -43,11 +40,17 @@ export function AppShell({ children }: AppShellProps) {
                   isActive ? `${styles.railItem} ${styles.railItemActive}` : styles.railItem
                 }
               >
-                {subject.title}
+                <span className={styles.railLabel}>
+                  <NotebookIcon className={styles.railIcon} />
+                  {subject.title}
+                </span>
               </NavLink>
             ) : (
               <span key={subject.slug} className={`${styles.railItem} ${styles.railItemSoon}`}>
-                {subject.title}
+                <span className={styles.railLabel}>
+                  <NotebookIcon className={styles.railIcon} />
+                  {subject.title}
+                </span>
                 <span className={styles.soonBadge}>soon</span>
               </span>
             ),
@@ -55,7 +58,9 @@ export function AppShell({ children }: AppShellProps) {
         </nav>
       </aside>
 
-      <main className={styles.main}>{children}</main>
+      <main className={styles.main} ref={mainRef}>
+        {children}
+      </main>
 
       <footer className={styles.footer}>
         <p>Alina's notes — learning in public</p>
