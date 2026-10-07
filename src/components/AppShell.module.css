@@ -16,7 +16,7 @@
   justify-content: space-between;
   padding: var(--space-4) var(--space-6);
   background-color: var(--color-sheet);
-  border-bottom: 2px solid var(--color-muted);
+  border-bottom: 2px solid var(--color-line);
 }
 
 .brand {
@@ -40,7 +40,7 @@
 
 .tagline {
   font-size: 0.875rem;
-  color: var(--color-primary);
+  color: var(--color-ink);
   background-color: var(--color-tape);
   padding: var(--space-1) var(--space-3);
   border-radius: 999px;
@@ -50,7 +50,7 @@
   grid-area: rail;
   padding: var(--space-5) var(--space-4);
   background-color: var(--color-sheet);
-  border-right: 2px solid var(--color-muted);
+  border-right: 2px solid var(--color-line);
 }
 
 .railTitle {
@@ -77,18 +77,18 @@
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--color-ink);
-  border-left: 4px solid transparent;
+  border: 2px solid transparent;
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .railItem:hover {
-  background-color: var(--color-paper);
+  background-color: var(--color-line);
+  border-color: var(--color-muted);
   text-decoration: none;
 }
 
 .railItemActive {
-  background-color: var(--color-paper);
-  border-left-color: var(--color-primary);
+  background-color: var(--color-line);
   color: var(--color-primary);
 }
 
@@ -102,7 +102,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  background-color: var(--color-tape);
+  background-color: var(--color-tape-muted);
   color: var(--color-ink);
   padding: 2px 8px;
   border-radius: 999px;
@@ -117,7 +117,7 @@
   grid-area: footer;
   padding: var(--space-4) var(--space-6);
   background-color: var(--color-sheet);
-  border-top: 2px solid var(--color-muted);
+  border-top: 2px solid var(--color-line);
   font-size: 0.85rem;
   color: var(--color-muted);
 }
@@ -134,7 +134,7 @@
 
   .rail {
     border-right: none;
-    border-bottom: 2px solid var(--color-muted);
+    border-bottom: 2px solid var(--color-line);
   }
 
   .railNav {

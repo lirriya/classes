@@ -12,7 +12,7 @@
   justify-content: space-between;
   gap: var(--space-4);
   background-color: var(--color-sheet);
-  border: 2px solid var(--color-muted);
+  border: 2px solid var(--color-line);
   border-radius: var(--radius-lg);
   padding: var(--space-5) var(--space-6);
   box-shadow: var(--shadow-sheet);
@@ -48,7 +48,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  background-color: var(--color-tape);
+  background-color: var(--color-tape-muted);
   color: var(--color-ink);
   padding: 4px 12px;
   border-radius: 999px;
@@ -78,12 +78,12 @@
 
 .tabActive {
   background-color: var(--color-primary);
-  color: var(--color-paper);
+  color: var(--color-sheet);
 }
 
 .sheet {
   background-color: var(--color-sheet);
-  border: 2px solid var(--color-muted);
+  border: 2px solid var(--color-line);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
   box-shadow: var(--shadow-sheet);
@@ -93,7 +93,8 @@
   font-size: 1.3rem;
   padding: var(--space-2) var(--space-3);
   margin-bottom: var(--space-4);
-  background-color: color-mix(in srgb, var(--color-tape) 70%, transparent);
+  background-color: var(--color-ink);
+  color: var(--color-tape-muted);
   border-radius: var(--radius-sm);
   text-align: left;
 }
