@@ -1,0 +1,132 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.intro {
+  background-color: var(--color-sheet);
+  border: 2px solid var(--color-muted);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sheet);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.kicker {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-primary);
+  background-color: var(--color-tape);
+  padding: var(--space-1) var(--space-3);
+  border-radius: 999px;
+}
+
+.title {
+  font-size: 2.25rem;
+}
+
+.lead {
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.meta {
+  font-size: 0.9rem;
+  color: var(--color-primary);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-5);
+}
+
+.cardLinkWrap {
+  display: block;
+  height: 100%;
+  color: inherit;
+}
+
+.cardLinkWrap:hover {
+  text-decoration: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
+  background-color: var(--color-sheet);
+  border: 2px solid var(--color-muted);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sheet);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.cardLinkWrap:not(.cardDisabled):hover .card {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lifted);
+  border-color: var(--color-primary);
+}
+
+.cardDisabled {
+  cursor: default;
+}
+
+.cardDisabled .card {
+  opacity: 0.7;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.cardTitle {
+  font-size: 1.15rem;
+}
+
+.soonBadge {
+  flex-shrink: 0;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background-color: var(--color-tape);
+  color: var(--color-ink);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.cardDate {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+.cardSummary {
+  flex-grow: 1;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.cardLink {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.cardDisabled .cardLink {
+  color: var(--color-muted);
+}
