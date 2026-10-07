@@ -1,14 +1,18 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useRef, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { getSubject } from "../content/subjects";
 import { BlockRenderer } from "../components/BlockRenderer";
 import { NotFoundPage } from "./NotFoundPage";
+import { useGsapReveal } from "../hooks/useGsapReveal";
+import { ArrowLeftIcon, ClockIcon, LayersIcon } from "../components/icons";
 import styles from "./SubjectPage.module.css";
 
 export function SubjectPage() {
   const { slug } = useParams();
   const subject = slug ? getSubject(slug) : undefined;
   const [activeClass, setActiveClass] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  useGsapReveal(sectionRef, activeClass);
 
   if (!subject) {
     return <NotFoundPage />;
@@ -18,9 +22,25 @@ export function SubjectPage() {
 
   return (
     <article className={styles.subject}>
-      <header className={styles.header}>
+      <Link to="/" className={styles.back}>
+        <ArrowLeftIcon className={styles.backIcon} />
+        All notebooks
+      </Link>
+
+      <header className={`${styles.header} ${styles.tape}`}>
         <div className={styles.headerText}>
-          {subject.date && <span className={styles.date}>{subject.date}</span>}
+          <div className={styles.chips}>
+            {subject.date && (
+              <span className={styles.chip}>
+                <ClockIcon className={styles.chipIcon} />
+                {subject.date}
+              </span>
+            )}
+            <span className={styles.chip}>
+              <LayersIcon className={styles.chipIcon} />
+              {subject.classes.length} classes
+            </span>
+          </div>
           <h1 className={styles.title}>{subject.title}</h1>
           {subject.summary && <p className={styles.summary}>{subject.summary}</p>}
         </div>
@@ -36,6 +56,7 @@ export function SubjectPage() {
               <button
                 key={subjectClass.title}
                 type="button"
+                title={subjectClass.title}
                 className={
                   index === activeClass
                     ? `${styles.tab} ${styles.tabActive}`
@@ -48,7 +69,7 @@ export function SubjectPage() {
             ))}
           </nav>
 
-          <section className={styles.sheet}>
+          <section className={styles.sheet} ref={sectionRef}>
             {currentClass.blocks.length > 0 ? (
               <>
                 <h2 className={styles.classTitle}>
@@ -67,7 +88,7 @@ export function SubjectPage() {
           </section>
         </>
       ) : (
-        <section className={styles.sheet}>
+        <section className={styles.sheet} ref={sectionRef}>
           <div className={styles.empty}>
             <h2 className={styles.classTitle}>Notes in progress</h2>
             <p>This notebook is being written. Check back soon!</p>

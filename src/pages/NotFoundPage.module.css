@@ -16,6 +16,13 @@
   color: var(--color-primary-bright);
 }
 
+.icon {
+  width: 42px;
+  height: 42px;
+  margin: 0 auto;
+  color: var(--color-primary);
+}
+
 .text {
   font-size: 1.1rem;
 }
