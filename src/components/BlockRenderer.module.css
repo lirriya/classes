@@ -29,6 +29,36 @@
   background-color: color-mix(in srgb, var(--color-tape) 20%, transparent);
 }
 
+.blocks > h5.heading {
+  background-color: color-mix(in srgb, var(--color-tape) 20%, transparent);
+  font-size: 0.95rem;
+}
+
+.blocks > h3.partHeading {
+  margin-top: var(--space-5);
+  background-color: var(--color-tape);
+  color: var(--color-ink);
+  font-size: 1.15rem;
+  padding: var(--space-3) var(--space-4);
+  scroll-margin-top: var(--space-5);
+}
+
+.quote {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-paper);
+  border: 2px solid var(--color-line);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.rule {
+  border: none;
+  border-top: 2px dashed var(--color-line);
+  margin: var(--space-2) 0;
+}
+
 .paragraph {
   line-height: 1.7;
 }

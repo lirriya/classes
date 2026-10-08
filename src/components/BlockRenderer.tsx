@@ -1,12 +1,14 @@
 import type { Block } from "../content/types";
 import { InlineText } from "./InlineText";
+import { ExerciseRenderer } from "./ExerciseRenderer";
 import styles from "./BlockRenderer.module.css";
 
 interface BlockRendererProps {
   blocks: Block[];
+  idPrefix?: string;
 }
 
-export function BlockRenderer({ blocks }: BlockRendererProps) {
+export function BlockRenderer({ blocks, idPrefix = "" }: BlockRendererProps) {
   return (
     <div className={styles.blocks}>
       {blocks.map((block, index) => {
@@ -17,7 +19,16 @@ export function BlockRenderer({ blocks }: BlockRendererProps) {
                 ? `${styles.heading} ${styles.exerciseHeading}`
                 : block.variant === "sub"
                   ? `${styles.heading} ${styles.subHeading}`
-                  : styles.heading;
+                  : block.variant === "part"
+                    ? `${styles.heading} ${styles.partHeading}`
+                    : styles.heading;
+            if (block.variant === "part") {
+              return (
+                <h3 key={index} id={`part-${block.id}`} className={className}>
+                  <InlineText text={block.text} />
+                </h3>
+              );
+            }
             if (block.level === 3) {
               return (
                 <h3 key={index} className={className}>
@@ -25,10 +36,17 @@ export function BlockRenderer({ blocks }: BlockRendererProps) {
                 </h3>
               );
             }
+            if (block.level === 4) {
+              return (
+                <h4 key={index} className={className}>
+                  <InlineText text={block.text} />
+                </h4>
+              );
+            }
             return (
-              <h4 key={index} className={className}>
+              <h5 key={index} className={className}>
                 <InlineText text={block.text} />
-              </h4>
+              </h5>
             );
           }
           case "paragraph":
@@ -67,6 +85,22 @@ export function BlockRenderer({ blocks }: BlockRendererProps) {
               <pre key={index} className={styles.code}>
                 <code>{block.text}</code>
               </pre>
+            );
+          case "quote":
+            return (
+              <blockquote key={index} className={styles.quote}>
+                <InlineText text={block.text} />
+              </blockquote>
+            );
+          case "rule":
+            return <hr key={index} className={styles.rule} />;
+          case "exercises":
+            return (
+              <ExerciseRenderer
+                key={index}
+                groups={block.groups}
+                idPrefix={`${idPrefix}${index}`}
+              />
             );
         }
       })}
