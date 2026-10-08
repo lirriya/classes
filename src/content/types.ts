@@ -1,10 +1,14 @@
 export type SubjectStatus = "published" | "soon";
 
-export type InlineText = string;
+export type Language = "fr" | "en";
+
+export type Localized = string | { fr: string; en: string };
+
+export type InlineText = Localized;
 
 export interface ListItem {
   text: InlineText;
-  children?: string[];
+  children?: InlineText[];
 }
 
 export interface ExerciseMistake {
@@ -57,7 +61,7 @@ export type Exercise =
 export type GradeableExercise = TrueFalseExercise | McqExercise | FillBlankExercise;
 
 export interface ExerciseGroup {
-  title: string;
+  title: Localized;
   exercises: Exercise[];
 }
 
@@ -72,21 +76,21 @@ export type Block =
 
 export interface SubjectPart {
   id: string;
-  label: string;
+  label: Localized;
 }
 
 export interface SubjectClass {
-  title: string;
-  label?: string;
+  title: Localized;
+  label?: Localized;
   parts?: SubjectPart[];
   blocks: Block[];
 }
 
 export interface Subject {
   slug: string;
-  title: string;
-  date?: string;
+  title: Localized;
+  date?: Localized;
   status: SubjectStatus;
-  summary?: string;
+  summary?: Localized;
   classes: SubjectClass[];
 }

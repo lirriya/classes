@@ -9,7 +9,7 @@ import {
   useExerciseProgress,
 } from "../hooks/useExerciseProgress";
 import { gradeableIds, gradeableIdsForClass } from "../content/exerciseStats";
-import { uiStrings } from "../content/uiStrings";
+import { useText, useUI } from "../hooks/useSettings";
 import {
   ArrowLeftIcon,
   CheckIcon,
@@ -22,6 +22,8 @@ import styles from "./SubjectPage.module.css";
 export function SubjectPage() {
   const { slug } = useParams();
   const subject = slug ? getSubject(slug) : undefined;
+  const ui = useUI();
+  const t = useText();
   const [tab, setTab] = useState({ slug: slug ?? "", index: 0 });
 
   if (tab.slug !== (slug ?? "")) {
@@ -59,19 +61,23 @@ export function SubjectPage() {
   };
 
   const handleReset = () => {
-    if (window.confirm(uiStrings.resetConfirm)) {
+    if (window.confirm(ui.resetConfirm)) {
       progress.reset();
     }
   };
 
-  const classLabel = (index: number) =>
-    subject.classes[index].label ?? `Class ${index + 1}`;
+  const classLabel = (index: number) => {
+    const subjectClass = subject.classes[index];
+    return subjectClass.label !== undefined
+      ? t(subjectClass.label)
+      : ui.classFallback(index);
+  };
 
   return (
     <article className={styles.subject}>
       <Link to="/" className={styles.back}>
         <ArrowLeftIcon className={styles.backIcon} />
-        All notebooks
+        {ui.allNotebooks}
       </Link>
 
       <header className={`${styles.header} ${styles.tape}`}>
@@ -80,22 +86,22 @@ export function SubjectPage() {
             {subject.date && (
               <span className={styles.chip}>
                 <ClockIcon className={styles.chipIcon} />
-                {subject.date}
+                {t(subject.date)}
               </span>
             )}
             <span className={styles.chip}>
               <LayersIcon className={styles.chipIcon} />
-              {subject.classes.length} classes
+              {ui.classesCount(subject.classes.length)}
             </span>
             {totalIds.length > 0 && (
               <span className={`${styles.chip} ${styles.chipProgress}`}>
                 <CheckIcon className={styles.chipIcon} />
-                {uiStrings.progressOf(totalSolved, totalIds.length)}
+                {ui.progressOf(totalSolved, totalIds.length)}
               </span>
             )}
           </div>
-          <h1 className={styles.title}>{subject.title}</h1>
-          {subject.summary && <p className={styles.summary}>{subject.summary}</p>}
+          <h1 className={styles.title}>{t(subject.title)}</h1>
+          {subject.summary && <p className={styles.summary}>{t(subject.summary)}</p>}
           {totalIds.length > 0 && (
             <button
               type="button"
@@ -104,12 +110,12 @@ export function SubjectPage() {
               onClick={handleReset}
             >
               <RotateIcon className={styles.chipIcon} />
-              {uiStrings.resetProgress}
+              {ui.resetProgress}
             </button>
           )}
         </div>
         {subject.status === "soon" && (
-          <span className={styles.soonBadge}>coming soon</span>
+          <span className={styles.soonBadge}>{ui.comingSoonBadge}</span>
         )}
       </header>
 
@@ -118,9 +124,9 @@ export function SubjectPage() {
           <nav className={styles.tabs}>
             {subject.classes.map((subjectClass, index) => (
               <button
-                key={subjectClass.title}
+                key={index}
                 type="button"
-                title={subjectClass.title}
+                title={t(subjectClass.title)}
                 className={
                   index === activeClass
                     ? `${styles.tab} ${styles.tabActive}`
@@ -146,7 +152,7 @@ export function SubjectPage() {
                 ))}
               </span>
               <span className={styles.meterLabel}>
-                {uiStrings.progressOf(classSolved, classIds.length)}
+                {ui.progressOf(classSolved, classIds.length)}
               </span>
             </div>
           )}
@@ -160,7 +166,7 @@ export function SubjectPage() {
                   className={styles.partPill}
                   onClick={() => scrollToPart(part.id)}
                 >
-                  {part.label}
+                  {t(part.label)}
                 </button>
               ))}
             </nav>
@@ -171,7 +177,7 @@ export function SubjectPage() {
               {currentClass.blocks.length > 0 ? (
                 <>
                   <h2 className={styles.classTitle}>
-                    {classLabel(activeClass)}: {currentClass.title}
+                    {classLabel(activeClass)}: {t(currentClass.title)}
                   </h2>
                   <BlockRenderer
                     blocks={currentClass.blocks}
@@ -181,9 +187,9 @@ export function SubjectPage() {
               ) : (
                 <div className={styles.empty}>
                   <h2 className={styles.classTitle}>
-                    {classLabel(activeClass)}: {currentClass.title}
+                    {classLabel(activeClass)}: {t(currentClass.title)}
                   </h2>
-                  <p>Notes for this class aren't written yet.</p>
+                  <p>{ui.noNotesYet}</p>
                 </div>
               )}
             </section>
@@ -192,8 +198,8 @@ export function SubjectPage() {
       ) : (
         <section className={styles.sheet} ref={sectionRef}>
           <div className={styles.empty}>
-            <h2 className={styles.classTitle}>Notes in progress</h2>
-            <p>This notebook is being written. Check back soon!</p>
+            <h2 className={styles.classTitle}>{ui.notesInProgressTitle}</h2>
+            <p>{ui.notesInProgressBody}</p>
           </div>
         </section>
       )}

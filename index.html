@@ -11,6 +11,13 @@
       rel="stylesheet"
     />
     <title>Alina's notes</title>
+    <script>
+      try {
+        if (localStorage.getItem("classes:theme") === "dark") {
+          document.documentElement.dataset.theme = "dark";
+        }
+      } catch {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

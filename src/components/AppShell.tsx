@@ -3,6 +3,8 @@ import { NavLink, useLocation } from "react-router-dom";
 import { subjects } from "../content/subjects";
 import type { ReactNode } from "react";
 import { useGsapReveal } from "../hooks/useGsapReveal";
+import { useText, useUI } from "../hooks/useSettings";
+import { SettingsMenu } from "./SettingsMenu";
 import { BookmarkIcon, NotebookIcon } from "./icons";
 import styles from "./AppShell.module.css";
 
@@ -13,6 +15,8 @@ interface AppShellProps {
 export function AppShell({ children }: AppShellProps) {
   const location = useLocation();
   const mainRef = useRef<HTMLElement>(null);
+  const ui = useUI();
+  const t = useText();
   useGsapReveal(mainRef, location.pathname);
 
   return (
@@ -22,13 +26,13 @@ export function AppShell({ children }: AppShellProps) {
           <NotebookIcon className={styles.brandIcon} />
           Alina's notes
         </NavLink>
-        <span className={styles.tagline}>study together</span>
+        <SettingsMenu />
       </header>
 
       <aside className={styles.rail}>
         <p className={styles.railTitle}>
           <BookmarkIcon className={styles.railTitleIcon} />
-          Notebooks
+          {ui.notebooks}
         </p>
         <nav className={styles.railNav}>
           {subjects.map((subject) =>
@@ -42,16 +46,16 @@ export function AppShell({ children }: AppShellProps) {
               >
                 <span className={styles.railLabel}>
                   <NotebookIcon className={styles.railIcon} />
-                  {subject.title}
+                  {t(subject.title)}
                 </span>
               </NavLink>
             ) : (
               <span key={subject.slug} className={`${styles.railItem} ${styles.railItemSoon}`}>
                 <span className={styles.railLabel}>
                   <NotebookIcon className={styles.railIcon} />
-                  {subject.title}
+                  {t(subject.title)}
                 </span>
-                <span className={styles.soonBadge}>soon</span>
+                <span className={styles.soonBadge}>{ui.soon}</span>
               </span>
             ),
           )}
@@ -63,7 +67,7 @@ export function AppShell({ children }: AppShellProps) {
       </main>
 
       <footer className={styles.footer}>
-        <p>Alina's notes — learning in public</p>
+        <p>{ui.footer}</p>
       </footer>
     </div>
   );

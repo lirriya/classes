@@ -8,8 +8,9 @@ import type {
   OpenExercise,
   TrueFalseExercise,
 } from "../content/types";
-import { uiStrings } from "../content/uiStrings";
+import { uiNotCorrect } from "../content/uiStrings";
 import { useExerciseProgressContext } from "../hooks/useExerciseProgress";
+import { useText, useUI } from "../hooks/useSettings";
 import { InlineText as InlineTextNode } from "./InlineText";
 import { CheckIcon, CrossIcon, EyeIcon, RotateIcon } from "./icons";
 import styles from "./ExerciseRenderer.module.css";
@@ -21,12 +22,13 @@ interface ExerciseRendererProps {
 
 export function ExerciseRenderer({ groups, idPrefix }: ExerciseRendererProps) {
   const progress = useExerciseProgressContext();
+  const t = useText();
 
   return (
     <div className={styles.groups}>
       {groups.map((group, groupIndex) => (
         <section className={styles.group} key={groupIndex}>
-          <h4 className={styles.groupTitle}>{group.title}</h4>
+          <h4 className={styles.groupTitle}>{t(group.title)}</h4>
           <div className={styles.questions}>
             {group.exercises.map((exercise, exerciseIndex) => {
               const id = `${idPrefix}:${groupIndex}:${exerciseIndex}`;
@@ -107,6 +109,7 @@ interface WrongNoteProps {
 }
 
 function WrongNote({ message, onRetry }: WrongNoteProps) {
+  const ui = useUI();
   return (
     <div className={`${styles.feedback} ${styles.feedbackWrong}`}>
       <p className={styles.feedbackText}>
@@ -117,19 +120,20 @@ function WrongNote({ message, onRetry }: WrongNoteProps) {
       </p>
       <button type="button" className={styles.retryBtn} onClick={onRetry}>
         <RotateIcon />
-        {uiStrings.tryAgain}
+        {ui.tryAgain}
       </button>
     </div>
   );
 }
 
 function SuccessNote({ text }: { text: InlineText }) {
+  const ui = useUI();
   return (
     <div className={`${styles.feedback} ${styles.feedbackSuccess}`}>
       <p className={styles.feedbackText}>
         <CheckIcon className={styles.feedbackIcon} />
         <span>
-          <strong>{uiStrings.goodJob}</strong>{" "}
+          <strong>{ui.goodJob}</strong>{" "}
           <InlineTextNode text={text} />
         </span>
       </p>
@@ -158,8 +162,9 @@ function TrueFalseQuestion({
   exercise,
 }: QuestionProps<TrueFalseExercise>) {
   const progress = useExerciseProgressContext();
+  const ui = useUI();
   const solved = progress.isSolved(id);
-  const [feedback, setFeedback] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<InlineText | null>(null);
   const [choice, setChoice] = useState<boolean | null>(null);
 
   const pick = (value: boolean) => {
@@ -168,7 +173,7 @@ function TrueFalseQuestion({
     if (value === exercise.answer) {
       progress.solve(id);
     } else {
-      setFeedback(exercise.mistake ?? uiStrings.notCorrect);
+      setFeedback(exercise.mistake ?? uiNotCorrect);
     }
   };
 
@@ -202,7 +207,7 @@ function TrueFalseQuestion({
               disabled={solved || feedback !== null}
               onClick={() => pick(value)}
             >
-              {value ? uiStrings.vrai : uiStrings.faux}
+              {value ? ui.vrai : ui.faux}
               {solved && value === exercise.answer && (
                 <CheckIcon className={styles.choiceIcon} />
               )}
@@ -227,7 +232,7 @@ function TrueFalseQuestion({
 function McqQuestion({ id, label, exercise }: QuestionProps<McqExercise>) {
   const progress = useExerciseProgressContext();
   const solved = progress.isSolved(id);
-  const [feedback, setFeedback] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<InlineText | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
 
   const pick = (index: number) => {
@@ -236,9 +241,7 @@ function McqQuestion({ id, label, exercise }: QuestionProps<McqExercise>) {
     if (index === exercise.answerIndex) {
       progress.solve(id);
     } else {
-      setFeedback(
-        exercise.options[index].feedback ?? uiStrings.notCorrect,
-      );
+      setFeedback(exercise.options[index].feedback ?? uiNotCorrect);
     }
   };
 
@@ -303,11 +306,13 @@ function FillBlankQuestion({
   exercise,
 }: QuestionProps<FillBlankExercise>) {
   const progress = useExerciseProgressContext();
+  const ui = useUI();
+  const t = useText();
   const solved = progress.isSolved(id);
-  const [feedback, setFeedback] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<InlineText | null>(null);
   const [values, setValues] = useState<string[]>([]);
 
-  const segments = exercise.prompt.split(/_{4,}/);
+  const segments = t(exercise.prompt).split(/_{4,}/);
 
   const submit = () => {
     if (solved || feedback !== null) return;
@@ -315,7 +320,7 @@ function FillBlankQuestion({
       normalize(values[index] ?? ""),
     );
     if (guesses.some((guess) => guess === "")) {
-      setFeedback(uiStrings.notCorrect);
+      setFeedback(uiNotCorrect);
       return;
     }
     const wrongIndex = exercise.blanks.findIndex((blank, index) =>
@@ -330,7 +335,7 @@ function FillBlankQuestion({
     const mistake = exercise.blanks[wrongIndex].mistakes.find((entry) =>
       entry.match.some((match) => normalize(match) === guesses[wrongIndex]),
     );
-    setFeedback(mistake?.feedback ?? uiStrings.notCorrect);
+    setFeedback(mistake?.feedback ?? uiNotCorrect);
   };
 
   const state: QuestionState = solved
@@ -352,7 +357,7 @@ function FillBlankQuestion({
                 <input
                   type="text"
                   className={styles.blankInput}
-                  aria-label={`Blank ${index + 1}`}
+                  aria-label={ui.blankLabel(index + 1)}
                   value={
                     solved
                       ? values[index] || exercise.blanks[index].accepted[0]
@@ -384,7 +389,7 @@ function FillBlankQuestion({
           onClick={submit}
         >
           <CheckIcon />
-          {uiStrings.check}
+          {ui.check}
         </button>
       )}
       {feedback !== null && (
@@ -401,6 +406,7 @@ interface OpenQuestionProps {
 }
 
 function OpenQuestion({ label, exercise }: OpenQuestionProps) {
+  const ui = useUI();
   const [revealed, setRevealed] = useState(false);
 
   return (
@@ -421,11 +427,11 @@ function OpenQuestion({ label, exercise }: OpenQuestionProps) {
         onClick={() => setRevealed(true)}
       >
         <EyeIcon />
-        {uiStrings.showSolution}
+        {ui.showSolution}
       </button>
       {revealed && (
         <div className={styles.revealCard}>
-          <span className={styles.revealLabel}>{uiStrings.solution}</span>
+          <span className={styles.revealLabel}>{ui.solution}</span>
           <p>
             <InlineTextNode text={exercise.solution} />
           </p>
