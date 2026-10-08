@@ -4,7 +4,7 @@ interface InlineTextProps {
   text: string;
 }
 
-const TOKEN_PATTERN = /(`[^`]+`)|(\*\*[^*]+\*\*)/g;
+const TOKEN_PATTERN = /(`[^`]+`)|(\*\*.+?\*\*)/g;
 
 export function InlineText({ text }: InlineTextProps) {
   const pattern = new RegExp(TOKEN_PATTERN.source, "g");
