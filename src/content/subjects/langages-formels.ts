@@ -2732,6 +2732,155 @@ const chapterThree: Block[] = [
       },
     ],
   },
+  {
+    type: "heading",
+    level: 3,
+    text: {
+      fr: "3. Théorème 3 : équivalence expressions régulières / automates (Section 3.4.1)",
+      en: "3. Theorem 3: Regular Expressions / Automata Equivalence (Section 3.4.1)",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Nous disposons maintenant de deux outils pour décrire un langage : les automates à états finis et les expressions régulières. Le théorème de Kleene (1956) affirme que ces deux outils décrivent exactement la même famille de langages, à savoir les langages réguliers.",
+      en: "We now have two tools to describe a language: finite automata and regular expressions. Kleene's theorem (1956) states that these two tools describe exactly the same family of languages, namely the regular languages.",
+    },
+  },
+  {
+    type: "list",
+    items: [
+      {
+        text: {
+          fr: "**Théorème 3 (Kleene, 1956) :** Un langage L est régulier **si et seulement si** L est décrit par une expression régulière.",
+          en: "**Theorem 3 (Kleene, 1956):** A language L is regular **if and only if** L is described by a regular expression.",
+        },
+      },
+      {
+        text: {
+          fr: "Le « si et seulement si » se démontre en deux sens : **(⇐) de l'expression régulière vers l'automate**, puis **(⇒) de l'automate vers l'expression régulière**.",
+          en: "The “if and only if” is proved in two directions: **(⇐) from the regular expression to the automaton**, then **(⇒) from the automaton to the regular expression**.",
+        },
+      },
+    ],
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: {
+      fr: "Sens ⇐ : d'une expression régulière vers un automate",
+      en: "Direction ⇐: From a Regular Expression to an Automaton",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "On raisonne par récurrence sur la structure de l'expression régulière R. On construit, pour chaque forme possible de R, un automate non-déterministe M possédant un seul état initial et un seul état final, tel que L(M) = L(R).",
+      en: "We proceed by induction on the structure of the regular expression R. For each possible form of R we build a nondeterministic automaton M with a single initial state and a single final state, such that L(M) = L(R).",
+    },
+  },
+  {
+    type: "list",
+    ordered: true,
+    items: [
+      {
+        text: {
+          fr: "**Cas de base R = a (avec a ∈ Σ) :** deux états q₁ (initial) et q₂ (final), reliés par une seule transition étiquetée a, c'est-à-dire Δ(q₁, a) = {q₂}.",
+          en: "**Base case R = a (with a ∈ Σ):** two states q₁ (initial) and q₂ (final), linked by the single transition labelled a, that is Δ(q₁, a) = {q₂}.",
+        },
+      },
+      {
+        text: {
+          fr: "**Cas de base R = ε :** un unique état, à la fois initial et final, sans aucune transition. Le langage reconnu est {ε}.",
+          en: "**Base case R = ε:** a single state, both initial and final, with no transitions. The recognized language is {ε}.",
+        },
+      },
+      {
+        text: {
+          fr: "**Cas de base R = ∅ :** un état initial et un état final distincts, sans aucune transition : aucun mot n'est accepté, donc L(M) = ∅.",
+          en: "**Base case R = ∅:** distinct initial and final states with no transitions: no word is accepted, so L(M) = ∅.",
+        },
+      },
+      {
+        text: {
+          fr: "**Récurrence R = R₁ ∪ R₂ :** on ajoute un nouvel état initial et un nouvel état final, reliés par des transitions ε aux automates de R₁ et de R₂ (construction d'union du Théorème 1(a)).",
+          en: "**Inductive step R = R₁ ∪ R₂:** add a new initial state and a new final state, linked by ε-transitions to the automata of R₁ and R₂ (union construction of Theorem 1(a)).",
+        },
+      },
+      {
+        text: {
+          fr: "**Récurrence R = R₁ · R₂ :** on relie la sortie de l'automate de R₁ à l'entrée de l'automate de R₂ par une transition ε (construction de concaténation du Théorème 1(b)).",
+          en: "**Inductive step R = R₁ · R₂:** connect the output of the R₁ automaton to the input of the R₂ automaton with an ε-transition (concatenation construction of Theorem 1(b)).",
+        },
+      },
+      {
+        text: {
+          fr: "**Récurrence R = R₁* :** on ajoute un nouvel état initial et final, ainsi qu'une transition ε de retour vers le début, de sorte que R₁ puisse être répété un nombre arbitraire de fois (construction d'étoile du Théorème 1(c)).",
+          en: "**Inductive step R = R₁*:** add a new initial and final state, plus an ε-transition looping back to the start, so that R₁ can be repeated an arbitrary number of times (Kleene-star construction of Theorem 1(c)).",
+        },
+      },
+    ],
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "**Conséquence :** toute expression régulière se transforme en NFA, et tout NFA se transforme en DFA (Théorème 2). Toute expression régulière décrit donc bien un langage régulier.",
+      en: "**Consequence:** every regular expression converts to an NFA, and every NFA converts to a DFA (Theorem 2). Hence every regular expression indeed describes a regular language.",
+    },
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: {
+      fr: "Sens ⇒ : d'un automate vers une expression régulière",
+      en: "Direction ⇒: From an Automaton to a Regular Expression",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Pour la réciproque, on transforme l'automate en un **NFA généralisé** : un automate dont les transitions peuvent être étiquetées par des expressions régulières, et qui possède un unique état initial et un unique état final.",
+      en: "For the converse, we turn the automaton into a **generalized NFA**: an automaton whose transitions may be labelled by regular expressions, with a unique initial state and a unique final state.",
+    },
+  },
+  {
+    type: "list",
+    ordered: true,
+    items: [
+      {
+        text: {
+          fr: "Ajouter un nouvel état initial s relié par ε à l'ancien état initial, et un nouvel état final f relié par ε depuis chaque ancien état final.",
+          en: "Add a new initial state s linked by ε to the old initial state, and a new final state f linked by ε from every old final state.",
+        },
+      },
+      {
+        text: {
+          fr: "Éliminer les états intermédiaires un par un, en conservant toujours s et f. Pour supprimer un état q, on remplace chaque chemin traversant q par une seule transition étiquetée R = R₁ · R₂* · R₃.",
+          en: "Eliminate the intermediate states one by one, always keeping s and f. To delete a state q, replace each path through q by a single transition labelled R = R₁ · R₂* · R₃.",
+        },
+      },
+      {
+        text: {
+          fr: "Répéter jusqu'à ce qu'il ne reste que s et f : l'unique étiquette de la transition restante est l'expression régulière recherchée.",
+          en: "Repeat until only s and f remain: the sole label of the remaining transition is the required regular expression.",
+        },
+      },
+    ],
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "**Schéma d'élimination :** si un état q est atteint depuis p par l'étiquette R₁, possède une boucle sur lui-même d'étiquette R₂ et mène vers r par l'étiquette R₃, alors après suppression de q on ajoute à la transition p → r l'expression R₁ · R₂* · R₃, combinée par union avec l'étiquette éventuellement déjà présente.",
+      en: "**Elimination scheme:** if a state q is reached from p with label R₁, has a self-loop with label R₂, and leads to r with label R₃, then after deleting q we add to the transition p → r the expression R₁ · R₂* · R₃, unioned with any label already present.",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "**Exemple :** en partant de l'automate à deux états qui reconnaît les mots comportant un nombre pair de a, l'élimination des états donne l'expression régulière (b* · a · b* · a)* · b*. Les deux sens réunis achèvent la preuve du Théorème 3 : langages réguliers et expressions régulières coïncident exactement.",
+      en: "**Example:** starting from the two-state automaton recognizing words with an even number of a's, eliminating the states yields the regular expression (b* · a · b* · a)* · b*. Combining both directions completes the proof of Theorem 3: regular languages and regular expressions coincide exactly.",
+    },
+  },
   { type: "rule" },
   {
     type: "heading",
@@ -2937,6 +3086,79 @@ const chapterThree: Block[] = [
           },
         ],
       },
+      {
+        title: {
+          fr: "Section E : Théorème 3 (Kleene)",
+          en: "Section E: Theorem 3 (Kleene)",
+        },
+        exercises: [
+          {
+            kind: "trueFalse",
+            prompt: {
+              fr: "Affirmation : Le théorème de Kleene affirme qu'un langage est régulier si et seulement s'il est décrit par une expression régulière.",
+              en: "Kleene's theorem states that a language is regular if and only if it is described by a regular expression.",
+            },
+            answer: true,
+            justification: {
+              fr: "**Vrai.** C'est l'énoncé exact du Théorème 3 : les automates à états finis et les expressions régulières décrivent la même famille de langages.",
+              en: "**True.** This is the exact statement of Theorem 3: finite automata and regular expressions describe the same family of languages.",
+            },
+            mistake: {
+              fr: "Retiens l'équivalence : automate fini ⇔ expression régulière.",
+              en: "Remember the equivalence: finite automaton ⇔ regular expression.",
+            },
+          },
+          {
+            kind: "trueFalse",
+            prompt: {
+              fr: "Affirmation : Pour transformer une expression régulière en automate, il faut obligatoirement construire directement un automate déterministe.",
+              en: "To convert a regular expression into an automaton, one must directly build a deterministic automaton.",
+            },
+            answer: false,
+            justification: {
+              fr: "**Faux.** La construction du sens (⇐) produit naturellement un NFA ; on peut ensuite le déterminiser grâce au Théorème 2 si on le souhaite.",
+              en: "**False.** The (⇐) construction naturally yields an NFA; it can then be determinized via Theorem 2 if desired.",
+            },
+            mistake: {
+              fr: "La construction la plus simple passe par un NFA — la déterminisation est une étape séparée.",
+              en: "The simplest construction goes through an NFA—determinization is a separate step.",
+            },
+          },
+        ],
+      },
+      {
+        title: {
+          fr: "Section F : Exercice de type Examen (Théorème 3)",
+          en: "Section F: Exam-Style Exercise (Theorem 3)",
+        },
+        exercises: [
+          {
+            kind: "open",
+            prompt: {
+              fr: "En suivant la construction du Théorème 3, expliquer comment obtenir un automate qui reconnaît le langage décrit par l'expression régulière R = a* · b sur Σ = {a, b}.",
+              en: "Following the construction of Theorem 3, explain how to obtain an automaton recognizing the language described by the regular expression R = a* · b over Σ = {a, b}.",
+            },
+            solution: {
+              fr: "Solution :",
+              en: "Solution:",
+            },
+            solutionItems: [
+              {
+                fr: "On part de l'automate élémentaire de a (deux états reliés par une transition a) et on applique la construction d'étoile pour R₁ = a* : un nouvel état initial et final plus une transition ε de retour vers le début permettent de répéter a un nombre arbitraire de fois, y compris zéro.",
+                en: "Start from the elementary automaton for a (two states linked by an a-transition) and apply the Kleene-star construction for R₁ = a*: a new initial and final state plus an ε-transition looping back to the start allow a to be repeated arbitrarily many times, including zero.",
+              },
+              {
+                fr: "On applique ensuite la concaténation avec l'automate élémentaire de b : une transition ε relie l'état final de a* à l'état initial de b.",
+                en: "Then apply concatenation with the elementary automaton for b: an ε-transition links the final state of a* to the initial state of b.",
+              },
+              {
+                fr: "Le NFA obtenu accepte exactement les mots composés de zéro ou plusieurs a suivis d'un seul b : L = {aⁿ b | n ≥ 0}.",
+                en: "The resulting NFA accepts exactly the words made of zero or more a's followed by a single b: L = {aⁿ b | n ≥ 0}.",
+              },
+            ],
+          },
+        ],
+      },
     ],
   },
   { type: "rule" },
@@ -2998,6 +3220,486 @@ const chapterThree: Block[] = [
       fr: "**Conclusion de l'analyse :** Le langage décrit par cette expression régulière est l'ensemble : L = {w | w correspond à… [insérez votre description logique ici]}.",
       en: "**Conclusion of the analysis:** The language described by this regular expression is the set: L = {w | w matches… [insert your logical description here]}.",
     },
+  },
+  {
+    type: "heading",
+    level: 3,
+    variant: "part",
+    id: "p4",
+    text: {
+      fr: "Langages réguliers — Partie 4 : Langages non réguliers",
+      en: "Regular Languages — Part 4: Non-regular Languages",
+    },
+  },
+  {
+    type: "heading",
+    level: 3,
+    text: {
+      fr: "1. Tous les langages ne sont pas réguliers (Section 3.5)",
+      en: "1. Not Every Language Is Regular (Section 3.5)",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Tous les langages rencontrés jusqu'ici étaient réguliers : reconnus par un automate ou décrits par une expression régulière. La réponse à la question « est-ce toujours le cas ? » est **non**. Considérons le langage L = {aⁿ bⁿ | n ≥ 0} sur l'alphabet Σ = {a, b}.",
+      en: "Every language seen so far was regular: recognized by an automaton or described by a regular expression. The answer to “is this always the case?” is **no**. Consider the language L = {aⁿ bⁿ | n ≥ 0} over the alphabet Σ = {a, b}.",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Pour reconnaître ce langage, il faudrait **compter** le nombre de a et vérifier qu'il est égal au nombre de b. Or un automate à états finis n'a pas de mémoire : il devrait créer un état pour chaque couple possible (zéro a / zéro b, un a / zéro b, zéro a / un b, …), et comme n est un entier quelconque, cela demanderait une **infinité d'états**. C'est impossible.",
+      en: "To recognize this language one would have to **count** the a's and check that the count equals the number of b's. But a finite automaton has no memory: it would need one state per possible pair (zero a / zero b, one a / zero b, zero a / one b, …), and since n is an arbitrary integer this would require **infinitely many states**. That is impossible.",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "On a donc besoin d'un outil permettant de **prouver qu'un langage n'est pas régulier**. Cet outil est le **lemme de pompage** (pumping lemma) pour les langages réguliers.",
+      en: "We therefore need a tool to **prove that a language is not regular**. This tool is the **pumping lemma** for regular languages.",
+    },
+  },
+  {
+    type: "heading",
+    level: 3,
+    text: {
+      fr: "2. Lemme 1 : le lemme de pompage",
+      en: "2. Lemma 1: The Pumping Lemma",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "**Lemme 1 (lemme de pompage) :** Si L est un langage régulier, alors il existe un nombre p (appelé longueur de pompage) tel que, pour tout mot w ∈ L avec |w| ≥ p, le mot w peut être décomposé en trois parties w = xyz satisfaisant les trois conditions suivantes :",
+      en: "**Lemma 1 (pumping lemma):** If L is a regular language, then there exists a number p (called the pumping length) such that, for every word w ∈ L with |w| ≥ p, the word w can be split into three parts w = xyz satisfying the following three conditions:",
+    },
+  },
+  {
+    type: "list",
+    ordered: true,
+    items: [
+      {
+        text: {
+          fr: "xyⁱz ∈ L pour tout i ≥ 0 (le segment y peut être répété ou supprimé).",
+          en: "xyⁱz ∈ L for every i ≥ 0 (the segment y can be repeated or deleted).",
+        },
+      },
+      {
+        text: {
+          fr: "|y| > 0 (le segment y n'est pas vide).",
+          en: "|y| > 0 (the segment y is not empty).",
+        },
+      },
+      {
+        text: {
+          fr: "|xy| ≤ p (le segment xy est court).",
+          en: "|xy| ≤ p (the segment xy is short).",
+        },
+      },
+    ],
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: {
+      fr: "Démonstration (principe des tiroirs)",
+      en: "Proof (Pigeonhole Principle)",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "L étant régulier, il existe un automate déterministe M = (Q, Σ, δ, q₀, F) qui reconnaît L. On pose p = |Q|, le nombre d'états de M.",
+      en: "Since L is regular, there is a deterministic automaton M = (Q, Σ, δ, q₀, F) recognizing L. Let p = |Q|, the number of states of M.",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Soit w = a₁a₂…aₙ ∈ L avec n ≥ p. Notons s₁, s₂, …, sₙ₊₁ la suite des états traversés pendant la lecture de w, où s₁ = q₀ (état initial) et δ(sᵢ, aᵢ) = sᵢ₊₁ pour tout i.",
+      en: "Let w = a₁a₂…aₙ ∈ L with n ≥ p. Denote by s₁, s₂, …, sₙ₊₁ the sequence of states visited while reading w, where s₁ = q₀ (initial state) and δ(sᵢ, aᵢ) = sᵢ₊₁ for every i.",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Cette suite comporte n + 1 ≥ p + 1 états, mais l'ensemble Q ne contient que p états distincts. Par le **principe des tiroirs**, deux positions de la suite correspondent nécessairement au même état : il existe deux indices k < l tels que sₖ = sₗ et l ≤ p + 1.",
+      en: "This sequence contains n + 1 ≥ p + 1 states, but the set Q has only p distinct states. By the **pigeonhole principle**, two positions of the sequence must correspond to the same state: there exist two indices k < l such that sₖ = sₗ and l ≤ p + 1.",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Posons alors x = a₁…aₖ₋₁, y = aₖ…aₗ₋₁ et z = aₗ…aₙ. Comme sₖ = sₗ, le segment y forme une **boucle** : on peut le répéter (le « pomper ») ou le supprimer sans modifier l'état d'arrivée, d'où xyⁱz ∈ L pour tout i ≥ 0. De plus y ≠ ε car k < l, et |xy| ≤ p car l ≤ p + 1. Le lemme est démontré. ∎",
+      en: "Now set x = a₁…aₖ₋₁, y = aₖ…aₗ₋₁ and z = aₗ…aₙ. Since sₖ = sₗ, the segment y forms a **loop**: it can be repeated (pumped) or deleted without changing the arrival state, hence xyⁱz ∈ L for every i ≥ 0. Moreover y ≠ ε because k < l, and |xy| ≤ p because l ≤ p + 1. The lemma is proved. ∎",
+    },
+  },
+  {
+    type: "heading",
+    level: 3,
+    text: {
+      fr: "3. Méthode en 5 étapes pour prouver qu'un langage n'est pas régulier",
+      en: "3. Five-Step Method to Prove a Language Is Not Regular",
+    },
+  },
+  {
+    type: "list",
+    ordered: true,
+    items: [
+      {
+        text: {
+          fr: "**Supposer, par l'absurde, que L est régulier** et noter p la longueur de pompage donnée par le lemme.",
+          en: "**Assume, for contradiction, that L is regular** and let p be the pumping length given by the lemma.",
+        },
+      },
+      {
+        text: {
+          fr: "**Choisir un mot w ∈ L « assez long »** (|w| ≥ p), en gardant p comme variable. Par exemple w = aᵖ bᵖ pour {aⁿ bⁿ}.",
+          en: "**Choose a word w ∈ L that is “long enough”** (|w| ≥ p), keeping p as a variable. For example w = aᵖ bᵖ for {aⁿ bⁿ}.",
+        },
+      },
+      {
+        text: {
+          fr: "**Utiliser la décomposition w = xyz** imposée par le lemme, avec |xy| ≤ p et |y| ≥ 1, pour en déduire la forme de y (ici, y ne contient que des a).",
+          en: "**Use the decomposition w = xyz** required by the lemma, with |xy| ≤ p and |y| ≥ 1, to deduce the shape of y (here, y contains only a's).",
+        },
+      },
+      {
+        text: {
+          fr: "**Pomper avec une valeur de i bien choisie** (souvent i = 0 ou i = 2) pour fabriquer un mot xyⁱz qui n'appartient pas à L.",
+          en: "**Pump with a well-chosen value of i** (often i = 0 or i = 2) to build a word xyⁱz that does not belong to L.",
+        },
+      },
+      {
+        text: {
+          fr: "**Conclure à la contradiction :** le lemme impose xyⁱz ∈ L, donc l'hypothèse initiale est fausse et L n'est pas régulier. ∎",
+          en: "**Conclude the contradiction:** the lemma requires xyⁱz ∈ L, so the initial assumption is false and L is not regular. ∎",
+        },
+      },
+    ],
+  },
+  {
+    type: "heading",
+    level: 3,
+    text: {
+      fr: "4. Exemple complet : {aⁿ bⁿ | n ≥ 0} n'est pas régulier",
+      en: "4. Full Example: {aⁿ bⁿ | n ≥ 0} Is Not Regular",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "**Hypothèse :** supposons, par l'absurde, que L = {aⁿ bⁿ | n ≥ 0} soit régulier, et soit p la longueur de pompage fournie par le lemme.",
+      en: "**Assumption:** suppose, for contradiction, that L = {aⁿ bⁿ | n ≥ 0} is regular, and let p be the pumping length given by the lemma.",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "**Choix du mot :** posons w = aᵖ bᵖ. Ce mot appartient bien à L (avec n = p) et sa longueur vaut |w| = 2p ≥ p.",
+      en: "**Choice of word:** set w = aᵖ bᵖ. This word indeed belongs to L (with n = p) and its length is |w| = 2p ≥ p.",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "**Décomposition :** le lemme donne w = xyz avec |xy| ≤ p et |y| ≥ 1. Comme |xy| ≤ p, les segments x et y se trouvent dans le bloc des p premiers a : le segment y ne contient que des a, donc y = aᵗ avec t ≥ 1.",
+      en: "**Decomposition:** the lemma gives w = xyz with |xy| ≤ p and |y| ≥ 1. Since |xy| ≤ p, the segments x and y lie inside the block of the first p a's: the segment y contains only a's, so y = aᵗ with t ≥ 1.",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "**Pompage avec i = 0 :** xy⁰z = xz. Dans xz, le nombre de a vaut p − t (strictement moins que p), tandis que le nombre de b reste p. Le mot xz n'a donc pas le même nombre de a et de b, c'est-à-dire xz ∉ L.",
+      en: "**Pumping with i = 0:** xy⁰z = xz. In xz the number of a's is p − t (strictly fewer than p), while the number of b's remains p. The word xz therefore has different numbers of a's and b's, that is, xz ∉ L.",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "**Contradiction :** le lemme garantit xyⁱz ∈ L pour tout i ≥ 0, en particulier pour i = 0. Comme xz ∉ L, l'hypothèse est contredite. Le langage L = {aⁿ bⁿ | n ≥ 0} n'est donc **pas régulier**. ∎",
+      en: "**Contradiction:** the lemma guarantees xyⁱz ∈ L for every i ≥ 0, in particular for i = 0. Since xz ∉ L, the assumption is contradicted. The language L = {aⁿ bⁿ | n ≥ 0} is therefore **not regular**. ∎",
+    },
+  },
+  {
+    type: "heading",
+    level: 3,
+    text: {
+      fr: "5. Autres exemples classiques",
+      en: "5. Other Classic Examples",
+    },
+  },
+  {
+    type: "list",
+    items: [
+      {
+        text: {
+          fr: "**{ww | w ∈ {a, b}*}** n'est pas régulier : on choisit le mot aᵖ b aᵖ b (c'est-à-dire ww avec w = aᵖ b) et on pompe avec i = 2. Le segment y étant dans les premiers a, la première moitié grandit et les deux moitiés ne coïncident plus.",
+          en: "**{ww | w ∈ {a, b}*}** is not regular: choose the word aᵖ b aᵖ b (that is, ww with w = aᵖ b) and pump with i = 2. Since y lies in the leading a's, the first half grows and the two halves no longer match.",
+        },
+      },
+      {
+        text: {
+          fr: "**{aⁿ² | n ≥ 0}** (mots de longueur un carré) n'est pas régulier : on choisit w = aᵖ² et on pompe avec i = 2. La longueur devient p² + t avec 1 ≤ t ≤ p, strictement comprise entre p² et (p + 1)² = p² + 2p + 1 : ce n'est plus un carré.",
+          en: "**{aⁿ² | n ≥ 0}** (words whose length is a perfect square) is not regular: choose w = aᵖ² and pump with i = 2. The length becomes p² + t with 1 ≤ t ≤ p, strictly between p² and (p + 1)² = p² + 2p + 1: it is no longer a square.",
+        },
+      },
+      {
+        text: {
+          fr: "**{aⁱ bʲ | i > j}** n'est pas régulier : on choisit w = aᵖ⁺¹ bᵖ et on pompe avec i = 0. Il reste p + 1 − t lettres a avec t ≥ 1, soit au plus p lettres a pour p lettres b : la condition i > j n'est plus vérifiée.",
+          en: "**{aⁱ bʲ | i > j}** is not regular: choose w = aᵖ⁺¹ bᵖ and pump with i = 0. There remain p + 1 − t a's with t ≥ 1, that is at most p a's for p b's: the condition i > j no longer holds.",
+        },
+      },
+    ],
+  },
+  { type: "rule" },
+  {
+    type: "heading",
+    level: 3,
+    variant: "exercise",
+    text: {
+      fr: "Exercices d'Entraînement",
+      en: "Practice Exercises",
+    },
+  },
+  {
+    type: "exercises",
+    groups: [
+      {
+        title: {
+          fr: "Section A : Vrai ou Faux (Justifiez)",
+          en: "Section A: True or False (Justify)",
+        },
+        exercises: [
+          {
+            kind: "trueFalse",
+            prompt: {
+              fr: "Affirmation : Le langage L = {aⁿ bⁿ | n ≥ 0} est un langage régulier.",
+              en: "The language L = {aⁿ bⁿ | n ≥ 0} is a regular language.",
+            },
+            answer: false,
+            justification: {
+              fr: "**Faux.** Un automate fini n'a pas de mémoire pour compter et comparer le nombre de a et de b ; le lemme de pompage prouve que ce langage n'est pas régulier.",
+              en: "**False.** A finite automaton has no memory to count and compare the number of a's and b's; the pumping lemma proves this language is not regular.",
+            },
+            mistake: {
+              fr: "Peux-tu compter un nombre arbitraire de symboles avec un nombre fini d'états ?",
+              en: "Can you count an arbitrary number of symbols with finitely many states?",
+            },
+          },
+          {
+            kind: "trueFalse",
+            prompt: {
+              fr: "Affirmation : Le lemme de pompage sert à démontrer qu'un langage est régulier.",
+              en: "The pumping lemma is used to prove that a language is regular.",
+            },
+            answer: false,
+            justification: {
+              fr: "**Faux.** Le lemme de pompage est un outil de **non-régularité** : on l'utilise par l'absurde pour montrer qu'un langage n'est pas régulier. Il ne prouve jamais la régularité.",
+              en: "**False.** The pumping lemma is a **non-regularity** tool: it is used by contradiction to show a language is not regular. It never proves regularity.",
+            },
+            mistake: {
+              fr: "Pour montrer qu'un langage EST régulier, on construit un automate ou une expression régulière.",
+              en: "To show a language IS regular, build an automaton or a regular expression.",
+            },
+          },
+          {
+            kind: "trueFalse",
+            prompt: {
+              fr: "Affirmation : Dans le lemme de pompage, le segment y de la décomposition w = xyz est toujours non vide.",
+              en: "In the pumping lemma, the segment y of the decomposition w = xyz is always non-empty.",
+            },
+            answer: true,
+            justification: {
+              fr: "**Vrai.** Le lemme impose |y| ≥ 1 : c'est ce qui rend le pompage non trivial (sinon rien ne changerait).",
+              en: "**True.** The lemma requires |y| ≥ 1: this is what makes pumping non-trivial (otherwise nothing would change).",
+            },
+            mistake: {
+              fr: "Rappelle-toi la condition 2 du lemme : |y| > 0.",
+              en: "Recall condition 2 of the lemma: |y| > 0.",
+            },
+          },
+        ],
+      },
+      {
+        title: {
+          fr: "Section B : Question à Choix Multiple (QCM)",
+          en: "Section B: Multiple Choice Questions (MCQ)",
+        },
+        exercises: [
+          {
+            kind: "mcq",
+            prompt: {
+              fr: "Quelles conditions la décomposition w = xyz doit-elle satisfaire dans le lemme de pompage ?",
+              en: "Which conditions must the decomposition w = xyz satisfy in the pumping lemma?",
+            },
+            options: [
+              {
+                text: {
+                  fr: "xyⁱz ∈ L pour tout i ≥ 0, |y| > 0 et |xy| ≤ p",
+                  en: "xyⁱz ∈ L for every i ≥ 0, |y| > 0 and |xy| ≤ p",
+                },
+              },
+              {
+                text: {
+                  fr: "xyⁱz ∈ L pour tout i ≥ 1, |y| ≥ 0 et |xy| ≤ p",
+                  en: "xyⁱz ∈ L for every i ≥ 1, |y| ≥ 0 and |xy| ≤ p",
+                },
+                feedback: {
+                  fr: "Le pompage inclut i = 0 (on peut supprimer y) et y doit être non vide (|y| > 0).",
+                  en: "Pumping includes i = 0 (y may be deleted) and y must be non-empty (|y| > 0).",
+                },
+              },
+              {
+                text: {
+                  fr: "xyz ∈ L seulement pour i = 1, avec |y| > 0",
+                  en: "xyz ∈ L only for i = 1, with |y| > 0",
+                },
+                feedback: {
+                  fr: "Le lemme vaut pour tout i ≥ 0, pas seulement i = 1.",
+                  en: "The lemma holds for every i ≥ 0, not only i = 1.",
+                },
+              },
+              {
+                text: {
+                  fr: "|xy| ≥ p et |y| ≤ p",
+                  en: "|xy| ≥ p and |y| ≤ p",
+                },
+                feedback: {
+                  fr: "C'est l'inégalité inverse : le segment xy doit être court, |xy| ≤ p.",
+                  en: "It is the opposite inequality: the segment xy must be short, |xy| ≤ p.",
+                },
+              },
+            ],
+            answerIndex: 0,
+            solution: {
+              fr: "Réponse A : xyⁱz ∈ L pour tout i ≥ 0, |y| > 0 et |xy| ≤ p.",
+              en: "Answer A: xyⁱz ∈ L for every i ≥ 0, |y| > 0 and |xy| ≤ p.",
+            },
+          },
+        ],
+      },
+      {
+        title: {
+          fr: "Section C : Texte à trous",
+          en: "Section C: Fill-in-the-Blanks",
+        },
+        exercises: [
+          {
+            kind: "fillBlank",
+            prompt: {
+              fr: "Pour montrer qu'un langage n'est pas régulier, on raisonne par __________ : on suppose le langage régulier et on note p la __________ de pompage. Comme |xy| ≤ p, le segment y reste dans les p premiers symboles, ce qui limite les décompositions possibles.",
+              en: "To show that a language is not regular, we reason by __________: we assume the language is regular and let p be the __________ length. Since |xy| ≤ p, the segment y stays within the first p symbols, which limits the possible decompositions.",
+            },
+            blanks: [
+              {
+                accepted: ["absurde", "l'absurde", "contradiction", "absurdity"],
+                mistakes: [
+                  {
+                    match: ["recurrence", "induction", "construction", "tiroirs"],
+                    feedback: {
+                      fr: "Ici on veut prouver une impossibilité : on part de l'hypothèse « L est régulier » pour aboutir à une contradiction.",
+                      en: "Here we want to prove an impossibility: we start from the assumption “L is regular” to reach a contradiction.",
+                    },
+                  },
+                ],
+              },
+              {
+                accepted: ["longueur", "pumping", "longueur de pompage", "pumping length"],
+                mistakes: [
+                  {
+                    match: ["etat", "state", "transition", "mot", "word"],
+                    feedback: {
+                      fr: "Le nombre p fourni par le lemme est la longueur de pompage (pumping length).",
+                      en: "The number p given by the lemma is the pumping length.",
+                    },
+                  },
+                ],
+              },
+            ],
+            solution: {
+              fr: "Réponses : absurde · longueur (de pompage).",
+              en: "Answers: contradiction · pumping (length).",
+            },
+          },
+        ],
+      },
+      {
+        title: {
+          fr: "Section D : Exercices de type Examen",
+          en: "Section D: Exam-style Exercises",
+        },
+        exercises: [
+          {
+            kind: "open",
+            prompt: {
+              fr: "En utilisant le lemme de pompage, prouver que le langage L = {0ⁿ 1ⁿ | n ≥ 0} n'est pas régulier.",
+              en: "Using the pumping lemma, prove that the language L = {0ⁿ 1ⁿ | n ≥ 0} is not regular.",
+            },
+            solution: {
+              fr: "Solution :",
+              en: "Solution:",
+            },
+            solutionItems: [
+              {
+                fr: "Supposons, par l'absurde, que L soit régulier et soit p la longueur de pompage.",
+                en: "Assume, for contradiction, that L is regular and let p be the pumping length.",
+              },
+              {
+                fr: "Choisissons w = 0ᵖ 1ᵖ ∈ L. On a |w| = 2p ≥ p.",
+                en: "Choose w = 0ᵖ 1ᵖ ∈ L. We have |w| = 2p ≥ p.",
+              },
+              {
+                fr: "Le lemme donne w = xyz avec |xy| ≤ p et |y| ≥ 1. Comme |xy| ≤ p, y ne contient que des 0 : y = 0ᵗ avec t ≥ 1.",
+                en: "The lemma gives w = xyz with |xy| ≤ p and |y| ≥ 1. Since |xy| ≤ p, y contains only 0's: y = 0ᵗ with t ≥ 1.",
+              },
+              {
+                fr: "Pompons avec i = 0 : xz contient p − t zéros mais toujours p uns. Donc xz ∉ L.",
+                en: "Pump with i = 0: xz contains p − t zeros but still p ones. Hence xz ∉ L.",
+              },
+              {
+                fr: "Contradiction avec le lemme (qui exige xy⁰z ∈ L) : L = {0ⁿ 1ⁿ | n ≥ 0} n'est pas régulier. ∎",
+                en: "This contradicts the lemma (which requires xy⁰z ∈ L): L = {0ⁿ 1ⁿ | n ≥ 0} is not regular. ∎",
+              },
+            ],
+          },
+          {
+            kind: "open",
+            prompt: {
+              fr: "Prouver que le langage L = {aⁿ bᵐ | n > m ≥ 0} n'est pas régulier.",
+              en: "Prove that the language L = {aⁿ bᵐ | n > m ≥ 0} is not regular.",
+            },
+            solution: {
+              fr: "Solution :",
+              en: "Solution:",
+            },
+            solutionItems: [
+              {
+                fr: "Supposons L régulier et soit p la longueur de pompage.",
+                en: "Assume L is regular and let p be the pumping length.",
+              },
+              {
+                fr: "Choisissons w = aᵖ⁺¹ bᵖ ∈ L : on a |w| = 2p + 1 ≥ p et le nombre de a dépasse bien celui de b.",
+                en: "Choose w = aᵖ⁺¹ bᵖ ∈ L: we have |w| = 2p + 1 ≥ p and the number of a's indeed exceeds that of b's.",
+              },
+              {
+                fr: "Le lemme donne w = xyz avec |xy| ≤ p et |y| ≥ 1, donc y = aᵗ avec t ≥ 1 (y reste dans le bloc des a).",
+                en: "The lemma gives w = xyz with |xy| ≤ p and |y| ≥ 1, so y = aᵗ with t ≥ 1 (y stays in the block of a's).",
+              },
+              {
+                fr: "Pompons avec i = 0 : xz contient p + 1 − t lettres a et p lettres b. Comme t ≥ 1, on a p + 1 − t ≤ p, donc le nombre de a n'est plus strictement supérieur au nombre de b : xz ∉ L.",
+                en: "Pump with i = 0: xz contains p + 1 − t a's and p b's. Since t ≥ 1, p + 1 − t ≤ p, so the number of a's is no longer strictly greater than the number of b's: xz ∉ L.",
+              },
+              {
+                fr: "Contradiction : L = {aⁿ bᵐ | n > m ≥ 0} n'est pas régulier. ∎",
+                en: "Contradiction: L = {aⁿ bᵐ | n > m ≥ 0} is not regular. ∎",
+              },
+            ],
+          },
+        ],
+      },
+    ],
   },
 ];
 
@@ -4086,6 +4788,10 @@ export const langagesFormels: Subject = {
         {
           id: "p3",
           label: { fr: "Partie 3 — Équivalence & regex", en: "Part 3 — Equivalence & regex" },
+        },
+        {
+          id: "p4",
+          label: { fr: "Partie 4 — Langages non réguliers", en: "Part 4 — Non-regular languages" },
         },
       ],
       blocks: chapterThree,
