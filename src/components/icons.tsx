@@ -165,3 +165,41 @@ export function UserIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function StepIcon({ className }: IconProps) {
+  return (
+    <svg className={className} {...sharedProps}>
+      <path d="M5 4.5 15 12 5 19.5z" />
+      <path d="M19 5v14" />
+    </svg>
+  );
+}
+
+export function ShuffleIcon({ className }: IconProps) {
+  return (
+    <svg className={className} {...sharedProps}>
+      <path d="M16 3h5v5" />
+      <path d="M4 20 21 3" />
+      <path d="M21 16v5h-5" />
+      <path d="M15 15l6 6" />
+      <path d="M4 4l5 5" />
+    </svg>
+  );
+}
+
+export function PlusIcon({ className }: IconProps) {
+  return (
+    <svg className={className} {...sharedProps}>
+      <path d="M12 5v14" />
+      <path d="M5 12h14" />
+    </svg>
+  );
+}
+
+export function MinusIcon({ className }: IconProps) {
+  return (
+    <svg className={className} {...sharedProps}>
+      <path d="M5 12h14" />
+    </svg>
+  );
+}

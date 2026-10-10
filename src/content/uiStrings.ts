@@ -23,6 +23,20 @@ export interface UIStrings {
   activeStates: string;
   emptyWord: string;
   conceptCheck: string;
+  nextStep: string;
+  randomStep: string;
+  sharedState: string;
+  timeline: string;
+  resultExpected: string;
+  resultActual: string;
+  resultSafe: string;
+  resultRace: string;
+  bufferLabel: string;
+  bufferCapacity: string;
+  produce: string;
+  consume: string;
+  bufferFull: string;
+  bufferEmpty: string;
   settings: string;
   settingsLabel: string;
   language: string;
@@ -83,6 +97,20 @@ export const uiStrings: Record<Language, UIStrings> = {
     activeStates: "États actifs",
     emptyWord: "mot vide",
     conceptCheck: "Vérifie ta compréhension",
+    nextStep: "Étape suivante",
+    randomStep: "Pas au hasard",
+    sharedState: "État partagé",
+    timeline: "Déroulé",
+    resultExpected: "Résultat attendu",
+    resultActual: "Résultat obtenu",
+    resultSafe: "Entrelacement correct",
+    resultRace: "Course critique : le résultat change !",
+    bufferLabel: "Tampon",
+    bufferCapacity: "Capacité",
+    produce: "Produire",
+    consume: "Consommer",
+    bufferFull: "Tampon plein : l'écriture est perdue !",
+    bufferEmpty: "Tampon vide : rien à lire !",
     settings: "Réglages",
     settingsLabel: "Ouvrir les réglages",
     language: "Langue",
@@ -139,6 +167,20 @@ export const uiStrings: Record<Language, UIStrings> = {
     activeStates: "Active states",
     emptyWord: "empty word",
     conceptCheck: "Check your understanding",
+    nextStep: "Next step",
+    randomStep: "Random step",
+    sharedState: "Shared state",
+    timeline: "Timeline",
+    resultExpected: "Expected result",
+    resultActual: "Actual result",
+    resultSafe: "Correct interleaving",
+    resultRace: "Race condition: the result changed!",
+    bufferLabel: "Buffer",
+    bufferCapacity: "Capacity",
+    produce: "Produce",
+    consume: "Consume",
+    bufferFull: "Buffer full: the write is lost!",
+    bufferEmpty: "Buffer empty: nothing to read!",
     settings: "Settings",
     settingsLabel: "Open settings",
     language: "Language",

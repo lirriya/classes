@@ -1,0 +1,33 @@
+.figure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-4);
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  min-width: 0;
+}
+
+.canvas {
+  background-color: var(--color-paper);
+  border: 2px solid var(--color-line);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.caption {
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--color-muted);
+  text-align: center;
+}

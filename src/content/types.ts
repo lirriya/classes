@@ -91,16 +91,91 @@ export interface AutomatonSpec {
   examples?: string[];
 }
 
+export type DiagramShape = "circle" | "box";
+
+export interface DiagramNode {
+  id: string;
+  label: Localized;
+  x: number;
+  y: number;
+  shape?: DiagramShape;
+  tone?: "default" | "primary" | "soft";
+}
+
+export interface DiagramEdge {
+  from: string;
+  to: string;
+  label?: Localized;
+  bend?: number;
+  dashed?: boolean;
+}
+
+export interface DiagramSpec {
+  id: string;
+  caption?: Localized;
+  nodes: DiagramNode[];
+  edges: DiagramEdge[];
+}
+
+export interface InterleavingVariableSpec {
+  name: string;
+  init: number;
+  scope?: "shared" | "local";
+}
+
+export interface InterleavingStep {
+  label: Localized;
+  target: string;
+  source: string;
+}
+
+export interface InterleavingProcessSpec {
+  id: string;
+  label: Localized;
+  steps: InterleavingStep[];
+}
+
+export interface InterleavingSpec {
+  id: string;
+  caption?: Localized;
+  variables: InterleavingVariableSpec[];
+  processes: InterleavingProcessSpec[];
+  expected?: Record<string, number>;
+}
+
+export interface BufferSpec {
+  id: string;
+  caption?: Localized;
+  capacity: number;
+  produceLabel?: Localized;
+  consumeLabel?: Localized;
+}
+
+export interface TraceEventSpec {
+  label: Localized;
+  detail?: Localized;
+}
+
+export interface TraceSpec {
+  id: string;
+  caption?: Localized;
+  events: TraceEventSpec[];
+}
+
 export type Block =
   | { type: "heading"; level: 3 | 4 | 5; text: InlineText; variant?: "exercise" | "sub" | "part"; id?: string }
   | { type: "paragraph"; text: InlineText }
   | { type: "list"; ordered?: boolean; items: ListItem[] }
-  | { type: "code"; text: string }
+  | { type: "code"; text: string; caption?: Localized; lang?: string }
   | { type: "quote"; text: InlineText }
   | { type: "rule" }
   | { type: "exercises"; groups: ExerciseGroup[] }
   | { type: "automaton"; layout?: "row"; automata: AutomatonSpec[] }
-  | { type: "checkpoint"; concept: Localized; exercise: Exercise };
+  | { type: "checkpoint"; concept: Localized; exercise: Exercise }
+  | { type: "diagram"; layout?: "row"; diagrams: DiagramSpec[] }
+  | { type: "interleaving"; spec: InterleavingSpec }
+  | { type: "buffer"; spec: BufferSpec }
+  | { type: "trace"; spec: TraceSpec };
 
 export interface SubjectPart {
   id: string;

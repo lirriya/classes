@@ -3,6 +3,11 @@ import { InlineText } from "./InlineText";
 import { ExerciseRenderer } from "./ExerciseRenderer";
 import { AutomatonFigure } from "./AutomatonFigure";
 import { CheckpointRenderer } from "./CheckpointRenderer";
+import { DiagramFigure } from "./DiagramFigure";
+import { InterleavingSimulator } from "./InterleavingSimulator";
+import { BufferSimulator } from "./BufferSimulator";
+import { TraceSimulator } from "./TraceSimulator";
+import { useText } from "../hooks/useSettings";
 import styles from "./BlockRenderer.module.css";
 
 interface BlockRendererProps {
@@ -11,6 +16,7 @@ interface BlockRendererProps {
 }
 
 export function BlockRenderer({ blocks, idPrefix = "" }: BlockRendererProps) {
+  const t = useText();
   return (
     <div className={styles.blocks}>
       {blocks.map((block, index) => {
@@ -84,9 +90,14 @@ export function BlockRenderer({ blocks, idPrefix = "" }: BlockRendererProps) {
           }
           case "code":
             return (
-              <pre key={index} className={styles.code}>
-                <code>{block.text}</code>
-              </pre>
+              <div key={index} className={styles.codeWrap}>
+                <pre className={styles.code} data-lang={block.lang}>
+                  <code>{block.text}</code>
+                </pre>
+                {block.caption && (
+                  <p className={styles.codeCaption}>{t(block.caption)}</p>
+                )}
+              </div>
             );
           case "quote":
             return (
@@ -121,6 +132,20 @@ export function BlockRenderer({ blocks, idPrefix = "" }: BlockRendererProps) {
                 exercise={block.exercise}
               />
             );
+          case "diagram":
+            return (
+              <DiagramFigure
+                key={index}
+                diagrams={block.diagrams}
+                layout={block.layout}
+              />
+            );
+          case "interleaving":
+            return <InterleavingSimulator key={index} spec={block.spec} />;
+          case "buffer":
+            return <BufferSimulator key={index} spec={block.spec} />;
+          case "trace":
+            return <TraceSimulator key={index} spec={block.spec} />;
         }
       })}
     </div>
