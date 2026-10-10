@@ -315,6 +315,51 @@ const chapterOne: Block[] = [
       },
     ],
   },
+  {
+    type: "checkpoint",
+    concept: {
+      fr: "concaténation et longueur",
+      en: "concatenation and length",
+    },
+    exercise: {
+      kind: "mcq",
+      prompt: {
+        fr: "Soient w = ab et u = ba. Que valent w · u et sa longueur |w · u| ?",
+        en: "Let w = ab and u = ba. What is w · u and its length |w · u|?",
+      },
+      options: [
+        {
+          text: { fr: "abba, de longueur 4", en: "abba, of length 4" },
+        },
+        {
+          text: { fr: "baab, de longueur 4", en: "baab, of length 4" },
+          feedback: {
+            fr: "Non : la concaténation w · u place les symboles de u APRÈS ceux de w, donc u ne passe pas devant.",
+            en: "No: the concatenation w · u places the symbols of u AFTER those of w, so u does not move in front.",
+          },
+        },
+        {
+          text: { fr: "abba, de longueur 2", en: "abba, of length 2" },
+          feedback: {
+            fr: "Non : |w · u| = |w| + |u| = 2 + 2 = 4.",
+            en: "No: |w · u| = |w| + |u| = 2 + 2 = 4.",
+          },
+        },
+        {
+          text: { fr: "ab · ba, de longueur 4", en: "ab · ba, of length 4" },
+          feedback: {
+            fr: "Presque : on écrit le résultat concaténé « abba », sans garder le point de l'opération.",
+            en: "Almost: the concatenated result is written \"abba\", without keeping the operation dot.",
+          },
+        },
+      ],
+      answerIndex: 0,
+      solution: {
+        fr: "w · u = ab · ba = **abba**, et sa longueur vaut |ab| + |ba| = 2 + 2 = **4**. La concaténation n'est pas commutative : u · w donnerait baab.",
+        en: "w · u = ab · ba = **abba**, and its length is |ab| + |ba| = 2 + 2 = **4**. Concatenation is not commutative: u · w would give baab.",
+      },
+    },
+  },
   { type: "rule" },
   {
     type: "heading",
@@ -424,6 +469,54 @@ const chapterOne: Block[] = [
     text: {
       fr: "L* représente l'ensemble de toutes les concaténations possibles de zéro, un ou plusieurs mots de L. Le mot vide ε appartient obligatoirement à L*, quel que soit L.",
       en: "L* represents the set of all possible concatenations of zero, one, or more words of L. The empty word ε necessarily belongs to L*, whatever L is.",
+    },
+  },
+  {
+    type: "checkpoint",
+    concept: {
+      fr: "étoile de Kleene et langage vide",
+      en: "Kleene star and empty language",
+    },
+    exercise: {
+      kind: "mcq",
+      prompt: {
+        fr: "Soit L = {a}. Que vaut L* ?",
+        en: "Let L = {a}. What is L*?",
+      },
+      options: [
+        {
+          text: { fr: "∅", en: "∅" },
+          feedback: {
+            fr: "Non : ∅ est le langage vide. L* contient toujours au moins ε, il n'est jamais vide.",
+            en: "No: ∅ is the empty language. L* always contains at least ε, so it is never empty.",
+          },
+        },
+        {
+          text: {
+            fr: "{ε, a, aa, aaa, …} (c'est-à-dire a*)",
+            en: "{ε, a, aa, aaa, …} (that is, a*)",
+          },
+        },
+        {
+          text: { fr: "{a}", en: "{a}" },
+          feedback: {
+            fr: "Non : {a} = L¹ seulement ; L* réunit toutes les puissances, y compris L⁰ = {ε}.",
+            en: "No: {a} = L¹ only; L* gathers all powers, including L⁰ = {ε}.",
+          },
+        },
+        {
+          text: { fr: "{ε}", en: "{ε}" },
+          feedback: {
+            fr: "Non : {ε} = L⁰ ; L* contient aussi a, aa, aaa, …",
+            en: "No: {ε} = L⁰; L* also contains a, aa, aaa, …",
+          },
+        },
+      ],
+      answerIndex: 1,
+      solution: {
+        fr: "L* = L⁰ ∪ L¹ ∪ L² ∪ … = {ε} ∪ {a} ∪ {aa} ∪ … = **{ε, a, aa, aaa, …} = a***. Le mot vide appartient toujours à L*, mais ∅ et {ε} sont deux choses différentes.",
+        en: "L* = L⁰ ∪ L¹ ∪ L² ∪ … = {ε} ∪ {a} ∪ {aa} ∪ … = **{ε, a, aa, aaa, …} = a***. The empty word always belongs to L*, but ∅ and {ε} are two different things.",
+      },
     },
   },
   { type: "rule" },
@@ -1360,6 +1453,31 @@ const chapterTwo: Block[] = [
     ],
   },
   {
+    type: "checkpoint",
+    concept: {
+      fr: "principe des tiroirs",
+      en: "pigeonhole principle",
+    },
+    exercise: {
+      kind: "mcq",
+      prompt: {
+        fr: "Il n'y a que 12 mois possibles. Combien de personnes suffisent pour garantir, par le principe des tiroirs, qu'au moins deux ont le même mois de naissance ?",
+        en: "There are only 12 possible months. How many people are enough to guarantee, by the pigeonhole principle, that at least two share the same birth month?",
+      },
+      options: [
+        { text: { fr: "12", en: "12" }, feedback: { fr: "Avec 12 personnes, on peut encore en placer une par mois (12 compartiments) sans doublon.", en: "With 12 people, one can still place one per month (12 compartments) with no repeat." } },
+        { text: { fr: "13", en: "13" } },
+        { text: { fr: "24", en: "24" }, feedback: { fr: "Bien plus que nécessaire : 13 suffisent déjà.", en: "Far more than needed: 13 already suffice." } },
+        { text: { fr: "366", en: "366" }, feedback: { fr: "366 est le nombre de jours, pas de mois. Ici il n'y a que 12 compartiments.", en: "366 is the number of days, not months. Here there are only 12 compartments." } },
+      ],
+      answerIndex: 1,
+      solution: {
+        fr: "Dès que le nombre d'objets dépasse le nombre de compartiments, il y a collision : **12 + 1 = 13** personnes suffisent pour forcer deux mois identiques.",
+        en: "As soon as the number of objects exceeds the number of compartments, a collision occurs: **12 + 1 = 13** people are enough to force two identical months.",
+      },
+    },
+  },
+  {
     type: "heading",
     level: 3,
     text: { fr: "2.5 L'équivalence logique : « Si et seulement si » (ssi)", en: "2.5 Logical Equivalence: “If and Only If” (iff)" },
@@ -1394,6 +1512,31 @@ const chapterTwo: Block[] = [
     text: {
       fr: "**La contraposée :** Parfois, prouver « si X alors Y » est trop complexe. On peut utiliser une forme équivalente appelée la contraposée, qui consiste à prouver que « si non Y alors non X ».",
       en: "**The contrapositive:** Sometimes, proving “if X then Y” is too complex. One may use an equivalent form called the contrapositive, which consists of proving that “if not Y then not X”.",
+    },
+  },
+  {
+    type: "checkpoint",
+    concept: {
+      fr: "contraposée",
+      en: "contrapositive",
+    },
+    exercise: {
+      kind: "mcq",
+      prompt: {
+        fr: "Pour prouver « X ⇒ Y », par quelle forme équivalente peut-on remplacer la démonstration ?",
+        en: "To prove “X ⇒ Y”, by which equivalent form may the proof be replaced?",
+      },
+      options: [
+        { text: { fr: "Y ⇒ X", en: "Y ⇒ X" }, feedback: { fr: "C'est la réciproque : elle n'est pas équivalente à X ⇒ Y.", en: "That is the converse: it is not equivalent to X ⇒ Y." } },
+        { text: { fr: "non Y ⇒ non X", en: "not Y ⇒ not X" } },
+        { text: { fr: "non X ⇒ non Y", en: "not X ⇒ not Y" }, feedback: { fr: "C'est la négation de l'implication (l'inverse), pas sa contraposée.", en: "That is the inverse, not the contrapositive." } },
+        { text: { fr: "X ⇔ Y", en: "X ⇔ Y" }, feedback: { fr: "L'équivalence est plus forte : elle exige aussi la réciproque.", en: "Equivalence is stronger: it also requires the converse." } },
+      ],
+      answerIndex: 1,
+      solution: {
+        fr: "« X ⇒ Y » est logiquement équivalent à sa **contraposée « non Y ⇒ non X »**. Prouver l'une revient à prouver l'autre.",
+        en: "“X ⇒ Y” is logically equivalent to its **contrapositive “not Y ⇒ not X”**. Proving one proves the other.",
+      },
     },
   },
   { type: "heading", level: 3, text: { fr: "2.6 Les Contre-exemples", en: "2.6 Counterexamples" } },
@@ -1763,6 +1906,35 @@ const chapterThree: Block[] = [
     ],
   },
   {
+    type: "automaton",
+    automata: [
+      {
+        id: "coffee-machine",
+        caption: {
+          fr: "Automate du distributeur de café : les pièces de 10 et 20 centimes mènent aux états 30 et 30+, qui acceptent (café délivré).",
+          en: "Coffee vending machine automaton: 10- and 20-cent coins lead to states 30 and 30+, which accept (coffee dispensed).",
+        },
+        states: [
+          { id: "q0", label: "0", x: 0, y: 0, initial: true },
+          { id: "q10", label: "10", x: 160, y: -100 },
+          { id: "q20", label: "20", x: 160, y: 100 },
+          { id: "q30", label: "30", x: 330, y: 0, accepting: true },
+          { id: "q30p", label: "30+", x: 500, y: 0, accepting: true },
+        ],
+        transitions: [
+          { from: "q0", to: "q10", symbols: ["10"] },
+          { from: "q0", to: "q20", symbols: ["20"] },
+          { from: "q10", to: "q20", symbols: ["10"] },
+          { from: "q10", to: "q30", symbols: ["20"] },
+          { from: "q20", to: "q30", symbols: ["10"] },
+          { from: "q20", to: "q30p", symbols: ["20"] },
+          { from: "q30", to: "q30p", symbols: ["10", "20"] },
+          { from: "q30p", to: "q30p", symbols: ["10", "20"] },
+        ],
+      },
+    ],
+  },
+  {
     type: "heading",
     level: 3,
     text: {
@@ -1814,6 +1986,57 @@ const chapterThree: Block[] = [
     ],
   },
   {
+    type: "checkpoint",
+    concept: {
+      fr: "définition formelle (5-tuplet)",
+      en: "formal definition (5-tuple)",
+    },
+    exercise: {
+      kind: "mcq",
+      prompt: {
+        fr: "Dans M = (Q, Σ, δ, q₀, F), lequel de ces éléments est un sous-ensemble de Q ?",
+        en: "In M = (Q, Σ, δ, q₀, F), which of these elements is a subset of Q?",
+      },
+      options: [
+        {
+          text: { fr: "Σ, l'alphabet d'entrée", en: "Σ, the input alphabet" },
+          feedback: {
+            fr: "Σ n'est pas un sous-ensemble de Q : c'est l'ensemble des symboles lus, distinct des états.",
+            en: "Σ is not a subset of Q: it is the set of input symbols, separate from the states.",
+          },
+        },
+        {
+          text: {
+            fr: "F, l'ensemble des états d'acceptation",
+            en: "F, the set of accepting states",
+          },
+        },
+        {
+          text: {
+            fr: "δ, la fonction de transition",
+            en: "δ, the transition function",
+          },
+          feedback: {
+            fr: "δ est une fonction Q × Σ → Q, pas un sous-ensemble de Q.",
+            en: "δ is a function Q × Σ → Q, not a subset of Q.",
+          },
+        },
+        {
+          text: { fr: "q₀, l'état initial", en: "q₀, the initial state" },
+          feedback: {
+            fr: "q₀ est un élément de Q, pas un sous-ensemble de Q.",
+            en: "q₀ is an element of Q, not a subset of Q.",
+          },
+        },
+      ],
+      answerIndex: 1,
+      solution: {
+        fr: "**F ⊆ Q :** les états d'acceptation forment un sous-ensemble des états. Tous les autres éléments sont soit un ensemble distinct (Σ), soit une fonction (δ), soit un état unique (q₀).",
+        en: "**F ⊆ Q:** the accepting states form a subset of the states. The others are either a separate set (Σ), a function (δ), or a single state (q₀).",
+      },
+    },
+  },
+  {
     type: "heading",
     level: 3,
     text: {
@@ -1843,6 +2066,90 @@ const chapterThree: Block[] = [
         },
       },
     ],
+  },
+  {
+    type: "automaton",
+    automata: [
+      {
+        id: "contains-11",
+        interactive: true,
+        alphabet: ["0", "1"],
+        examples: ["011", "11", "1", "1010", ""],
+        caption: {
+          fr: "Automate déterministe sur Σ = {0, 1}. Exécute des mots pour découvrir le langage qu'il reconnaît.",
+          en: "Deterministic automaton over Σ = {0, 1}. Run words to discover the language it recognizes.",
+        },
+        states: [
+          { id: "q0", label: "q₀", x: 0, y: 0, initial: true },
+          { id: "q1", label: "q₁", x: 180, y: 0 },
+          { id: "q2", label: "q₂", x: 360, y: 0, accepting: true },
+        ],
+        transitions: [
+          { from: "q0", to: "q0", symbols: ["0"] },
+          { from: "q0", to: "q1", symbols: ["1"] },
+          { from: "q1", to: "q0", symbols: ["0"] },
+          { from: "q1", to: "q2", symbols: ["1"] },
+          { from: "q2", to: "q2", symbols: ["0", "1"] },
+        ],
+      },
+    ],
+  },
+  {
+    type: "checkpoint",
+    concept: {
+      fr: "langage reconnu par un automate",
+      en: "language recognized by an automaton",
+    },
+    exercise: {
+      kind: "mcq",
+      prompt: {
+        fr: "Quel langage l'automate ci-dessus reconnaît-il (sur Σ = {0, 1}) ?",
+        en: "Which language does the automaton above recognize (over Σ = {0, 1})?",
+      },
+      options: [
+        {
+          text: {
+            fr: "Les mots qui contiennent le facteur 11",
+            en: "The words that contain the factor 11",
+          },
+        },
+        {
+          text: {
+            fr: "Les mots qui se terminent par 11",
+            en: "The words that end with 11",
+          },
+          feedback: {
+            fr: "Non : une fois q₂ atteint, l'automate y reste, donc « 110 » est accepté même s'il ne se termine pas par 11.",
+            en: "No: once q₂ is reached the automaton stays there, so \"110\" is accepted even though it does not end with 11.",
+          },
+        },
+        {
+          text: {
+            fr: "Les mots qui contiennent exactement deux 1",
+            en: "The words that contain exactly two 1's",
+          },
+          feedback: {
+            fr: "Non : q₂ boucle sur 0 et 1, donc « 110 » (trois 1) est accepté aussi.",
+            en: "No: q₂ loops on 0 and 1, so \"110\" (three 1's) is accepted too.",
+          },
+        },
+        {
+          text: {
+            fr: "Les mots avec un nombre pair de 1",
+            en: "The words with an even number of 1's",
+          },
+          feedback: {
+            fr: "Non : « 1 » (un seul 1) est accepté, ce n'est pas un nombre pair.",
+            en: "No: \"1\" (a single 1) is accepted, which is not even.",
+          },
+        },
+      ],
+      answerIndex: 0,
+      solution: {
+        fr: "L'automate mémorise s'il a déjà vu deux 1 consécutifs. q₂ (acceptant) signifie « 11 a déjà été vu » et reste bloqué sur place : le langage reconnu est **l'ensemble des mots contenant le facteur 11**.",
+        en: "The automaton remembers whether it has already seen two consecutive 1's. q₂ (accepting) means \"11 has been seen\" and loops forever: the recognized language is **the set of words containing the factor 11**.",
+      },
+    },
   },
   { type: "rule" },
   {
@@ -2253,6 +2560,100 @@ const chapterThree: Block[] = [
     ],
   },
   {
+    type: "automaton",
+    layout: "row",
+    automata: [
+      {
+        id: "product-m1",
+        caption: {
+          fr: "M₁ : les mots sur {a, b} qui se terminent par a.",
+          en: "M₁: words over {a, b} ending in a.",
+        },
+        states: [
+          { id: "m1p0", label: "p₀", x: 0, y: 0, initial: true },
+          { id: "m1p1", label: "p₁", x: 180, y: 0, accepting: true },
+        ],
+        transitions: [
+          { from: "m1p0", to: "m1p0", symbols: ["b"] },
+          { from: "m1p0", to: "m1p1", symbols: ["a"] },
+          { from: "m1p1", to: "m1p1", symbols: ["a"] },
+          { from: "m1p1", to: "m1p0", symbols: ["b"] },
+        ],
+      },
+      {
+        id: "product-m2",
+        caption: {
+          fr: "M₂ : les mots sur {a, b} avec un nombre pair de b.",
+          en: "M₂: words over {a, b} with an even number of b's.",
+        },
+        states: [
+          { id: "m2e0", label: "E", x: 0, y: 0, initial: true, accepting: true },
+          { id: "m2e1", label: "O", x: 180, y: 0 },
+        ],
+        transitions: [
+          { from: "m2e0", to: "m2e0", symbols: ["a"] },
+          { from: "m2e0", to: "m2e1", symbols: ["b"] },
+          { from: "m2e1", to: "m2e1", symbols: ["a"] },
+          { from: "m2e1", to: "m2e0", symbols: ["b"] },
+        ],
+      },
+    ],
+  },
+  {
+    type: "checkpoint",
+    concept: {
+      fr: "méthode du produit cartésien",
+      en: "Cartesian product method",
+    },
+    exercise: {
+      kind: "mcq",
+      prompt: {
+        fr: "On construit l'automate produit de M₁ = (Q₁, Σ, δ₁, q₁, F₁) et M₂ = (Q₂, Σ, δ₂, q₂, F₂). Que sont les états du nouvel automate ?",
+        en: "We build the product automaton of M₁ = (Q₁, Σ, δ₁, q₁, F₁) and M₂ = (Q₂, Σ, δ₂, q₂, F₂). What are the states of the new automaton?",
+      },
+      options: [
+        {
+          text: { fr: "Simplement Q₁", en: "Just Q₁" },
+          feedback: {
+            fr: "Ce serait l'automate M₁ seul : il faut simuler les deux automates en même temps.",
+            en: "That would be M₁ alone: we need to simulate both automata at once.",
+          },
+        },
+        {
+          text: {
+            fr: "Les paires (s₁, s₂) de Q₁ × Q₂",
+            en: "The pairs (s₁, s₂) from Q₁ × Q₂",
+          },
+        },
+        {
+          text: {
+            fr: "Les états finaux communs F₁ ∩ F₂",
+            en: "The common final states F₁ ∩ F₂",
+          },
+          feedback: {
+            fr: "F₁ ∩ F₂ sert à définir les états d'acceptation, pas tous les états.",
+            en: "F₁ ∩ F₂ defines the accepting states, not all the states.",
+          },
+        },
+        {
+          text: {
+            fr: "Les symboles de Σ",
+            en: "The symbols of Σ",
+          },
+          feedback: {
+            fr: "Les symboles forment l'alphabet, pas les états.",
+            en: "Symbols form the alphabet, not the states.",
+          },
+        },
+      ],
+      answerIndex: 1,
+      solution: {
+        fr: "Les états sont les paires **(s₁, s₂) ∈ Q₁ × Q₂** : l'automate produit suit simultanément l'état de M₁ et celui de M₂. L'acceptation dépend ensuite de l'opération : F = (F₁ × Q₂) ∪ (Q₁ × F₂) pour l'union, F = F₁ × F₂ pour l'intersection.",
+        en: "The states are the pairs **(s₁, s₂) ∈ Q₁ × Q₂**: the product automaton tracks the state of M₁ and M₂ simultaneously. Acceptance then depends on the operation: F = (F₁ × Q₂) ∪ (Q₁ × F₂) for union, F = F₁ × F₂ for intersection.",
+      },
+    },
+  },
+  {
     type: "heading",
     level: 3,
     text: {
@@ -2324,6 +2725,55 @@ const chapterThree: Block[] = [
     text: {
       fr: "L'exécution ne suit plus un chemin unique, mais crée un **arbre de possibilités**. Toutes les branches sont explorées en parallèle de façon non-déterministe. Si **au moins une branche** parvient à lire tout le mot et se termine sur un état final, alors le mot est accepté.",
       en: "Execution no longer follows a single path—it explores a **computation tree** (set of possible paths). All branches are explored in parallel (nondeterministically). If **at least one branch** reads the entire word and ends in a final (accepting) state, the word is accepted.",
+    },
+  },
+  {
+    type: "automaton",
+    automata: [
+      {
+        id: "contains-ab",
+        interactive: true,
+        alphabet: ["a", "b"],
+        examples: ["ab", "aab", "aba", "ba", "bb"],
+        caption: {
+          fr: "Automate non-déterministe sur Σ = {a, b}. Sur la lettre a depuis q₀, deux flèches partent : l'ensemble d'états actifs montre le non-déterminisme.",
+          en: "Nondeterministic automaton over Σ = {a, b}. On the letter a from q₀ two arrows leave: the set of active states reveals the nondeterminism.",
+        },
+        states: [
+          { id: "n0", label: "q₀", x: 0, y: 0, initial: true },
+          { id: "n1", label: "q₁", x: 190, y: -80 },
+          { id: "n2", label: "q₂", x: 380, y: 0, accepting: true },
+        ],
+        transitions: [
+          { from: "n0", to: "n0", symbols: ["a", "b"] },
+          { from: "n0", to: "n1", symbols: ["a"] },
+          { from: "n1", to: "n2", symbols: ["b"] },
+          { from: "n2", to: "n2", symbols: ["a", "b"] },
+        ],
+      },
+    ],
+  },
+  {
+    type: "checkpoint",
+    concept: {
+      fr: "non-déterminisme",
+      en: "nondeterminism",
+    },
+    exercise: {
+      kind: "trueFalse",
+      prompt: {
+        fr: "Affirmation : après la lecture d'une lettre, un automate non-déterministe peut se trouver simultanément dans plusieurs états.",
+        en: "After reading one letter, a nondeterministic automaton can be in several states at the same time.",
+      },
+      answer: true,
+      justification: {
+        fr: "**Vrai.** L'exécution explore plusieurs branches en parallèle : l'ensemble des états actifs peut contenir plusieurs états (par exemple {q₀, q₁} après un a dans l'automate ci-dessus).",
+        en: "**True.** Execution explores several branches in parallel: the set of active states can contain more than one state (for example {q₀, q₁} after an a in the automaton above).",
+      },
+      mistake: {
+        fr: "Regarde les états actifs du simulateur après un a : combien d'états sont allumés en même temps ?",
+        en: "Look at the simulator's active states after an a: how many states light up at once?",
+      },
     },
   },
   { type: "rule" },
@@ -2660,6 +3110,29 @@ const chapterThree: Block[] = [
     ],
   },
   {
+    type: "checkpoint",
+    concept: {
+      fr: "équivalence NFA / DFA (Théorème 2)",
+      en: "NFA / DFA equivalence (Theorem 2)",
+    },
+    exercise: {
+      kind: "trueFalse",
+      prompt: {
+        fr: "Affirmation : tout NFA possède un DFA équivalent, donc les NFA et les DFA ont exactement la même puissance expressive.",
+        en: "Every NFA has an equivalent DFA, so NFAs and DFAs have exactly the same expressive power.",
+      },
+      answer: true,
+      justification: {
+        fr: "**Vrai.** La construction par sous-ensembles transforme tout NFA en un DFA qui reconnaît le même langage (Théorème 2). Les deux modèles décrivent donc exactement les mêmes langages.",
+        en: "**True.** The subset construction turns every NFA into a DFA recognizing the same language (Theorem 2). Both models therefore describe exactly the same languages.",
+      },
+      mistake: {
+        fr: "Relis le Théorème 2 et la construction par sous-ensembles : que devient un NFA entre les mains de cette construction ?",
+        en: "Reread Theorem 2 and the subset construction: what does an NFA become under that construction?",
+      },
+    },
+  },
+  {
     type: "heading",
     level: 3,
     text: {
@@ -2879,6 +3352,88 @@ const chapterThree: Block[] = [
     text: {
       fr: "**Exemple :** en partant de l'automate à deux états qui reconnaît les mots comportant un nombre pair de a, l'élimination des états donne l'expression régulière (b* · a · b* · a)* · b*. Les deux sens réunis achèvent la preuve du Théorème 3 : langages réguliers et expressions régulières coïncident exactement.",
       en: "**Example:** starting from the two-state automaton recognizing words with an even number of a's, eliminating the states yields the regular expression (b* · a · b* · a)* · b*. Combining both directions completes the proof of Theorem 3: regular languages and regular expressions coincide exactly.",
+    },
+  },
+  {
+    type: "automaton",
+    automata: [
+      {
+        id: "even-a",
+        interactive: true,
+        alphabet: ["a", "b"],
+        examples: ["aa", "ab", "", "a", "aba"],
+        caption: {
+          fr: "L'automate à deux états de l'exemple : l'état E (« pair ») est à la fois initial et final. Sers-toi du simulateur pour vérifier l'expression (b* · a · b* · a)* · b*.",
+          en: "The two-state automaton from the example: state E (“even”) is both initial and final. Use the simulator to check the expression (b* · a · b* · a)* · b*.",
+        },
+        states: [
+          { id: "even", label: "E", x: 0, y: 0, initial: true, accepting: true },
+          { id: "odd", label: "O", x: 200, y: 0 },
+        ],
+        transitions: [
+          { from: "even", to: "even", symbols: ["b"] },
+          { from: "even", to: "odd", symbols: ["a"] },
+          { from: "odd", to: "odd", symbols: ["b"] },
+          { from: "odd", to: "even", symbols: ["a"] },
+        ],
+      },
+    ],
+  },
+  {
+    type: "checkpoint",
+    concept: {
+      fr: "expression régulière ↔ automate",
+      en: "regular expression ↔ automaton",
+    },
+    exercise: {
+      kind: "mcq",
+      prompt: {
+        fr: "L'automate ci-dessus reconnaît :",
+        en: "The automaton above recognizes:",
+      },
+      options: [
+        {
+          text: {
+            fr: "Les mots avec un nombre pair de b",
+            en: "Words with an even number of b's",
+          },
+          feedback: {
+            fr: "Non : la lettre qui fait basculer d'un état à l'autre est le a, pas le b.",
+            en: "No: the letter that toggles between the two states is a, not b.",
+          },
+        },
+        {
+          text: {
+            fr: "Les mots avec un nombre pair de a",
+            en: "Words with an even number of a's",
+          },
+        },
+        {
+          text: {
+            fr: "Les mots qui commencent par a",
+            en: "Words that start with a",
+          },
+          feedback: {
+            fr: "Non : le mot vide ε est accepté, et « ba » aussi, qui ne commencent pas par a.",
+            en: "No: the empty word ε is accepted, and so is \"ba\", which do not start with a.",
+          },
+        },
+        {
+          text: {
+            fr: "Les mots de longueur paire",
+            en: "Words of even length",
+          },
+          feedback: {
+            fr: "Non : « a » (longueur 1) n'est pas accepté, mais « ab » (longueur 2) l'est — ce n'est pas la longueur qui compte.",
+            en: "No: \"a\" (length 1) is not accepted, but \"ab\" (length 2) is — length is not what matters.",
+          },
+        },
+      ],
+      answerIndex: 1,
+      solution: {
+        fr: "L'état « pair » signifie « un nombre pair de a lus jusqu'ici ». L'automate alterne entre pair et impair à chaque a (le b ne change pas d'état) : il accepte exactement les mots ayant un **nombre pair de a**.",
+        en: "The “pair” state means “an even number of a's read so far”. The automaton toggles between pair and impair on every a (b does not change state): it accepts exactly the words with an **even number of a's**.",
+      },
     },
   },
   { type: "rule" },
@@ -3300,6 +3855,63 @@ const chapterThree: Block[] = [
     ],
   },
   {
+    type: "checkpoint",
+    concept: {
+      fr: "énoncé du lemme de pompage",
+      en: "statement of the pumping lemma",
+    },
+    exercise: {
+      kind: "mcq",
+      prompt: {
+        fr: "Que garantit le lemme de pompage pour un langage régulier L ?",
+        en: "What does the pumping lemma guarantee for a regular language L?",
+      },
+      options: [
+        {
+          text: {
+            fr: "Tout mot de L est de longueur au plus p",
+            en: "Every word of L has length at most p",
+          },
+          feedback: {
+            fr: "Non : L peut contenir des mots arbitrairement longs ; la longueur p ne borne que le segment xy dans la décomposition.",
+            en: "No: L may contain arbitrarily long words; the length p only bounds the segment xy in the decomposition.",
+          },
+        },
+        {
+          text: {
+            fr: "Il existe p tel que tout mot w ∈ L assez long s'écrit xyz avec |xy| ≤ p, |y| > 0 et xyⁱz ∈ L pour tout i ≥ 0",
+            en: "There exists p such that every long enough w ∈ L can be written xyz with |xy| ≤ p, |y| > 0, and xyⁱz ∈ L for all i ≥ 0",
+          },
+        },
+        {
+          text: {
+            fr: "L est un langage fini",
+            en: "L is a finite language",
+          },
+          feedback: {
+            fr: "Non : beaucoup de langages réguliers sont infinis (par exemple a*).",
+            en: "No: many regular languages are infinite (for example a*).",
+          },
+        },
+        {
+          text: {
+            fr: "Tout mot de L peut s'écrire xy avec |x| = |y|",
+            en: "Every word of L can be written xy with |x| = |y|",
+          },
+          feedback: {
+            fr: "Non : rien n'impose que x et y aient la même longueur dans le lemme.",
+            en: "No: nothing forces x and y to have the same length in the lemma.",
+          },
+        },
+      ],
+      answerIndex: 1,
+      solution: {
+        fr: "Le lemme de pompage affirme l'existence d'une longueur p telle que tout mot w ∈ L avec |w| ≥ p se décompose en **w = xyz** avec **|xy| ≤ p**, **|y| > 0** et **xyⁱz ∈ L pour tout i ≥ 0**. C'est le segment y (une boucle de l'automate) que l'on peut « pomper ».",
+        en: "The pumping lemma states that there is a length p such that every w ∈ L with |w| ≥ p splits as **w = xyz** with **|xy| ≤ p**, **|y| > 0**, and **xyⁱz ∈ L for every i ≥ 0**. It is the segment y (a loop of the automaton) that can be “pumped”.",
+      },
+    },
+  },
+  {
     type: "heading",
     level: 4,
     text: {
@@ -3378,6 +3990,31 @@ const chapterThree: Block[] = [
         },
       },
     ],
+  },
+  {
+    type: "checkpoint",
+    concept: {
+      fr: "méthode en 5 étapes",
+      en: "five-step method",
+    },
+    exercise: {
+      kind: "mcq",
+      prompt: {
+        fr: "Dans la méthode en 5 étapes, quelle valeur de i choisit-on souvent pour faire « disparaître » le segment y et obtenir une contradiction ?",
+        en: "In the five-step method, which value of i is often chosen to make the segment y “disappear” and reach a contradiction?",
+      },
+      options: [
+        { text: { fr: "i = 1", en: "i = 1" }, feedback: { fr: "i = 1 redonne le mot xyz de départ, sans contradiction.", en: "i = 1 gives back the original word xyz, with no contradiction." } },
+        { text: { fr: "i = 0", en: "i = 0" } },
+        { text: { fr: "i = |y|", en: "i = |y|" }, feedback: { fr: "La valeur de i importe peu ici : seule compte la suppression (i = 0) ou la répétition (i = 2).", en: "The value of i is irrelevant here: only deletion (i = 0) or repetition (i = 2) matters." } },
+        { text: { fr: "i = p", en: "i = p" }, feedback: { fr: "On pompe avec une petite valeur entière (souvent 0 ou 2), pas avec la longueur de pompage elle-même.", en: "We pump with a small integer (often 0 or 2), not with the pumping length itself." } },
+      ],
+      answerIndex: 1,
+      solution: {
+        fr: "Avec **i = 0**, le segment y est supprimé : xy⁰z = xz. Pour {aⁿ bⁿ}, xz a alors moins de a que de b, donc xz ∉ L — ce qui contredit le lemme et prouve que L n'est pas régulier.",
+        en: "With **i = 0**, the segment y is deleted: xy⁰z = xz. For {aⁿ bⁿ}, xz then has fewer a's than b's, so xz ∉ L — contradicting the lemma and proving L is not regular.",
+      },
+    },
   },
   {
     type: "heading",

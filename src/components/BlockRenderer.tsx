@@ -1,6 +1,8 @@
 import type { Block } from "../content/types";
 import { InlineText } from "./InlineText";
 import { ExerciseRenderer } from "./ExerciseRenderer";
+import { AutomatonFigure } from "./AutomatonFigure";
+import { CheckpointRenderer } from "./CheckpointRenderer";
 import styles from "./BlockRenderer.module.css";
 
 interface BlockRendererProps {
@@ -100,6 +102,23 @@ export function BlockRenderer({ blocks, idPrefix = "" }: BlockRendererProps) {
                 key={index}
                 groups={block.groups}
                 idPrefix={`${idPrefix}${index}`}
+              />
+            );
+          case "automaton":
+            return (
+              <AutomatonFigure
+                key={index}
+                automata={block.automata}
+                layout={block.layout}
+              />
+            );
+          case "checkpoint":
+            return (
+              <CheckpointRenderer
+                key={index}
+                id={`${idPrefix}checkpoint:${index}`}
+                concept={block.concept}
+                exercise={block.exercise}
               />
             );
         }

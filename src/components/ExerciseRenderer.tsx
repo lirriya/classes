@@ -33,7 +33,7 @@ export function ExerciseRenderer({ groups, idPrefix }: ExerciseRendererProps) {
             {group.exercises.map((exercise, exerciseIndex) => {
               const id = `${idPrefix}:${groupIndex}:${exerciseIndex}`;
               return (
-                <QuestionItem
+                <ExerciseQuestion
                   key={
                     progress.isSolved(id) ? `${id}-solved` : `${id}-fresh`
                   }
@@ -56,7 +56,7 @@ interface QuestionItemProps {
   exercise: Exercise;
 }
 
-function QuestionItem({ id, label, exercise }: QuestionItemProps) {
+export function ExerciseQuestion({ id, label, exercise }: QuestionItemProps) {
   switch (exercise.kind) {
     case "trueFalse":
       return (

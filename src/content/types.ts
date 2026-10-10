@@ -65,6 +65,32 @@ export interface ExerciseGroup {
   exercises: Exercise[];
 }
 
+export interface AutomatonStateNode {
+  id: string;
+  label?: string;
+  x: number;
+  y: number;
+  initial?: boolean;
+  accepting?: boolean;
+}
+
+export interface AutomatonTransition {
+  from: string;
+  to: string;
+  symbols: string[];
+  bend?: number;
+}
+
+export interface AutomatonSpec {
+  id: string;
+  states: AutomatonStateNode[];
+  transitions: AutomatonTransition[];
+  caption?: Localized;
+  interactive?: boolean;
+  alphabet?: string[];
+  examples?: string[];
+}
+
 export type Block =
   | { type: "heading"; level: 3 | 4 | 5; text: InlineText; variant?: "exercise" | "sub" | "part"; id?: string }
   | { type: "paragraph"; text: InlineText }
@@ -72,7 +98,9 @@ export type Block =
   | { type: "code"; text: string }
   | { type: "quote"; text: InlineText }
   | { type: "rule" }
-  | { type: "exercises"; groups: ExerciseGroup[] };
+  | { type: "exercises"; groups: ExerciseGroup[] }
+  | { type: "automaton"; layout?: "row"; automata: AutomatonSpec[] }
+  | { type: "checkpoint"; concept: Localized; exercise: Exercise };
 
 export interface SubjectPart {
   id: string;

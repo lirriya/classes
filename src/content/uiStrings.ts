@@ -13,6 +13,16 @@ export interface UIStrings {
   resetConfirm: string;
   progressOf: (solved: number, total: number) => string;
   blankLabel: (index: number) => string;
+  simulator: string;
+  testWord: string;
+  runSim: string;
+  resetSim: string;
+  accepted: string;
+  rejected: string;
+  examplesLabel: string;
+  activeStates: string;
+  emptyWord: string;
+  conceptCheck: string;
   settings: string;
   settingsLabel: string;
   language: string;
@@ -63,6 +73,16 @@ export const uiStrings: Record<Language, UIStrings> = {
       "Réinitialiser toute la progression de ce carnet ? Chaque exercice résolu sera marqué comme non résolu.",
     progressOf: (solved, total) => `${solved} / ${total} résolus`,
     blankLabel: (index) => `Trou ${index}`,
+    simulator: "Simulateur",
+    testWord: "Mot à tester",
+    runSim: "Exécuter",
+    resetSim: "Réinitialiser",
+    accepted: "Mot accepté",
+    rejected: "Mot refusé",
+    examplesLabel: "Exemples :",
+    activeStates: "États actifs",
+    emptyWord: "mot vide",
+    conceptCheck: "Vérifie ta compréhension",
     settings: "Réglages",
     settingsLabel: "Ouvrir les réglages",
     language: "Langue",
@@ -109,6 +129,16 @@ export const uiStrings: Record<Language, UIStrings> = {
       "Reset all progress for this notebook? Every solved exercise will be marked as unsolved.",
     progressOf: (solved, total) => `${solved} / ${total} solved`,
     blankLabel: (index) => `Blank ${index}`,
+    simulator: "Simulator",
+    testWord: "Word to test",
+    runSim: "Run",
+    resetSim: "Reset",
+    accepted: "Word accepted",
+    rejected: "Word rejected",
+    examplesLabel: "Examples:",
+    activeStates: "Active states",
+    emptyWord: "empty word",
+    conceptCheck: "Check your understanding",
     settings: "Settings",
     settingsLabel: "Open settings",
     language: "Language",
