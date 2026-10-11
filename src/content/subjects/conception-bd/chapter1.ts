@@ -236,6 +236,22 @@ export const chapterOne: Block[] = [
   },
   {
     type: "checkpoint",
+    concept: { fr: "Démarche de conception", en: "Design approach" },
+    exercise: {
+      kind: "trueFalse",
+      prompt: {
+        fr: "On passe directement du monde réel au schéma relationnel, sans passer par le schéma E-A.",
+        en: "We go directly from reality to the relational schema, without going through the E-R schema.",
+      },
+      answer: false,
+      justification: {
+        fr: "On passe par le **schéma conceptuel E-A** d'abord, puis on le transforme en schéma relationnel.",
+        en: "We first go through the **conceptual E-R schema**, then transform it into a relational schema.",
+      },
+    },
+  },
+  {
+    type: "checkpoint",
     concept: { fr: "Pourquoi le niveau conceptuel ?", en: "Why the conceptual level?" },
     exercise: {
       kind: "mcq",
@@ -557,8 +573,8 @@ export const chapterOne: Block[] = [
       {
         id: "scolarite-card",
         caption: {
-          fr: "Le type association Inscrire relie Étudiant et Filière. Les cardinalités se lisent sur chaque rôle.",
-          en: "The association type Enrol links Student and Program. Cardinalities are read on each role.",
+          fr: "Type association Inscrire : cardinalités sur chaque rôle.",
+          en: "Association Enrol: cardinalities on each role.",
         },
         nodes: [
           { id: "etudiant", label: { fr: "ÉTUDIANT", en: "STUDENT" }, x: 0, y: 0, shape: "box", tone: "primary" },
@@ -828,8 +844,8 @@ export const chapterOne: Block[] = [
       {
         id: "scolarite-ea",
         caption: {
-          fr: "Schéma conceptuel en Entité-Association du cas « Scolarité des étudiants ».",
-          en: "Entity-Relationship conceptual schema of the « Student records » case.",
+          fr: "Schéma E-A du cas « Scolarité des étudiants ».",
+          en: "E-R schema of the « Student records » case.",
         },
         nodes: [
           { id: "etudiant", label: { fr: "ÉTUDIANT (NoEtudiant)", en: "STUDENT (StudentNo)" }, x: 0, y: 0, shape: "box", tone: "primary" },
