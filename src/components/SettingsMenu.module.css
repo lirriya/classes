@@ -1,0 +1,159 @@
+.wrap {
+  position: relative;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background-color: var(--color-tape);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.trigger:hover {
+  transform: scale(1.08);
+}
+
+.trigger:focus-visible {
+  outline: 2px solid var(--color-primary-bright);
+  outline-offset: 2px;
+}
+
+.triggerOpen {
+  background-color: var(--color-tape-muted);
+}
+
+.triggerIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.panel {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background-color: var(--color-sheet);
+  border: 2px solid var(--color-line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lifted);
+  z-index: 30;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sectionLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-muted);
+}
+
+.options {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.option {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 2px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.option:hover {
+  border-color: var(--color-primary-bright);
+}
+
+.option:focus-visible {
+  outline: 2px solid var(--color-primary-bright);
+  outline-offset: 1px;
+}
+
+.optionActive {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-sheet);
+}
+
+.optionActive:hover {
+  border-color: var(--color-primary);
+}
+
+.optionIcon {
+  width: 15px;
+  height: 15px;
+}
+
+.loginBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  border-radius: var(--radius-md);
+  background-color: var(--color-primary);
+  color: var(--color-sheet);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.loginBtn:hover {
+  background-color: var(--color-primary-bright);
+  transform: translateY(-1px);
+}
+
+.loginBtn:focus-visible {
+  outline: 2px solid var(--color-primary-bright);
+  outline-offset: 2px;
+}
+
+.soonNote {
+  align-self: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: var(--space-1) var(--space-3);
+  border-radius: 999px;
+  background-color: var(--color-tape-muted);
+  color: var(--color-ink);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.soonNoteVisible {
+  opacity: 1;
+  transform: translateY(0);
+}

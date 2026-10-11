@@ -38,14 +38,6 @@
   color: var(--color-primary);
 }
 
-.tagline {
-  font-size: 0.875rem;
-  color: var(--color-ink);
-  background-color: var(--color-tape);
-  padding: var(--space-1) var(--space-3);
-  border-radius: 999px;
-}
-
 .rail {
   grid-area: rail;
   padding: var(--space-5) var(--space-4);

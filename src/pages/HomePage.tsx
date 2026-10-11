@@ -2,11 +2,14 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { subjects } from "../content/subjects";
 import { useGsapStagger } from "../hooks/useGsapReveal";
+import { useText, useUI } from "../hooks/useSettings";
 import { ArrowRightIcon, LayersIcon } from "../components/icons";
 import styles from "./HomePage.module.css";
 
 export function HomePage() {
   const gridRef = useRef<HTMLDivElement>(null);
+  const ui = useUI();
+  const t = useText();
   useGsapStagger(gridRef, `.${styles.card}`, "home");
 
   const published = subjects.filter((subject) => subject.status === "published");
@@ -18,28 +21,22 @@ export function HomePage() {
   return (
     <div className={styles.home}>
       <section className={`${styles.intro} ${styles.tape}`}>
-        <span className={styles.kicker}>Chapter 1 — welcome</span>
+        <span className={styles.kicker}>{ui.homeKicker}</span>
         <h1 className={styles.title}>Alina's notes</h1>
-        <p className={styles.lead}>
-          Welcome to my little corner of the internet, where I share my notes and
-          learning journey with you. Let's study together!
-        </p>
-        <p className={styles.meta}>
-          One big notebook, one sub-notebook per subject. Pick one from the index
-          and open it.
-        </p>
+        <p className={styles.lead}>{ui.homeLead}</p>
+        <p className={styles.meta}>{ui.homeMeta}</p>
         <div className={styles.stats}>
           <div className={styles.stat}>
             <span className={styles.statValue}>{subjects.length}</span>
-            <span className={styles.statLabel}>notebooks</span>
+            <span className={styles.statLabel}>{ui.statNotebooks}</span>
           </div>
           <div className={styles.stat}>
             <span className={styles.statValue}>{published.length}</span>
-            <span className={styles.statLabel}>with notes</span>
+            <span className={styles.statLabel}>{ui.statWithNotes}</span>
           </div>
           <div className={styles.stat}>
             <span className={styles.statValue}>{totalClasses}</span>
-            <span className={styles.statLabel}>classes planned</span>
+            <span className={styles.statLabel}>{ui.statClasses}</span>
           </div>
         </div>
       </section>
@@ -49,25 +46,25 @@ export function HomePage() {
           const card = (
             <article className={styles.card}>
               <div className={styles.cardHeader}>
-                <h2 className={styles.cardTitle}>{subject.title}</h2>
+                <h2 className={styles.cardTitle}>{t(subject.title)}</h2>
                 {subject.status === "soon" && (
-                  <span className={styles.soonBadge}>coming soon</span>
+                  <span className={styles.soonBadge}>{ui.comingSoonBadge}</span>
                 )}
               </div>
-              {subject.date && <p className={styles.cardDate}>{subject.date}</p>}
+              {subject.date && <p className={styles.cardDate}>{t(subject.date)}</p>}
               {subject.summary && (
-                <p className={styles.cardSummary}>{subject.summary}</p>
+                <p className={styles.cardSummary}>{t(subject.summary)}</p>
               )}
               <div className={styles.cardMeta}>
                 <span className={styles.cardClasses}>
                   <LayersIcon className={styles.cardMetaIcon} />
                   {subject.status === "published"
-                    ? `${subject.classes.length} classes`
-                    : "notes in progress"}
+                    ? ui.classesCount(subject.classes.length)
+                    : ui.notesInProgress}
                 </span>
                 {subject.status === "published" && (
                   <span className={styles.cardLink}>
-                    Open notebook
+                    {ui.openNotebook}
                     <ArrowRightIcon className={styles.cardArrow} />
                   </span>
                 )}

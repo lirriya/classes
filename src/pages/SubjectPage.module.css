@@ -49,7 +49,7 @@
   transform: rotate(3deg);
   background-color: color-mix(in srgb, var(--color-tape) 85%, transparent);
   border-radius: 2px;
-  box-shadow: 0 1px 3px rgba(61, 21, 52, 0.12);
+  box-shadow: var(--shadow-soft);
 }
 
 .headerText {
@@ -146,7 +146,7 @@
   padding: var(--space-2) var(--space-3);
   margin-bottom: var(--space-4);
   background-color: var(--color-ink);
-  color: var(--color-tape-muted);
+  color: var(--color-on-ink);
   border-radius: var(--radius-sm);
   text-align: left;
 }

@@ -3,18 +3,21 @@ import { AppShell } from "./components/AppShell";
 import { HomePage } from "./pages/HomePage";
 import { SubjectPage } from "./pages/SubjectPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { SettingsProvider } from "./components/SettingsProvider";
 
 function App() {
   return (
-    <BrowserRouter>
-      <AppShell>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/:slug" element={<SubjectPage />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </AppShell>
-    </BrowserRouter>
+    <SettingsProvider>
+      <BrowserRouter>
+        <AppShell>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/:slug" element={<SubjectPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </AppShell>
+      </BrowserRouter>
+    </SettingsProvider>
   );
 }
 
