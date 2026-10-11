@@ -526,6 +526,36 @@ export const chapterOne: Block[] = [
       },
     },
   },
+  {
+    type: "checkpoint",
+    concept: { fr: "Identifier un rôle à cardinalité max 1", en: "Role with max cardinality 1" },
+    exercise: {
+      kind: "mcq",
+      prompt: {
+        fr: "Si un rôle a la cardinalité **(1,1)**, l'identifiant de l'association peut être...",
+        en: "If a role has cardinality **(1,1)**, the association identifier can be...",
+      },
+      options: [
+        {
+          text: { fr: "réduit à l'identifiant de l'entité jouant ce rôle.", en: "reduced to the identifier of the entity playing that role." },
+          feedback: { fr: "Oui : règle 1 — si un rôle est (1,1), l'association est déterminée par ce rôle.", en: "Yes: rule 1 — if a role is (1,1), the association is determined by that role." },
+        },
+        {
+          text: { fr: "toujours l'ensemble de tous les identifiants.", en: "always the set of all identifiers." },
+          feedback: { fr: "Non : c'est le cas si aucun rôle n'a de cardinalité maximale de 1.", en: "No: that's when no role has maximum cardinality of 1." },
+        },
+        {
+          text: { fr: "un numéro arbitraire.", en: "an arbitrary number." },
+          feedback: { fr: "Non : l'identifiant se déduit des entités participantes.", en: "No: the identifier is derived from the participating entities." },
+        },
+      ],
+      answerIndex: 0,
+      solution: {
+        fr: "Si un rôle a (1,1), l'identifiant de l'association est celui du type entité jouant ce rôle.",
+        en: "If a role has (1,1), the association identifier is the identifier of the entity type playing that role.",
+      },
+    },
+  },
   { type: "rule" },
   {
     type: "heading",
@@ -615,6 +645,36 @@ export const chapterOne: Block[] = [
       solution: {
         fr: "Dans un couple **(i, j)**, **i** est le minimum et **j** le maximum. **(1,N)** = au moins une fois, plusieurs fois possibles.",
         en: "In a **(i, j)** pair, **i** is the minimum and **j** the maximum. **(1,N)** = at least once, several times possible.",
+      },
+    },
+  },
+  {
+    type: "checkpoint",
+    concept: { fr: "Signification des couples (0,1) et (1,1)", en: "Meaning of (0,1) and (1,1)" },
+    exercise: {
+      kind: "mcq",
+      prompt: {
+        fr: "Quelle différence y a-t-il entre **(0,1)** et **(1,1)** ?",
+        en: "What is the difference between **(0,1)** and **(1,1)**?",
+      },
+      options: [
+        {
+          text: { fr: "(0,1) est facultatif (0 ou 1), (1,1) est obligatoire (exactement 1).", en: "(0,1) is optional (0 or 1), (1,1) is mandatory (exactly 1)." },
+          feedback: { fr: "Exactement : le minimum change.", en: "Exactly: the minimum differs." },
+        },
+        {
+          text: { fr: "(0,1) permet plusieurs fois, (1,1) interdit plusieurs fois.", en: "(0,1) allows several times, (1,1) forbids several times." },
+          feedback: { fr: "Non : (0,1) et (1,1) interdisent tous deux plusieurs fois (maximum 1).", en: "No: both forbid several times (maximum 1)." },
+        },
+        {
+          text: { fr: "Aucune différence : ils signifient tous deux « au plus une fois ».", en: "No difference: both mean 'at most once'." },
+          feedback: { fr: "Non : (1,1) exige au moins une fois.", en: "No: (1,1) requires at least once." },
+        },
+      ],
+      answerIndex: 0,
+      solution: {
+        fr: "(0,1) = facultatif (minimum 0), (1,1) = obligatoire (minimum 1). Maximum 1 dans les deux cas.",
+        en: "(0,1) = optional (minimum 0), (1,1) = mandatory (minimum 1). Maximum 1 in both cases.",
       },
     },
   },
