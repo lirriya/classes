@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+class material/
+poly.pdf
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

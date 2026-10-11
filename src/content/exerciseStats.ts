@@ -6,6 +6,12 @@ export function gradeableIdsForClass(
 ): string[] {
   const ids: string[] = [];
   blocks.forEach((block, blockIndex) => {
+    if (block.type === "checkpoint") {
+      if (block.exercise.kind !== "open") {
+        ids.push(`${classIndex}:checkpoint:${blockIndex}`);
+      }
+      return;
+    }
     if (block.type !== "exercises") return;
     block.groups.forEach((group, groupIndex) => {
       group.exercises.forEach((exercise, exerciseIndex) => {

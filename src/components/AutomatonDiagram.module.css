@@ -1,0 +1,97 @@
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+}
+
+.node {
+  fill: var(--color-sheet);
+  stroke: var(--color-ink);
+  stroke-width: 2;
+  transition: fill 0.2s ease, stroke 0.2s ease;
+}
+
+.nodeActive {
+  fill: var(--color-primary);
+  stroke: var(--color-primary);
+}
+
+.nodeInner {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 2;
+  transition: stroke 0.2s ease;
+}
+
+.nodeInnerActive {
+  stroke: var(--color-sheet);
+}
+
+.stateLabel {
+  fill: var(--color-ink);
+  font-size: 13px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+  transition: fill 0.2s ease;
+}
+
+.stateLabelActive {
+  fill: var(--color-sheet);
+}
+
+.edge {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 2;
+  transition: stroke 0.2s ease, stroke-width 0.2s ease;
+}
+
+.edgeActive {
+  stroke: var(--color-primary);
+  stroke-width: 3;
+  stroke-dasharray: 6 4;
+  animation: dash 0.8s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+.edgeLabel {
+  fill: var(--color-ink);
+  font-size: 12px;
+  font-weight: 600;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--color-paper);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+.edgeLabelActive {
+  fill: var(--color-primary-bright);
+}
+
+.initialArrow {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 2;
+}
+
+.arrowHead {
+  fill: var(--color-ink);
+}
+
+.arrowHeadActive {
+  fill: var(--color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .edgeActive {
+    animation: none;
+  }
+}
