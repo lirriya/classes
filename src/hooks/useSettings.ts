@@ -49,10 +49,12 @@ export function writeStored(key: string, value: string): void {
 
 export function detectLang(): Language {
   const stored = readStored(LANG_KEY);
-  if (stored === "fr" || stored === "en") return stored;
+  if (stored === "fr" || stored === "en" || stored === "uk") return stored;
   if (typeof window === "undefined") return "fr";
   const browserLang = (window.navigator?.language ?? "").toLowerCase();
-  return browserLang.startsWith("fr") ? "fr" : "en";
+  if (browserLang.startsWith("fr")) return "fr";
+  if (browserLang.startsWith("uk") || browserLang.startsWith("ru")) return "uk";
+  return "en";
 }
 
 export function detectTheme(): Theme {

@@ -1,8 +1,8 @@
 export type SubjectStatus = "published" | "soon";
 
-export type Language = "fr" | "en";
+export type Language = "fr" | "en" | "uk";
 
-export type Localized = string | { fr: string; en: string };
+export type Localized = string | { fr: string; en: string; uk?: string };
 
 export type InlineText = Localized;
 

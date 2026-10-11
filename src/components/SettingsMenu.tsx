@@ -7,6 +7,7 @@ import styles from "./SettingsMenu.module.css";
 const LANGUAGES: { value: Language; label: string }[] = [
   { value: "fr", label: "Français" },
   { value: "en", label: "English" },
+  { value: "uk", label: "Українська" },
 ];
 
 export function SettingsMenu() {
