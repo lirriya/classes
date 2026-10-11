@@ -321,7 +321,7 @@ export const chapterThree: Block[] = [
     type: "code",
     lang: "sql",
     text: "Cond_Simple :=\n    Colonne Op_Comp {Colonne | Constante}\n  | Colonne IN (valeur, ...)\n  | Colonne BETWEEN Cste AND Cste\n  | Colonne LIKE Cste\n  | Colonne IS NULL\n  | Colonne IS NOT NULL",
-    caption: { fr: "Conditions simples. Opérateurs : <, <=, >, >=, =, !=, <>", en: "Simple conditions. Operators: <, <=, >, >=, =, !=, <>" },
+    caption: { fr: "Conditions simples.", en: "Simple conditions." },
   },
   {
     type: "list",
