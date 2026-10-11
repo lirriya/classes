@@ -481,8 +481,8 @@ export const chapterTwo: Block[] = [
       {
         id: "df-graphe",
         caption: {
-          fr: "Graphe des DF de la relation PROPRIETAIRE. NoVéhicule détermine NoP qui détermine NOM : NOM dépend transitivement de NoVéhicule.",
-          en: "FD graph of the OWNER relation. VehicleNo determines OwnerNo which determines NAME: NAME transitively depends on VehicleNo.",
+          fr: "Graphe des DF de la relation PROPRIETAIRE.",
+          en: "FD graph of the OWNER relation.",
         },
         nodes: [
           { id: "nov", label: { fr: "NoVéhicule", en: "VehicleNo" }, x: 0, y: 80, shape: "box", tone: "primary" },
@@ -759,7 +759,7 @@ export const chapterTwo: Block[] = [
     type: "code",
     lang: "text",
     text: "Etudiant | Cours | Sport\n---------+-------+-------\nPierre   | BD    | Tennis\nPierre   | BD    | Foot\nPaul     | Math  | Foot\nPaul     | BD    | Foot",
-    caption: { fr: "Extension de R(Étudiant, Cours, Sport) : cours et sport sont indépendants.", en: "Extension of R(Student, Course, Sport): course and sport are independent." },
+    caption: { fr: "Extension de R(Étudiant, Cours, Sport).", en: "Extension of R(Student, Course, Sport)." },
   },
   {
     type: "list",
