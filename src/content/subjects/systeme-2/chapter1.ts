@@ -151,27 +151,44 @@ export const chapterOne: Block[] = [
     type: "code",
     lang: "c",
     caption: {
-      fr: "Le squelette universel d'un fork : on teste la valeur de retour.",
-      en: "The universal fork skeleton: test the return value.",
+      fr: "Programme complet : error(), pere() et fils(), comme dans le cours.",
+      en: "Complete program: error(), pere() and fils(), as in the lecture.",
     },
     text: `#include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
 
+/* Meme role que perror, en plus il arrete le programme. */
+void error(const char *message) {
+    perror(message);
+    exit(EXIT_FAILURE);
+}
+
+/* Branche executee par le pere. */
+void pere(pid_t pid) {
+    printf("Je suis le pere : le PID du fils est %d\\n", pid);
+    if (wait(NULL) == -1)
+        error("wait");
+}
+
+/* Branche executee par le fils. */
+void fils(void) {
+    printf("Je suis le fils : mon PID est %d\\n", getpid());
+}
+
 int main(void) {
     pid_t pid = fork();
+    if (pid == -1)
+        error("fork");
 
-    if (pid == -1) {
-        perror("fork");
-        return 1;
+    if (pid == 0) {                 /* branche du fils */
+        fils();
+        exit(EXIT_SUCCESS);
     }
-    if (pid == 0) {
-        printf("Je suis le fils, mon PID = %d\\n", getpid());
-        _exit(0);
-    }
-    printf("Je suis le pere, le PID du fils = %d\\n", pid);
-    wait(NULL);
-    return 0;
+
+    pere(pid);                      /* branche du pere */
+    return EXIT_SUCCESS;
 }`,
   },
   {
@@ -336,26 +353,64 @@ int main(void) {
     type: "code",
     lang: "c",
     caption: {
-      fr: "Le schéma père → fils : le père écrit, le fils lit.",
-      en: "The parent → child pattern: the parent writes, the child reads.",
+      fr: "Programme complet : le père écrit, le fils lit (fonctions pere et fils).",
+      en: "Complete program: the parent writes, the child reads (pere and fils functions).",
     },
-    text: `int fd[2];
-pipe(fd);
+    text: `#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
-if (fork() == 0) {
-    close(fd[1]);
-    char buffer[64];
-    ssize_t n = read(fd[0], buffer, sizeof(buffer) - 1);
+#define TAILLE 64
+
+void error(const char *message) {
+    perror(message);
+    exit(EXIT_FAILURE);
+}
+
+/* fils : ferme l'ecriture puis lit le message du pere. */
+void fils(int fd[2]) {
+    char buffer[TAILLE];
+    ssize_t n;
+
+    close(fd[1]);                            /* le fils ne lit que fd[0] */
+    n = read(fd[0], buffer, TAILLE - 1);
+    if (n == -1)
+        error("read");
     buffer[n] = '\\0';
     printf("Le fils a lu : %s\\n", buffer);
     close(fd[0]);
-    _exit(0);
 }
 
-close(fd[0]);
-write(fd[1], "bonjour", 7);
-close(fd[1]);
-wait(NULL);`,
+/* pere : ferme la lecture puis ecrit le message. */
+void pere(int fd[2]) {
+    close(fd[0]);                            /* le pere n'ecrit que fd[1] */
+    if (write(fd[1], "bonjour", 7) == -1)
+        error("write");
+    close(fd[1]);                            /* envoie l'EOF au fils */
+}
+
+int main(void) {
+    int fd[2];
+    pid_t pid;
+
+    if (pipe(fd) == -1)
+        error("pipe");
+
+    pid = fork();
+    if (pid == -1)
+        error("fork");
+
+    if (pid == 0) {
+        fils(fd);
+        exit(EXIT_SUCCESS);
+    }
+
+    pere(fd);
+    if (wait(NULL) == -1)
+        error("wait");
+    return EXIT_SUCCESS;
+}`,
   },
   {
     type: "diagram",

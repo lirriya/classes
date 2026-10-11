@@ -362,13 +362,36 @@ veut[i] = false;`,
   {
     type: "heading",
     level: 4,
-    text: { fr: "C. Généralisation à n processus (boulangerie)", en: "C. Generalization to n processes (bakery)" },
+    text: { fr: "C. Généralisation à n processus", en: "C. Generalization to n processes" },
   },
   {
     type: "paragraph",
     text: {
-      fr: "L'algorithme de la **boulangerie** (Lamport) généralise Peterson. Comme dans une boulangerie, chaque client prend un **ticket** croissant ; le plus petit ticket passe d'abord. En cas d'égalité, on départage par le plus petit identifiant.",
-      en: "The **bakery** algorithm (Lamport) generalizes Peterson. As in a bakery, each customer takes an increasing **ticket**; the smallest ticket goes first. On a tie, the smallest identifier breaks it.",
+      fr: "Peterson se généralise à **n processus** avec deux tableaux : `niveau[i]` (le niveau courant du processus i, initialisé à −1) et `dernier[k]` (le dernier processus arrivé au niveau k). Chaque processus doit franchir **n − 1 niveaux**.",
+      en: "Peterson generalizes to **n processes** with two arrays: `niveau[i]` (process i's current level, initialized to −1) and `dernier[k]` (the last process to reach level k). Each process must clear **n − 1 levels**.",
+    },
+  },
+  {
+    type: "code",
+    lang: "c",
+    caption: { fr: "Peterson généralisé, processus i (n processus) — d'après le CM2.", en: "Generalized Peterson, process i (n processes) — from lecture 2." },
+    text: `int niveau[n];                /* initialise a -1 pour tous */
+int dernier[n - 1];
+
+for (int k = 0; k < n - 1; k++) {
+    niveau[i] = k;            /* j'arrive au niveau k  */
+    dernier[k] = i;           /* et je suis le dernier */
+    while (dernier[k] == i &&
+           (existe j != i avec niveau[j] >= k)) { /* attente */ }
+}
+/* section critique */
+niveau[i] = -1;`,
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "**Pour aller plus loin (hors support de cours) :** l'algorithme de la **boulangerie** (Lamport) est une autre généralisation à n processus. Comme dans une boulangerie, chaque client prend un **ticket** croissant ; le plus petit ticket passe d'abord. En cas d'égalité, on départage par le plus petit identifiant.",
+      en: "**Going further (beyond the lecture notes):** the **bakery** algorithm (Lamport) is another generalization to n processes. As in a bakery, each customer takes an increasing **ticket**; the smallest ticket goes first. On a tie, the smallest identifier breaks it.",
     },
   },
   {
@@ -552,6 +575,82 @@ ticket[i] = 0;           /* sortie : on rend son ticket */`,
       fr: "**Question type :** « Écrire l'entrée/sortie de section critique de Peterson et prouver les propriétés. »",
       en: "**Typical question:** “Write Peterson's critical-section entry/exit and prove the properties.”",
     },
+  },
+  {
+    type: "code",
+    lang: "c",
+    caption: {
+      fr: "Programme complet : compteur partagé par mmap, protégé par Peterson (error, pere, fils).",
+      en: "Complete program: counter shared via mmap, protected by Peterson (error, pere, fils).",
+    },
+    text: `#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
+
+#define TOURS 100000
+
+typedef struct {
+    volatile int veut[2];      /* intention d'entrer en SC */
+    volatile int tour;         /* a qui le tour            */
+    volatile long compteur;    /* ressource partagee       */
+} Partage;
+
+void error(const char *message) {
+    perror(message);
+    exit(EXIT_FAILURE);
+}
+
+/* Processus i : Peterson, puis incrementation en section critique. */
+void processus(int i, Partage *p) {
+    int j = 1 - i;
+    for (int n = 0; n < TOURS; n++) {
+        p->veut[i] = 1;                        /* j'annonce mon intention */
+        p->tour = j;                           /* je cede la priorite     */
+        while (p->veut[j] && p->tour == j) {   /* attente active          */
+        }
+        p->compteur++;                         /* SECTION CRITIQUE        */
+        p->veut[i] = 0;                        /* je sors                 */
+    }
+}
+
+void fils(Partage *p) {
+    processus(1, p);
+}
+
+void pere(Partage *p) {
+    processus(0, p);
+    if (wait(NULL) == -1)
+        error("wait");
+    printf("compteur = %ld (attendu %d)\\n", p->compteur, 2 * TOURS);
+    if (munmap(p, sizeof(Partage)) == -1)
+        error("munmap");
+}
+
+int main(void) {
+    Partage *p = mmap(NULL, sizeof(Partage),
+                      PROT_READ | PROT_WRITE,
+                      MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    if (p == MAP_FAILED)
+        error("mmap");
+    p->veut[0] = 0;
+    p->veut[1] = 0;
+    p->tour = 0;
+    p->compteur = 0;
+
+    pid_t pid = fork();
+    if (pid == -1)
+        error("fork");
+
+    if (pid == 0) {
+        fils(p);
+        exit(EXIT_SUCCESS);
+    }
+
+    pere(p);
+    return EXIT_SUCCESS;
+}`,
   },
   {
     type: "list",

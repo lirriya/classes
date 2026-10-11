@@ -109,22 +109,32 @@ export const chapterThree: Block[] = [
     type: "code",
     lang: "c",
     caption: {
-      fr: "Installer un gestionnaire, puis le retirer avec SIG_DFL.",
-      en: "Install a handler, then remove it with SIG_DFL.",
+      fr: "Programme complet : installer un gestionnaire, puis en ignorer un autre.",
+      en: "Complete program: install a handler, then ignore another.",
     },
-    text: `#include <signal.h>
-#include <stdio.h>
+    text: `#include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
+
+void error(const char *message) {
+    perror(message);
+    exit(EXIT_FAILURE);
+}
 
 void handler(int sig) {
     printf("Signal %d recu\\n", sig);
 }
 
 int main(void) {
-    signal(SIGINT, handler);     /* capturer Ctrl-C          */
-    signal(SIGTERM, SIG_IGN);    /* ignorer la demande d'arret */
-    while (1) pause();           /* attendre un signal         */
-    return 0;
+    if (signal(SIGINT, handler) == SIG_ERR)    /* capturer Ctrl-C            */
+        error("signal");
+    if (signal(SIGTERM, SIG_IGN) == SIG_ERR)   /* ignorer la demande d'arret */
+        error("signal");
+
+    while (1)
+        pause();                               /* attendre un signal         */
+    return EXIT_SUCCESS;
 }`,
   },
   {
@@ -219,20 +229,39 @@ int main(void) {
     type: "code",
     lang: "c",
     caption: {
-      fr: "Compteur de signaux robuste : on test/décrémente dans une section protégée.",
-      en: "Robust signal counter: test/decrement inside a protected section.",
+      fr: "Compteur de signaux robuste (pour aller plus loin) : test et attente atomiques.",
+      en: "Robust signal counter (going further): atomic test and wait.",
     },
-    text: `volatile sig_atomic_t recus = 0;
+    text: `#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
 
-void handler(int sig) { (void) sig; recus++; }
+void error(const char *message) {
+    perror(message);
+    exit(EXIT_FAILURE);
+}
+
+volatile sig_atomic_t recus = 0;
+
+void handler(int sig) {
+    (void) sig;
+    recus++;
+}
 
 int main(void) {
-    signal(SIGUSR1, handler);
     sigset_t vide;
-    sigemptyset(&vide);
-    while (recus == 0) sigsuspend(&vide);  /* atomique */
+
+    if (signal(SIGUSR1, handler) == SIG_ERR)
+        error("signal");
+    if (sigemptyset(&vide) == -1)
+        error("sigemptyset");
+
+    while (recus == 0)
+        sigsuspend(&vide);              /* test + attente atomiques */
+
     printf("recu !\\n");
-    return 0;
+    return EXIT_SUCCESS;
 }`,
   },
   {
@@ -347,30 +376,62 @@ int main(void) {
   {
     type: "quote",
     text: {
-      fr: "**Question type :** « Écrire un programme qui capture SIGINT et affiche un message, puis continue. »",
-      en: "**Typical question:** “Write a program that catches SIGINT, prints a message, then continues.”",
+      fr: "**Question type :** « Le père envoie un signal à son fils ; le fils l'intercepte, l'affiche et se termine. »",
+      en: "**Typical question:** “The parent sends a signal to its child; the child catches it, prints it and exits.”",
     },
   },
   {
     type: "code",
     lang: "c",
-    text: `void handler(int sig) {
-    (void) sig;                 /* marquer le parametre utilise */
-    write(STDOUT_FILENO, "capture !\\n", 10);
+    caption: {
+      fr: "Programme complet : error(), deroute(), fils() (gestionnaire + pause) et pere() (kill).",
+      en: "Complete program: error(), deroute(), fils() (handler + pause) and pere() (kill).",
+    },
+    text: `#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+#include <string.h>
+#include <sys/wait.h>
+
+void error(const char *message) {
+    perror(message);
+    exit(EXIT_FAILURE);
+}
+
+/* Fonction de deroutement : executee a la reception du signal. */
+void deroute(int sig) {
+    printf("Fils : signal %d (%s) recu\\n", sig, strsignal(sig));
+}
+
+/* fils : installe le gestionnaire puis attend le signal. */
+void fils(void) {
+    if (signal(SIGUSR1, deroute) == SIG_ERR)
+        error("signal");
+    pause();                            /* endormi jusqu'au signal */
+}
+
+/* pere : laisse au fils le temps de s'installer, puis envoie le signal. */
+void pere(pid_t pid) {
+    sleep(1);                           /* evite une course avec signal() */
+    if (kill(pid, SIGUSR1) == -1)
+        error("kill");
+    if (wait(NULL) == -1)
+        error("wait");
 }
 
 int main(void) {
-    struct sigaction action;
-    action.sa_handler = handler;       /* ou signal(SIGINT, handler) */
-    sigemptyset(&action.sa_mask);      /* aucun signal bloque pendant le handler */
-    action.sa_flags = 0;               /* SA_RESTART pour relancer les appels interrompus */
+    pid_t pid = fork();
+    if (pid == -1)
+        error("fork");
 
-    if (sigaction(SIGINT, &action, NULL) == -1) {
-        perror("sigaction");
-        return 1;
+    if (pid == 0) {
+        fils();
+        exit(EXIT_SUCCESS);
     }
-    while (1) pause();                 /* attendre les signaux */
-    return 0;
+
+    pere(pid);
+    return EXIT_SUCCESS;
 }`,
   },
   {

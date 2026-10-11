@@ -104,22 +104,55 @@ export const chapterFour: Block[] = [
     type: "code",
     lang: "c",
     caption: {
-      fr: "Compteur partagé : la mémoire est projetée avant le fork, donc partagée.",
-      en: "Shared counter: memory is mapped before the fork, hence shared.",
+      fr: "Programme complet : mémoire projetée avant le fork, donc partagée.",
+      en: "Complete program: memory mapped before the fork, hence shared.",
     },
-    text: `int *counter = mmap(NULL, sizeof(int),
-                    PROT_READ | PROT_WRITE,
-                    MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-if (counter == MAP_FAILED) { perror("mmap"); exit(1); }
-*counter = 0;
+    text: `#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
 
-if (fork() == 0) {
-    for (int i = 0; i < 100; i++) (*counter)++;
-    _exit(0);
+void error(const char *message) {
+    perror(message);
+    exit(EXIT_FAILURE);
 }
-wait(NULL);
-printf("counter = %d\\n", *counter);   /* souvent != 100 ! */
-munmap(counter, sizeof(int));`,
+
+/* fils : incremente le compteur partage 100 fois. */
+void fils(int *compteur) {
+    for (int i = 0; i < 100; i++)
+        (*compteur)++;
+}
+
+/* pere : attend le fils puis lit le compteur partage. */
+void pere(int *compteur) {
+    if (wait(NULL) == -1)
+        error("wait");
+    printf("compteur = %d\\n", *compteur);   /* souvent != 100 ! */
+    if (munmap(compteur, sizeof(int)) == -1)
+        error("munmap");
+}
+
+int main(void) {
+    int *compteur = mmap(NULL, sizeof(int),
+                         PROT_READ | PROT_WRITE,
+                         MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    if (compteur == MAP_FAILED)
+        error("mmap");
+    *compteur = 0;                          /* etat initial AVANT le fork */
+
+    pid_t pid = fork();
+    if (pid == -1)
+        error("fork");
+
+    if (pid == 0) {
+        fils(compteur);
+        exit(EXIT_SUCCESS);
+    }
+
+    pere(compteur);
+    return EXIT_SUCCESS;
+}`,
   },
   {
     type: "diagram",
@@ -269,27 +302,59 @@ munmap(counter, sizeof(int));`,
     type: "code",
     lang: "c",
     caption: {
-      fr: "Squelette à recopier pour créer une mémoire partagée entre père et fils.",
-      en: "Skeleton to copy for creating shared memory between parent and child.",
+      fr: "Programme complet à recopier : mémoire partagée entre père et fils.",
+      en: "Complete program to copy: shared memory between parent and child.",
     },
-    text: `size_t taille = sizeof(int);
-int *partage = mmap(NULL, taille,
-                    PROT_READ | PROT_WRITE,
-                    MAP_SHARED | MAP_ANONYMOUS,
-                    -1, 0);
-if (partage == MAP_FAILED) { perror("mmap"); exit(EXIT_FAILURE); }
-*partage = 0;              /* etat initial, AVANT le fork */
+    text: `#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
 
-pid_t pid = fork();
-if (pid == 0) {
-    /* le fils ecrit dans partage */
-    *partage = 42;
-    munmap(partage, taille);
-    _exit(0);
+#define TAILLE sizeof(int)
+
+void error(const char *message) {
+    perror(message);
+    exit(EXIT_FAILURE);
 }
-wait(NULL);
-/* le pere lit *partage : il voit 42 */
-munmap(partage, taille);`,
+
+/* fils : ecrit 42 dans la zone partagee. */
+void fils(int *partage) {
+    *partage = 42;
+    if (munmap(partage, TAILLE) == -1)
+        error("munmap");
+}
+
+/* pere : attend le fils puis lit la zone partagee. */
+void pere(int *partage) {
+    if (wait(NULL) == -1)
+        error("wait");
+    printf("Le pere lit : %d\\n", *partage);   /* affiche 42 */
+    if (munmap(partage, TAILLE) == -1)
+        error("munmap");
+}
+
+int main(void) {
+    int *partage = mmap(NULL, TAILLE,
+                        PROT_READ | PROT_WRITE,
+                        MAP_SHARED | MAP_ANONYMOUS,
+                        -1, 0);
+    if (partage == MAP_FAILED)
+        error("mmap");
+    *partage = 0;                             /* etat initial AVANT le fork */
+
+    pid_t pid = fork();
+    if (pid == -1)
+        error("fork");
+
+    if (pid == 0) {
+        fils(partage);
+        exit(EXIT_SUCCESS);
+    }
+
+    pere(partage);
+    return EXIT_SUCCESS;
+}`,
   },
   {
     type: "quote",

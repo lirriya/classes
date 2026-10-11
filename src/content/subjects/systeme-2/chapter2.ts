@@ -124,26 +124,72 @@ export const chapterTwo: Block[] = [
     type: "code",
     lang: "c",
     caption: {
-      fr: "Le père écrit dans le FIFO, le fils le lit.",
-      en: "The parent writes to the FIFO, the child reads from it.",
+      fr: "Programme complet : le père écrit dans le FIFO, le fils le lit.",
+      en: "Complete program: the parent writes to the FIFO, the child reads it.",
     },
-    text: `mkfifo("/tmp/tube", 0666);
+    text: `#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
 
-if (fork() == 0) {                      /* fils = lecteur */
-    int fd = open("/tmp/tube", O_RDONLY);
-    char buffer[64];
-    ssize_t n = read(fd, buffer, sizeof(buffer) - 1);
+#define TUBE "/tmp/tube"
+#define TAILLE 64
+
+void error(const char *message) {
+    perror(message);
+    exit(EXIT_FAILURE);
+}
+
+/* fils : ouvre le FIFO en lecture et affiche le message. */
+void fils(void) {
+    char buffer[TAILLE];
+    ssize_t n;
+    int fd = open(TUBE, O_RDONLY);
+    if (fd == -1)
+        error("open");
+
+    n = read(fd, buffer, TAILLE - 1);
+    if (n == -1)
+        error("read");
     buffer[n] = '\\0';
     printf("Le fils a recu : %s\\n", buffer);
     close(fd);
-    _exit(0);
 }
 
-int fd = open("/tmp/tube", O_WRONLY);   /* pere = ecrivain */
-write(fd, "coucou", 6);
-close(fd);
-wait(NULL);
-unlink("/tmp/tube");`,
+/* pere : ouvre le FIFO en ecriture et depose le message. */
+void pere(void) {
+    int fd = open(TUBE, O_WRONLY);
+    if (fd == -1)
+        error("open");
+
+    if (write(fd, "coucou", 6) == -1)
+        error("write");
+    close(fd);
+}
+
+int main(void) {
+    pid_t pid;
+
+    if (mkfifo(TUBE, 0666) == -1)
+        error("mkfifo");
+
+    pid = fork();
+    if (pid == -1)
+        error("fork");
+
+    if (pid == 0) {
+        fils();
+        exit(EXIT_SUCCESS);
+    }
+
+    pere();
+    if (wait(NULL) == -1)
+        error("wait");
+    unlink(TUBE);
+    return EXIT_SUCCESS;
+}`,
   },
   {
     type: "heading",

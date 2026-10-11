@@ -53,25 +53,42 @@ export const chapterSix: Block[] = [
   {
     type: "code",
     lang: "c",
-    caption: { fr: "Deux threads incrémentent un compteur partagé : même blague que les processus !", en: "Two threads increment a shared counter: same joke as with processes!" },
-    text: `#include <pthread.h>
+    caption: { fr: "Programme complet : deux threads incrémentent un compteur partagé (même piège que les processus).", en: "Complete program: two threads increment a shared counter (same trap as processes)." },
+    text: `#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
 
-int compteur = 0;   /* partage entre threads */
+#define TOURS 100000
+
+int compteur = 0;                     /* partage entre les threads */
+
+void error(const char *message) {
+    perror(message);
+    exit(EXIT_FAILURE);
+}
 
 void *travail(void *arg) {
     (void) arg;
-    for (int i = 0; i < 100000; i++) compteur++;
+    for (int i = 0; i < TOURS; i++)
+        compteur++;                   /* section critique non protegee */
     return NULL;
 }
 
 int main(void) {
     pthread_t t1, t2;
-    pthread_create(&t1, NULL, travail, NULL);
-    pthread_create(&t2, NULL, travail, NULL);
-    pthread_join(t1, NULL);
-    pthread_join(t2, NULL);
-    /* compteur < 200000 presque toujours ! */
-    return 0;
+
+    if (pthread_create(&t1, NULL, travail, NULL) != 0)
+        error("pthread_create");
+    if (pthread_create(&t2, NULL, travail, NULL) != 0)
+        error("pthread_create");
+
+    if (pthread_join(t1, NULL) != 0)
+        error("pthread_join");
+    if (pthread_join(t2, NULL) != 0)
+        error("pthread_join");
+
+    printf("compteur = %d (attendu %d)\\n", compteur, 2 * TOURS);
+    return EXIT_SUCCESS;
 }`,
   },
   {
@@ -134,14 +151,77 @@ int main(void) {
   {
     type: "code",
     lang: "c",
-    caption: { fr: "Exclusion mutuelle avec un sémaphore (POSIX).", en: "Mutual exclusion with a semaphore (POSIX)." },
-    text: `sem_t mutex;
-sem_init(&mutex, 1, 1);      /* partage entre processus, valeur 1 */
+    caption: { fr: "Programme complet : exclusion mutuelle avec un sémaphore POSIX (error, pere, fils).", en: "Complete program: mutual exclusion with a POSIX semaphore (error, pere, fils)." },
+    text: `#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <semaphore.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
 
-/* ... dans chaque processus ... */
-sem_wait(&mutex);            /* P : entree */
-/* --- section critique --- */
-sem_post(&mutex);            /* V : sortie */`,
+#define TOURS 100000
+
+typedef struct {
+    sem_t mutex;               /* semaphore binaire      */
+    int compteur;              /* ressource protegee     */
+} Partage;
+
+void error(const char *message) {
+    perror(message);
+    exit(EXIT_FAILURE);
+}
+
+/* fils : incremente le compteur sous exclusion mutuelle. */
+void fils(Partage *p) {
+    for (int i = 0; i < TOURS; i++) {
+        if (sem_wait(&p->mutex) == -1)     /* P : entree */
+            error("sem_wait");
+        p->compteur++;                     /* SECTION CRITIQUE */
+        if (sem_post(&p->mutex) == -1)     /* V : sortie */
+            error("sem_post");
+    }
+}
+
+/* pere : incremente aussi, puis attend et affiche. */
+void pere(Partage *p) {
+    for (int i = 0; i < TOURS; i++) {
+        if (sem_wait(&p->mutex) == -1)
+            error("sem_wait");
+        p->compteur++;
+        if (sem_post(&p->mutex) == -1)
+            error("sem_post");
+    }
+    if (wait(NULL) == -1)
+        error("wait");
+    printf("compteur = %d (attendu %d)\\n", p->compteur, 2 * TOURS);
+    if (sem_destroy(&p->mutex) == -1)
+        error("sem_destroy");
+    if (munmap(p, sizeof(Partage)) == -1)
+        error("munmap");
+}
+
+int main(void) {
+    Partage *p = mmap(NULL, sizeof(Partage),
+                      PROT_READ | PROT_WRITE,
+                      MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    if (p == MAP_FAILED)
+        error("mmap");
+    p->compteur = 0;
+    if (sem_init(&p->mutex, 1, 1) == -1)   /* 1 = partage entre processus */
+        error("sem_init");
+
+    pid_t pid = fork();
+    if (pid == -1)
+        error("fork");
+
+    if (pid == 0) {
+        fils(p);
+        exit(EXIT_SUCCESS);
+    }
+
+    pere(p);
+    return EXIT_SUCCESS;
+}`,
   },
   {
     type: "paragraph",
@@ -331,12 +411,33 @@ V(vide);      /* signale une place de plus       */`,
   {
     type: "code",
     lang: "c",
-    text: `sem_t mutex;
-sem_init(&mutex, 1, 1);      /* 1 = partage entre processus, valeur initiale 1 */
+    caption: {
+      fr: "Programme minimal à recopier : un sémaphore binaire protège la section critique.",
+      en: "Minimal program to copy: a binary semaphore protects the critical section.",
+    },
+    text: `#include <stdio.h>
+#include <stdlib.h>
+#include <semaphore.h>
 
-sem_wait(&mutex);            /* P : reserver */
-/* section critique */
-sem_post(&mutex);            /* V : liberer  */`,
+void error(const char *message) {
+    perror(message);
+    exit(EXIT_FAILURE);
+}
+
+sem_t mutex;
+
+int main(void) {
+    if (sem_init(&mutex, 0, 1) == -1)    /* 0 = threads, 1 = processus */
+        error("sem_init");
+
+    if (sem_wait(&mutex) == -1)          /* P : reserver */
+        error("sem_wait");
+    /* --- section critique --- */
+    if (sem_post(&mutex) == -1)          /* V : liberer  */
+        error("sem_post");
+
+    return EXIT_SUCCESS;
+}`,
   },
   {
     type: "list",
