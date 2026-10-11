@@ -282,7 +282,7 @@ export const chapterFive: Block[] = [
   },
   {
     type: "code",
-    lang: "c",
+    lang: "pseudo-code",
     caption: {
       fr: "Forme générale (TD4) : entreeSC(), Section Critique, sortieSC().",
       en: "General shape (TD4): entreeSC(), Critical Section, sortieSC().",
@@ -349,7 +349,7 @@ sortieSC ();`,
   },
   {
     type: "code",
-    lang: "c",
+    lang: "pseudo-code",
     caption: {
       fr: "Principe général de l'attente active (CM2).",
       en: "General busy-waiting principle (lecture 2).",
@@ -398,7 +398,7 @@ sortieSC ();`,
   },
   {
     type: "code",
-    lang: "c",
+    lang: "pseudo-code",
     caption: {
       fr: "Variable libre : exemple simple et incorrect (CM2).",
       en: "The libre variable: simple and incorrect example (lecture 2).",
@@ -426,7 +426,7 @@ libre = true;`,
   },
   {
     type: "code",
-    lang: "c",
+    lang: "pseudo-code",
     caption: {
       fr: "À tour de rôle : tour = i, le processus i peut entrer (CM2).",
       en: "Taking turns: tour = i, process i may enter (lecture 2).",
@@ -499,6 +499,128 @@ tour = A;`,
   {
     type: "heading",
     level: 4,
+    text: { fr: "La notation : un pseudo-code, pas du C", en: "The notation: pseudocode, not C" },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Les cadres ci-dessous ne sont **pas du langage C compilable** : c'est le **pseudo-code** défini par le TD4 pour une machine abstraite à deux processeurs. On y emploie des mots du C (`bool`, `int`, `while`, `=`) pour rester lisible, mais aussi des mots du TD (`attente`, `entreeSC`, `sortieSC`, `<Section Critique>`) qui n'existent dans aucune bibliothèque. À l'examen, il faut savoir **lire** et **rédiger** ce pseudo-code, pas le compiler.",
+      en: "The frames below are **not compilable C**: they are the **pseudocode** defined by TD4 for an abstract two-processor machine. It borrows C words (`bool`, `int`, `while`, `=`) to stay readable, but also TD words (`attente`, `entreeSC`, `sortieSC`, `<Section Critique>`) that exist in no library. For the exam you must be able to **read** and **write** this pseudocode, not compile it.",
+    },
+  },
+  {
+    type: "list",
+    items: [
+      {
+        text: {
+          fr: "**`i` et `j`** désignent les **deux processeurs** : `i` pour le premier, `j` pour l'autre. Les deux exécutent le **même** code, chacun voyant son propre indice dans `i` et l'autre dans `j`.",
+          en: "**`i` and `j`** name the **two processors**: `i` for the first, `j` for the other. Both run the **same** code, each seeing its own index as `i` and the other as `j`.",
+        },
+      },
+      {
+        text: {
+          fr: "**`attente`** est une convention pour l'**attente active** (busy waiting) : le processeur tourne en rond sans se bloquer. Ce n'est pas une fonction que l'on appelle.",
+          en: "**`attente`** is a convention for **busy waiting**: the processor spins without blocking. It is not a function to call.",
+        },
+      },
+      {
+        text: {
+          fr: "**`entreeSC(i)` et `sortieSC(i)`** sont les **protocoles** d'entrée et de sortie de la section critique, exécutés par le processeur `i`.",
+          en: "**`entreeSC(i)` and `sortieSC(i)`** are the critical-section **entry and exit protocols**, executed by processor `i`.",
+        },
+      },
+      {
+        text: {
+          fr: "**`<Section Critique>`** est l'**emplacement** du code protégé (par exemple `i++`) : les chevrons indiquent qu'il faut le remplacer, pas le recopier.",
+          en: "**`<Section Critique>`** is the **placeholder** for the protected code (for example `i++`): the angle brackets say to replace it, not to copy it.",
+        },
+      },
+      {
+        text: {
+          fr: "Les **variables partagées** (`occ`, `tour`, `demande[2]`, `dernier`) sont déclarées **une seule fois**, en dehors des protocoles ; les deux processeurs y accèdent.",
+          en: "The **shared variables** (`occ`, `tour`, `demande[2]`, `dernier`) are declared **once**, outside the protocols; both processors access them.",
+        },
+      },
+      {
+        text: {
+          fr: "**`=`** est l'**affectation** (comme en C) et **`==`** la **comparaison** : `occ = true` écrit, `occ == true` teste.",
+          en: "**`=`** is **assignment** (as in C) and **`==`** is **comparison**: `occ = true` writes, `occ == true` tests.",
+        },
+      },
+    ],
+  },
+  {
+    type: "code",
+    lang: "pseudo-code",
+    caption: {
+      fr: "Exemple annoté : le booléen d'occupation occ en pseudo-code TD4.",
+      en: "Annotated example: the occupation boolean occ in TD4 pseudocode.",
+    },
+    text: `/* Variables partagées : déclarées une seule fois pour les 2 processeurs */
+bool occ = false;          /* vrai : la section critique est occupée */
+
+/* Protocole du processeur i, l'autre étant j */
+entreeSC (i) {
+    while (occ) attente;   /* attente active tant que occ est vrai */
+    occ = true;            /* je réserve la section critique */
+}
+sortieSC (i) {
+    occ = false;           /* je libère la section critique */
+}`,
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Le même squelette en **C réel** remplacerait `attente` par un point-virgule (`while (occ) ;`), `entreeSC(i)` par une fonction `void entreeSC(int i)` et `<Section Critique>` par le code à protéger : c'est seulement la **rédaction** qui change, pas le raisonnement.",
+      en: "The same skeleton in **real C** would replace `attente` with a semicolon (`while (occ) ;`), `entreeSC(i)` with a function `void entreeSC(int i)` and `<Section Critique>` with the code to protect: only the **wording** changes, not the reasoning.",
+    },
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: { fr: "Pseudo-assembleur et équivalence while / GOTO", en: "Pseudo-assembly and the while / GOTO equivalence" },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Deux points de « bas niveau » reviennent dans le TD4. D'abord, `i++` n'est **pas atomique** : en pseudo-assembleur elle se décompose en trois instructions élémentaires.",
+      en: "Two “low-level” points come back in TD4. First, `i++` is **not atomic**: in pseudo-assembly it splits into three elementary instructions.",
+    },
+  },
+  {
+    type: "code",
+    lang: "pseudo-assembleur",
+    caption: {
+      fr: "Pseudo-assembleur de i++ (TD4, question 1).",
+      en: "Pseudo-assembly of i++ (TD4, question 1).",
+    },
+    text: `LOAD  R, i     /* lire i dans un registre */
+ADD   R, 1     /* incrémenter le registre */
+STORE i, R     /* écrire le registre dans i */`,
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "C'est l'**entrelacement** de ces trois instructions entre les deux processeurs (les deux lisent avant qu'un seul écrive) qui donne `i = 1` au lieu de `i = 2`. Ensuite, le TD4 demande l'équivalent d'une boucle `while` avec des `GOTO` : l'attente active s'écrit indifféremment avec l'un ou l'autre.",
+      en: "It is the **interleaving** of these three instructions between the two processors (both read before either writes) that gives `i = 1` instead of `i = 2`. Second, TD4 asks for the equivalent of a `while` loop with `GOTO`: busy waiting can be written with either one.",
+    },
+  },
+  {
+    type: "code",
+    lang: "pseudo-code",
+    caption: {
+      fr: "Une boucle while traduite en GOTO (TD4, question 4).",
+      en: "A while loop translated into GOTO (TD4, question 4).",
+    },
+    text: `/* while (condition) corps;  équivaut à : */
+debut :  if (!condition) goto fin;
+         corps;
+         goto debut;
+fin :`,
+  },
+  {
+    type: "heading",
+    level: 4,
     text: { fr: "2.2 Utilisation d'un booléen d'occupation", en: "2.2 Using an occupation boolean" },
   },
   {
@@ -510,7 +632,7 @@ tour = A;`,
   },
   {
     type: "code",
-    lang: "c",
+    lang: "pseudo-code",
     caption: {
       fr: "TD4 2.2 : le booléen d'occupation occ.",
       en: "TD4 2.2: the occupation boolean occ.",
@@ -539,7 +661,7 @@ sortieSC(i) {
   },
   {
     type: "code",
-    lang: "c",
+    lang: "pseudo-code",
     caption: {
       fr: "TD4 2.3 : chacun son tour, avec i et j.",
       en: "TD4 2.3: each in his turn, with i and j.",
@@ -567,7 +689,7 @@ sortieSC(i) {
   },
   {
     type: "code",
-    lang: "c",
+    lang: "pseudo-code",
     caption: {
       fr: "TD4 2.4 : annonce de sa volonté, tableau demande[2].",
       en: "TD4 2.4: announcing one's will, the array demande[2].",
@@ -596,7 +718,7 @@ sortieSC(i) {
   },
   {
     type: "code",
-    lang: "c",
+    lang: "pseudo-code",
     caption: {
       fr: "TD4 2.5 : annonce avec renonce — je renonce puis je réannonce.",
       en: "TD4 2.5: announcement with renounce — I renounce then announce again.",
@@ -629,7 +751,7 @@ sortieSC(i) {
   },
   {
     type: "code",
-    lang: "c",
+    lang: "pseudo-code",
     caption: {
       fr: "TD4 2.6 : demande + tour — je renonce et je redemande aussitôt.",
       en: "TD4 2.6: request + turn — I renounce and request again right away.",
@@ -664,7 +786,7 @@ sortieSC(i) {
   },
   {
     type: "code",
-    lang: "c",
+    lang: "pseudo-code",
     caption: {
       fr: "TD4 2.7 : Dekker 1966 — on attend son tour avant de redemander.",
       en: "TD4 2.7: Dekker 1966 — one waits for one's turn before requesting again.",
@@ -701,7 +823,7 @@ sortieSC(i) {
   },
   {
     type: "code",
-    lang: "c",
+    lang: "pseudo-code",
     caption: {
       fr: "TD4 2.8 / CM2 : Peterson 1981, avec demande et dernier.",
       en: "TD4 2.8 / lecture 2: Peterson 1981, with demande and dernier.",
@@ -765,7 +887,7 @@ sortieSC(i) {
   },
   {
     type: "code",
-    lang: "c",
+    lang: "pseudo-code",
     caption: {
       fr: "CM2 : Peterson généralisé à n processus, pour le processus i.",
       en: "Lecture 2: Peterson generalized to n processes, for process i.",
@@ -1148,6 +1270,145 @@ niveau[i] = -1;`,
         text: {
           fr: "**Phrase de conclusion :** « Peterson satisfait l'exclusion mutuelle, l'absence de blocage permanent, la condition de progression et l'équité, mais utilise l'attente active. »",
           en: "**Concluding sentence:** “Peterson satisfies mutual exclusion, absence of permanent blocking, progress condition and fairness, but uses busy waiting.”",
+        },
+      },
+    ],
+  },
+  {
+    type: "heading",
+    level: 3,
+    text: {
+      fr: "Ce qu'il faut maîtriser pour l'examen",
+      en: "What to master for the exam",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Liste de contrôle du chapitre : ce qui doit être su **par cœur** et savoir **rédiger** en pseudo-code du TD4, sans hésiter.",
+      en: "Chapter checklist: what must be known **by heart** and **written** in TD4 pseudocode without hesitation.",
+    },
+  },
+  {
+    type: "list",
+    ordered: true,
+    items: [
+      {
+        text: {
+          fr: "**Définitions :** action atomique, entrelacement, non-déterminisme, section critique, atomicité, exclusion mutuelle (au plus un processus en SC à la fois).",
+          en: "**Definitions:** atomic action, interleaving, non-determinism, critical section, atomicity, mutual exclusion (at most one process in the CS at a time).",
+        },
+      },
+      {
+        text: {
+          fr: "**Les 4 propriétés**, avec leurs noms exacts : exclusion mutuelle, absence de blocage permanent, condition de progression, équité.",
+          en: "**The 4 properties**, with their exact names: mutual exclusion, absence of permanent blocking, progress condition, fairness.",
+        },
+      },
+      {
+        text: {
+          fr: "**Pseudo-assembleur de `i++`** (LOAD / ADD / STORE) et **deux scénarios** d'entrelacement donnant `i = 1` au lieu de `2`.",
+          en: "**Pseudo-assembly of `i++`** (LOAD / ADD / STORE) and **two interleaving scenarios** giving `i = 1` instead of `2`.",
+        },
+      },
+      {
+        text: {
+          fr: "**Équivalence `while` / `GOTO`**, et la forme générale d'encadrement `entreeSC(); <Section Critique>; sortieSC();`.",
+          en: "**`while` / `GOTO` equivalence**, and the general framing form `entreeSC(); <Section Critique>; sortieSC();`.",
+        },
+      },
+      {
+        text: {
+          fr: "**Écrire `entreeSC`/`sortieSC`** des sept cahiers des charges : `occ` (2.2), `tour` (2.3), `demande` seule (2.4), renonce (2.5), demande + tour (2.6), Dekker (2.7), Peterson (2.8).",
+          en: "**Write `entreeSC`/`sortieSC`** for the seven specifications: `occ` (2.2), `tour` (2.3), `demande` alone (2.4), renounce (2.5), request + turn (2.6), Dekker (2.7), Peterson (2.8).",
+        },
+      },
+      {
+        text: {
+          fr: "Pour **chaque stratégie**, savoir dire en une phrase : **l'exclusion mutuelle est-elle garantie ?** et **quel problème subsiste / quelle propriété est violée ?**",
+          en: "For **each strategy**, say in one sentence: **is mutual exclusion guaranteed?** and **which problem remains / which property is violated?**",
+        },
+      },
+      {
+        text: {
+          fr: "Reconnaître les **trois familles** : solutions logicielles à attente active sans arbitrage ; solutions matérielles à attente active sans arbitrage (masquage des interruptions) ; solutions avec blocage, attente passive et arbitrage (sémaphores).",
+          en: "Recognise the **three families**: software solutions with busy waiting and no arbitration; hardware solutions with busy waiting and no arbitration (interrupt masking); solutions with blocking, passive waiting and arbitration (semaphores).",
+        },
+      },
+      {
+        text: {
+          fr: "**Peterson généralisé à `n` processus** : un tableau `niveau[n]` (initialisé à −1) et `dernier[n−1]`, avec `n − 1` niveaux à franchir en montant puis en descendant.",
+          en: "**Peterson generalised to `n` processes**: an array `niveau[n]` (initialised to −1) and `dernier[n−1]`, with `n − 1` levels to climb then descend.",
+        },
+      },
+      {
+        text: {
+          fr: "Situer le **producteur-consommateur** du côté de la **synchronisation** : c'est la première brique des solutions avec blocage et attente passive.",
+          en: "Place the **producer-consumer** on the **synchronisation** side: it is the first building block of solutions with blocking and passive waiting.",
+        },
+      },
+    ],
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: { fr: "Pièges classiques", en: "Classic traps" },
+  },
+  {
+    type: "list",
+    items: [
+      {
+        text: {
+          fr: "`occ = true` (**affectation**) n'est pas `occ == true` (**comparaison**) — ne pas confondre dans le `while`.",
+          en: "`occ = true` (**assignment**) is not `occ == true` (**comparison**) — do not swap them in the `while`.",
+        },
+      },
+      {
+        text: {
+          fr: "**Toujours réinitialiser** la variable partagée en sortie : `occ = false`, `demande[i] = false`, et `tour = j` chez Dekker.",
+          en: "**Always reset** the shared variable on exit: `occ = false`, `demande[i] = false`, and `tour = j` in Dekker.",
+        },
+      },
+      {
+        text: {
+          fr: "`occ` commet la même erreur que `libre` : le **test puis l'écriture** ne sont pas atomiques — l'exclusion mutuelle **n'est pas garantie**.",
+          en: "`occ` makes the same mistake as `libre`: the **test then write** is not atomic — mutual exclusion is **not guaranteed**.",
+        },
+      },
+      {
+        text: {
+          fr: "`tour` seul : l'exclusion mutuelle tient, mais la **propriété 3** est violée si l'autre ne veut pas entrer (blocage mutuel).",
+          en: "`tour` alone: mutual exclusion holds, but **property 3** is violated if the other does not want to enter (mutual blocking).",
+        },
+      },
+      {
+        text: {
+          fr: "2.4 (annonce seule) : exclusion mutuelle garantie, mais **interblocage** si les deux annoncent — **propriété 2** violée.",
+          en: "2.4 (announcement alone): mutual exclusion guaranteed, but **deadlock** if both announce — **property 2** violated.",
+        },
+      },
+      {
+        text: {
+          fr: "2.5 et 2.6 : exclusion mutuelle garantie, mais **famine** possible car on renonce et redemande sans attendre — **propriété 4** violée.",
+          en: "2.5 and 2.6: mutual exclusion guaranteed, but **starvation** possible since one renounces and requests again without waiting — **property 4** violated.",
+        },
+      },
+      {
+        text: {
+          fr: "Dekker et Peterson : les **quatre propriétés** sont satisfaites, mais l'**attente active** consomme le processeur.",
+          en: "Dekker and Peterson: the **four properties** are satisfied, but **busy waiting** burns the processor.",
+        },
+      },
+      {
+        text: {
+          fr: "`attente` est une **convention d'écriture**, pas une fonction : on ne la cherche pas dans une bibliothèque.",
+          en: "`attente` is a **writing convention**, not a function: you will not find it in any library.",
+        },
+      },
+      {
+        text: {
+          fr: "Le TD4 interdit **tout support matériel** autre que l'**ordre des écritures** en mémoire : pas de test-and-set, pas d'instruction atomique privilégiée.",
+          en: "TD4 forbids **any hardware support** other than the **order of memory writes**: no test-and-set, no privileged atomic instruction.",
         },
       },
     ],

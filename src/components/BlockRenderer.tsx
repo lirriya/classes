@@ -91,6 +91,9 @@ export function BlockRenderer({ blocks, idPrefix = "" }: BlockRendererProps) {
           case "code":
             return (
               <div key={index} className={styles.codeWrap}>
+                {block.lang && (
+                  <span className={styles.codeLang}>{block.lang}</span>
+                )}
                 <pre className={styles.code} data-lang={block.lang}>
                   <code>{block.text}</code>
                 </pre>
