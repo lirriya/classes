@@ -6,6 +6,7 @@ import { chapterFour } from "./chapter4";
 import { chapterFive } from "./chapter5";
 import { chapterSix } from "./chapter6";
 import { examBlancs } from "./exam";
+import { prepCC1 } from "./prep";
 
 export const systeme2: Subject = {
   slug: "systeme-2",
@@ -92,6 +93,44 @@ export const systeme2: Subject = {
         },
       ],
       blocks: examBlancs,
+    },
+    {
+      label: { fr: "Prépa CCI 1", en: "CCI 1 prep" },
+      title: {
+        fr: "Best prep for CCI 1 — la fiche express",
+        en: "Best prep for CC1 — the cheat sheet",
+      },
+      parts: [
+        {
+          id: "p1",
+          label: { fr: "1. Processus", en: "1. Processes" },
+        },
+        {
+          id: "p2",
+          label: { fr: "2. Tubes anonymes", en: "2. Anonymous pipes" },
+        },
+        {
+          id: "p3",
+          label: { fr: "3. Tubes nommés", en: "3. Named pipes" },
+        },
+        {
+          id: "p4",
+          label: { fr: "4. Signaux", en: "4. Signals" },
+        },
+        {
+          id: "p5",
+          label: { fr: "5. mmap", en: "5. mmap" },
+        },
+        {
+          id: "p6",
+          label: { fr: "6. Exclusion mutuelle", en: "6. Mutual exclusion" },
+        },
+        {
+          id: "p7",
+          label: { fr: "7. Méthode d'examen", en: "7. Exam method" },
+        },
+      ],
+      blocks: prepCC1,
     },
   ],
 };
