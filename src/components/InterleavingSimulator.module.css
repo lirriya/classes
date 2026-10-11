@@ -1,0 +1,229 @@
+.simulator {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  border: 2px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background-color: var(--color-sheet);
+  padding: var(--space-4);
+}
+
+.caption {
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
+.shared {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border-radius: var(--radius-md);
+  background-color: var(--color-paper);
+  padding: var(--space-3);
+}
+
+.panelTitle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+}
+
+.vars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.var {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  border: 2px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-sheet);
+  padding: 0.2rem var(--space-3);
+}
+
+.varName {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.varValue {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 700;
+  color: var(--color-primary-bright);
+}
+
+.processes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-3);
+}
+
+.processCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border: 2px solid var(--color-line);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.processTitle {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.86rem;
+}
+
+.steps li {
+  border-radius: var(--radius-sm);
+  padding: 0.15rem var(--space-2);
+}
+
+.todo {
+  color: var(--color-muted);
+}
+
+.current {
+  background-color: var(--color-tape);
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+.done {
+  color: var(--color-muted);
+  text-decoration: line-through;
+}
+
+.stepBtn,
+.controlBtn,
+.resetBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.stepBtn svg,
+.controlBtn svg,
+.resetBtn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.stepBtn {
+  margin-top: auto;
+  background-color: var(--color-primary);
+  color: var(--color-sheet);
+}
+
+.controlBtn {
+  background-color: var(--color-tape-muted);
+  color: var(--color-ink);
+}
+
+.resetBtn {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  border: 2px solid var(--color-line);
+}
+
+.stepBtn:hover:not(:disabled),
+.controlBtn:hover:not(:disabled),
+.resetBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background-color: var(--color-primary-bright);
+  color: var(--color-sheet);
+}
+
+.stepBtn:disabled,
+.controlBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.controls {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.timeline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.timelineLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+}
+
+.timelineChips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.chip {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.76rem;
+  border-radius: 999px;
+  background-color: var(--color-tape-muted);
+  color: var(--color-ink);
+  padding: 0.05rem var(--space-2);
+}
+
+.verdict {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.verdictTitle {
+  font-weight: 700;
+}
+
+.verdictDetail {
+  font-size: 0.86rem;
+}
+
+.verdictSafe {
+  background-color: var(--color-success-soft);
+  border: 2px solid var(--color-success);
+  color: var(--color-success);
+}
+
+.verdictRace {
+  background-color: var(--color-error-soft);
+  border: 2px solid var(--color-error);
+  color: var(--color-error);
+}

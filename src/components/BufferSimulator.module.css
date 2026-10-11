@@ -1,0 +1,124 @@
+.simulator {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  border: 2px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background-color: var(--color-sheet);
+  padding: var(--space-4);
+}
+
+.caption {
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
+.bufferRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.bufferLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+}
+
+.slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  height: 42px;
+  border: 2px dashed var(--color-line);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-paper);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 700;
+  color: var(--color-muted);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.slotFilled {
+  border-style: solid;
+  border-color: var(--color-primary);
+  background-color: var(--color-tape);
+  color: var(--color-ink);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.produceBtn,
+.consumeBtn,
+.resetBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.produceBtn svg,
+.consumeBtn svg,
+.resetBtn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.produceBtn {
+  background-color: var(--color-primary);
+  color: var(--color-sheet);
+}
+
+.consumeBtn {
+  background-color: var(--color-tape-muted);
+  color: var(--color-ink);
+}
+
+.resetBtn {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  border: 2px solid var(--color-line);
+}
+
+.produceBtn:hover,
+.consumeBtn:hover,
+.resetBtn:hover {
+  transform: translateY(-1px);
+  background-color: var(--color-primary-bright);
+  color: var(--color-sheet);
+}
+
+.message {
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.messageFull,
+.messageEmpty {
+  background-color: var(--color-error-soft);
+  border: 2px solid var(--color-error);
+  color: var(--color-error);
+}

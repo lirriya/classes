@@ -1,0 +1,134 @@
+.simulator {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  border: 2px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background-color: var(--color-sheet);
+  padding: var(--space-4);
+}
+
+.caption {
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
+.events {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.events li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  transition: background-color 0.2s ease;
+}
+
+.marker {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 2px solid var(--color-line);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+.eventBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.eventLabel {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.detail {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.todo {
+  opacity: 0.5;
+}
+
+.current {
+  background-color: var(--color-tape);
+}
+
+.current .marker {
+  border-color: var(--color-ink);
+  background-color: var(--color-ink);
+  color: var(--color-sheet);
+}
+
+.done .marker {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-sheet);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.nextBtn,
+.resetBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.nextBtn svg,
+.resetBtn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.nextBtn {
+  background-color: var(--color-primary);
+  color: var(--color-sheet);
+}
+
+.resetBtn {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  border: 2px solid var(--color-line);
+}
+
+.nextBtn:hover:not(:disabled),
+.resetBtn:hover {
+  transform: translateY(-1px);
+  background-color: var(--color-primary-bright);
+  color: var(--color-sheet);
+}
+
+.nextBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

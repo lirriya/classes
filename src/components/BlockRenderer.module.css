@@ -87,6 +87,27 @@
   line-height: 1.5;
 }
 
+.codeWrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.codeLang {
+  align-self: flex-start;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.codeCaption {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
 .code code {
   background: none;
   padding: 0;

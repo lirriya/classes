@@ -1,0 +1,60 @@
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+}
+
+.node {
+  fill: var(--color-sheet);
+  stroke: var(--color-ink);
+  stroke-width: 2;
+  transition: fill 0.2s ease, stroke 0.2s ease;
+}
+
+.nodePrimary {
+  fill: var(--color-primary);
+  stroke: var(--color-primary);
+}
+
+.nodeSoft {
+  fill: var(--color-tape);
+  stroke: var(--color-ink);
+}
+
+.nodeLabel {
+  fill: var(--color-ink);
+  font-size: 13px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.nodeLabelOnPrimary {
+  fill: var(--color-sheet);
+}
+
+.edge {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 2;
+}
+
+.edgeDashed {
+  stroke-dasharray: 6 5;
+}
+
+.edgeLabel {
+  fill: var(--color-ink);
+  font-size: 12px;
+  font-weight: 600;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--color-paper);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+.arrowHead {
+  fill: var(--color-ink);
+}
