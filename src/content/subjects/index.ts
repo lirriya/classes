@@ -5,6 +5,7 @@ import { database } from "./database";
 import { algorithms } from "./algorithms";
 import { langagesFormels } from "./langages-formels";
 import { systeme2 } from "./systeme-2";
+import { conceptionBd } from "./conception-bd";
 
 export const subjects: Subject[] = [
   memoryManagement,
@@ -13,6 +14,7 @@ export const subjects: Subject[] = [
   algorithms,
   langagesFormels,
   systeme2,
+  conceptionBd,
 ];
 
 export function getSubject(slug: string): Subject | undefined {
