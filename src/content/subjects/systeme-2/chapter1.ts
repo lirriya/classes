@@ -508,36 +508,119 @@ wait(NULL);`,
   {
     type: "paragraph",
     text: {
-      fr: "**Recopiez ce squelette, il est noté sur la structure :**",
-      en: "**Copy this skeleton, the structure earns the marks:**",
+      fr: "**Structure attendue :** on découpe le travail en **quatre fonctions**. `main` ne fait que créer le tube et le processus ; `pere` s'occupe de l'écriture ; `fils` s'occupe de la lecture ; `error` joue le rôle de `perror` en arrêtant proprement le programme. Cette séparation est ce qui rapporte les points de structure à l'examen.",
+      en: "**Expected structure:** split the work into **four functions**. `main` only creates the pipe and the process; `pere` handles the writing; `fils` handles the reading; `error` plays the role of `perror` while cleanly stopping the program. This separation is what earns the structural marks on the exam.",
+    },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "**Recopiez ce squelette complet — il est noté sur la structure.** Compilation : `gcc -Wall -Wextra -o prog prog.c`.",
+      en: "**Copy this complete skeleton — the structure earns the marks.** Compilation: `gcc -Wall -Wextra -o prog prog.c`.",
     },
   },
   {
     type: "code",
     lang: "c",
-    text: `int fd[2];
-if (pipe(fd) == -1) { perror("pipe"); exit(1); }
+    caption: {
+      fr: "Programme complet : error(), pere(), fils() et main().",
+      en: "Complete program: error(), pere(), fils() and main().",
+    },
+    text: `#include <stdio.h>      /* printf, perror          */
+#include <stdlib.h>     /* exit, EXIT_FAILURE      */
+#include <unistd.h>     /* pipe, fork, read, write */
+                        /* close, _exit            */
+#include <sys/wait.h>   /* wait                    */
+#include <sys/types.h>  /* pid_t, ssize_t          */
 
-pid_t pid = fork();
-if (pid == -1) { perror("fork"); exit(1); }
+#define TAILLE 128
 
-if (pid == 0) {                 /* ---- FILS ---- */
-    close(fd[1]);               /* ferme l'ecriture */
-    /* read(fd[0], ...) */
-    close(fd[0]);
-    _exit(0);
+/* Meme role que perror, mais arrete le programme. */
+void error(const char *message) {
+    perror(message);            /* "message: <errno>" sur stderr */
+    exit(EXIT_FAILURE);
 }
 
-close(fd[0]);                   /* ---- PERE ---- */
-/* write(fd[1], ...) */
-close(fd[1]);
-wait(NULL);`,
+/* Processus pere : ecrit dans le tube puis ferme l'ecriture. */
+void pere(int fd[2]) {
+    const char *message = "bonjour depuis le pere";
+
+    close(fd[0]);                          /* le pere ne lit pas          */
+    if (write(fd[1], message, 22) == -1)   /* 22 = strlen(message)        */
+        error("write");
+    close(fd[1]);                          /* envoie l'EOF (fin du flux)  */
+}
+
+/* Processus fils : lit le tube jusqu'a l'EOF, puis affiche. */
+void fils(int fd[2]) {
+    char buffer[TAILLE];
+    ssize_t n;
+
+    close(fd[1]);                          /* le fils n'ecrit pas         */
+    n = read(fd[0], buffer, TAILLE - 1);   /* lit les octets disponibles  */
+    if (n == -1)
+        error("read");
+    buffer[n] = '\\0';                       /* termine la chaine           */
+    printf("Le fils a recu : %s\\n", buffer);
+    close(fd[0]);
+}
+
+int main(void) {
+    int fd[2];
+    pid_t pid;
+
+    if (pipe(fd) == -1)                    /* 1. creer le tube            */
+        error("pipe");
+
+    pid = fork();                          /* 2. creer le processus       */
+    if (pid == -1)
+        error("fork");
+
+    if (pid == 0) {                        /* 3. branche du fils          */
+        fils(fd);
+        exit(EXIT_SUCCESS);                /* exit vide les tampons stdio */
+    }
+
+    pere(fd);                              /* 4. branche du pere          */
+    wait(NULL);                            /* 5. attendre la fin du fils  */
+    return EXIT_SUCCESS;
+}`,
+  },
+  {
+    type: "list",
+    ordered: true,
+    items: [
+      {
+        text: {
+          fr: "**`error(message)`** : appelle `perror(message)` puis `exit`, exactement comme un `perror` suivi d'un `exit`.",
+          en: "**`error(message)`**: calls `perror(message)` then `exit`, exactly like a `perror` followed by an `exit`.",
+        },
+      },
+      {
+        text: {
+          fr: "**`pere(fd)`** : ferme `fd[0]`, écrit le message dans `fd[1]`, puis ferme `fd[1]` (ce qui envoie l'EOF au fils).",
+          en: "**`pere(fd)`**: closes `fd[0]`, writes the message into `fd[1]`, then closes `fd[1]` (which sends EOF to the child).",
+        },
+      },
+      {
+        text: {
+          fr: "**`fils(fd)`** : ferme `fd[1]`, lit dans `fd[0]`, ajoute le terminateur `'\\0'` et affiche.",
+          en: "**`fils(fd)`**: closes `fd[1]`, reads from `fd[0]`, appends the `'\\0'` terminator and prints.",
+        },
+      },
+      {
+        text: {
+          fr: "**`main`** : `pipe` pour les descripteurs, `fork` pour le processus, puis chaque branche appelle **sa** fonction et le père termine par `wait`.",
+          en: "**`main`**: `pipe` for the descriptors, `fork` for the process, then each branch calls **its** function and the parent finishes with `wait`.",
+        },
+      },
+    ],
   },
   {
     type: "quote",
     text: {
-      fr: "**Réflexe à réciter :** `pipe` → `fork` → tester `pid` → fermer l'extrémité inutile → lire/écrire → `close` → `wait`. Cette phrase seule rapporte presque tous les points de structure.",
-      en: "**Reflex to recite:** `pipe` → `fork` → test `pid` → close the unused end → read/write → `close` → `wait`. This single sentence earns nearly all structural marks.",
+      fr: "**Réflexe à réciter :** `pipe` → `fork` → tester `pid` → le père appelle `pere`, le fils appelle `fils` → chaque fonction ferme l'extrémité inutile → `close` → `wait` dans `main`. Les quatre fonctions `error`, `pere`, `fils`, `main` suffisent à structurer la réponse.",
+      en: "**Reflex to recite:** `pipe` → `fork` → test `pid` → the parent calls `pere`, the child calls `fils` → each function closes its unused end → `close` → `wait` in `main`. The four functions `error`, `pere`, `fils`, `main` are enough to structure the answer.",
     },
   },
 ];
