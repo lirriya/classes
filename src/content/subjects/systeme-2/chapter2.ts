@@ -4,8 +4,8 @@ export const chapterTwo: Block[] = [
   {
     type: "paragraph",
     text: {
-      fr: "Un tube anonyme meurt avec les processus qui l'ont créé. Comment deux programmes **sans lien de parenté** peuvent-ils communiquer ? Réponse : le **tube nommé** (FIFO), qui possède une entrée dans le système de fichiers.",
-      en: "An anonymous pipe dies with the processes that created it. How can two **unrelated** programs communicate? The answer: the **named pipe** (FIFO), which has an entry in the file system.",
+      fr: "Un tube anonyme disparaît avec les processus qui l'ont créé, et seuls des processus apparentés peuvent le partager. Comment deux programmes **sans lien de parenté** peuvent-ils communiquer ? Réponse : le **tube nommé** (FIFO), qui possède un **nom physique** dans le système de fichiers.",
+      en: "An anonymous pipe disappears with the processes that created it, and only related processes can share it. How can two **unrelated** programs communicate? The answer: the **named pipe** (FIFO), which has a **physical name** in the file system.",
     },
   },
   { type: "rule" },
@@ -17,8 +17,8 @@ export const chapterTwo: Block[] = [
   {
     type: "paragraph",
     text: {
-      fr: "**Analogie :** le tube anonyme est un **tuyau privé** posé entre deux maisons voisines. Le tube nommé est une **boîte aux lettres partagée** plantée dans la rue : n'importe qui connaissant son adresse (son chemin) peut y déposer ou y prendre du courrier.",
-      en: "**Analogy:** the anonymous pipe is a **private pipe** laid between two neighbouring houses. The named pipe is a **shared letterbox** planted on the street: anyone who knows its address (its path) can drop off or pick up mail.",
+      fr: "**Analogie :** le tube anonyme est un **tuyau privé** posé entre deux pièces voisines. Le tube nommé est une **boîte aux lettres partagée** plantée dans la rue : quiconque connaît son adresse (son nom physique) peut y déposer ou y prendre du courrier.",
+      en: "**Analogy:** the anonymous pipe is a **private pipe** laid between two neighbouring rooms. The named pipe is a **shared letterbox** planted on the street: anyone who knows its address (its physical name) can drop off or pick up mail.",
     },
   },
   {
@@ -26,20 +26,26 @@ export const chapterTwo: Block[] = [
     items: [
       {
         text: {
-          fr: "**`int mkfifo(const char *path, mode_t mode)`** crée un FIFO à l'emplacement `path`, avec des permissions comme `0666`.",
-          en: "**`int mkfifo(const char *path, mode_t mode)`** creates a FIFO at `path`, with permissions such as `0666`.",
+          fr: "**Ils permettent aux processus sans lien de parenté de communiquer** ; ils ont les propriétés des tubes anonymes, mais sont **créés et ouverts en tant que fichiers binaires de taille 0**.",
+          en: "**They let unrelated processes communicate**; they have the properties of anonymous pipes, but are **created and opened as binary files of size 0**.",
         },
       },
       {
         text: {
-          fr: "En ligne de commande : `mkfifo mon_tube`. Le fichier apparaît avec le type `p` (`ls -l` affiche `prw-r--r--`).",
-          en: "On the command line: `mkfifo my_pipe`. The file appears with type `p` (`ls -l` shows `prw-r--r--`).",
+          fr: "**Deux processus quelconques** peuvent les ouvrir, à condition d'en connaître les **noms physiques**.",
+          en: "**Any two processes** can open them, provided they know their **physical names**.",
         },
       },
       {
         text: {
-          fr: "On échange ensuite **exactement comme un fichier** : `open`, `read`, `write`, `close`. On le détruit avec `unlink` (ou `remove`).",
-          en: "Exchange then works **exactly like a file**: `open`, `read`, `write`, `close`. It is destroyed with `unlink` (or `remove`).",
+          fr: "**Commande bash :** `mkfifo [-m mode] nom`. `-m mode` donne les droits d'accès (même que `chmod`), `nom` est le nom du tube.",
+          en: "**Bash command:** `mkfifo [-m mode] nom`. `-m mode` gives the access rights (same as `chmod`), `nom` is the name of the pipe.",
+        },
+      },
+      {
+        text: {
+          fr: "**Fonction C :** `int mkfifo(const char *nom, mode_t mode)`, avec `#include <sys/stat.h>`. Elle renvoie **-1 si échec**, sinon **0**.",
+          en: "**C function:** `int mkfifo(const char *nom, mode_t mode)`, with `#include <sys/stat.h>`. It returns **-1 on failure**, otherwise **0**.",
         },
       },
     ],
@@ -50,13 +56,13 @@ export const chapterTwo: Block[] = [
       {
         id: "fifo-flow",
         caption: {
-          fr: "Le FIFO est visible dans le système de fichiers : deux processus indépendants s'y connectent par son chemin.",
-          en: "The FIFO is visible in the file system: two independent processes connect to it through its path.",
+          fr: "Le tube nommé est visible dans le système de fichiers : deux processus quelconques s'y connectent par son nom physique.",
+          en: "The named pipe is visible in the file system: any two processes connect to it through its physical name.",
         },
         nodes: [
-          { id: "writer", label: { fr: "Écrivain", en: "Writer" }, x: 0, y: 0, shape: "box", tone: "primary" },
-          { id: "path", label: { fr: "/tmp/tube (FIFO)", en: "/tmp/tube (FIFO)" }, x: 230, y: 0, shape: "box", tone: "soft" },
-          { id: "reader", label: { fr: "Lecteur", en: "Reader" }, x: 480, y: 0, shape: "box", tone: "primary" },
+          { id: "writer", label: { fr: "Processus 1", en: "Process 1" }, x: 0, y: 0, shape: "box", tone: "primary" },
+          { id: "path", label: { fr: "tube nommé (nom physique)", en: "named pipe (physical name)" }, x: 230, y: 0, shape: "box", tone: "soft" },
+          { id: "reader", label: { fr: "Processus 2", en: "Process 2" }, x: 490, y: 0, shape: "box", tone: "primary" },
         ],
         edges: [
           { from: "writer", to: "path", label: "open + write" },
@@ -66,155 +72,89 @@ export const chapterTwo: Block[] = [
     ],
   },
   {
-    type: "paragraph",
-    text: {
-      fr: "**Différences clés avec le tube anonyme :** il a un **nom** (donc un chemin), il **persiste** sur le disque après la mort des processus, et il relie des processus **non apparentés**. Il est en revanche toujours **unidirectionnel** selon la manière dont on l'ouvre.",
-      en: "**Key differences from the anonymous pipe:** it has a **name** (hence a path), it **persists** on disk after the processes die, and it links **unrelated** processes. It is still **unidirectional** according to how it is opened.",
+    type: "checkpoint",
+    concept: { fr: "Tube nommé et lien de parenté", en: "Named pipe and parent link" },
+    exercise: {
+      kind: "trueFalse",
+      prompt: {
+        fr: "Un tube nommé ne peut relier que deux processus ayant un lien de parenté.",
+        en: "A named pipe can only link two processes that are related.",
+      },
+      answer: false,
+      justification: {
+        fr: "Au contraire : sa raison d'être est justement de permettre à des processus **sans lien de parenté** de communiquer, puisqu'ils peuvent l'ouvrir à condition d'en connaître le **nom physique**.",
+        en: "On the contrary: its very purpose is to let **unrelated** processes communicate, since they can open it provided they know its **physical name**.",
+      },
     },
   },
   {
     type: "heading",
     level: 3,
-    text: { fr: "2. Le piège du open bloquant", en: "2. The blocking open trap" },
-  },
-  {
-    type: "paragraph",
-    text: {
-      fr: "C'est **le** point d'examen. Ouvrir un FIFO n'est pas anodin : `open` **attend** que l'autre bout soit ouvert.",
-      en: "This is **the** exam point. Opening a FIFO is not harmless: `open` **waits** until the other end is opened.",
-    },
+    text: { fr: "2. Supprimer un tube nommé : remove", en: "2. Removing a named pipe: remove" },
   },
   {
     type: "list",
     items: [
       {
         text: {
-          fr: "`open(fifo, O_RDONLY)` **bloque** tant qu'aucun processus n'a ouvert le FIFO en `O_WRONLY`.",
-          en: "`open(fifo, O_RDONLY)` **blocks** until some process has opened the FIFO in `O_WRONLY`.",
+          fr: "**Commande bash :** `rm nom`, comme pour un fichier.",
+          en: "**Bash command:** `rm nom`, just like a file.",
         },
       },
       {
         text: {
-          fr: "`open(fifo, O_WRONLY)` **bloque** tant qu'aucun processus n'a ouvert le FIFO en `O_RDONLY`.",
-          en: "`open(fifo, O_WRONLY)` **blocks** until some process has opened the FIFO in `O_RDONLY`.",
-        },
-      },
-      {
-        text: {
-          fr: "`open(fifo, O_RDONLY | O_NONBLOCK)` **réussit immédiatement**, même sans écrivain.",
-          en: "`open(fifo, O_RDONLY | O_NONBLOCK)` **succeeds immediately**, even without a writer.",
-        },
-      },
-      {
-        text: {
-          fr: "`open(fifo, O_WRONLY | O_NONBLOCK)` **échoue** avec `errno = ENXIO` s'il n'y a aucun lecteur.",
-          en: "`open(fifo, O_WRONLY | O_NONBLOCK)` **fails** with `errno = ENXIO` if there is no reader.",
+          fr: "**Fonction C :** `int remove(const char *pathname);`. Elle renvoie **-1 si échec**, sinon **0**.",
+          en: "**C function:** `int remove(const char *pathname);`. It returns **-1 on failure**, otherwise **0**.",
         },
       },
     ],
   },
   {
-    type: "paragraph",
-    text: {
-      fr: "**Conséquence pratique :** si un processus ouvre le FIFO en écriture **avant** que le lecteur n'existe, il se bloque indéfiniment. C'est pourquoi on désigne souvent **un écrivain et un lecteur bien définis**, et qu'on lance l'un puis l'autre dans le bon ordre (ou avec `O_NONBLOCK`).",
-      en: "**Practical consequence:** if a process opens the FIFO for writing **before** the reader exists, it blocks indefinitely. That is why one often designates **a well-defined writer and reader**, launching one then the other in the right order (or with `O_NONBLOCK`).",
+    type: "checkpoint",
+    concept: { fr: "Suppression d'un tube nommé", en: "Removing a named pipe" },
+    exercise: {
+      kind: "trueFalse",
+      prompt: {
+        fr: "On supprime un tube nommé avec l'appel système `remove` ; la commande bash équivalente est `rm nom`.",
+        en: "A named pipe is removed with the system call `remove`; the equivalent bash command is `rm nom`.",
+      },
+      answer: true,
+      justification: {
+        fr: "`int remove(const char *pathname)` renvoie -1 si échec, sinon 0. La commande bash équivalente est `rm nom`.",
+        en: "`int remove(const char *pathname)` returns -1 on failure, otherwise 0. The equivalent bash command is `rm nom`.",
+      },
     },
-  },
-  {
-    type: "code",
-    lang: "c",
-    caption: {
-      fr: "Programme complet : le père écrit dans le FIFO, le fils le lit.",
-      en: "Complete program: the parent writes to the FIFO, the child reads it.",
-    },
-    text: `#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-
-#define TUBE "/tmp/tube"
-#define TAILLE 64
-
-void error(const char *message) {
-    perror(message);
-    exit(EXIT_FAILURE);
-}
-
-/* fils : ouvre le FIFO en lecture et affiche le message. */
-void fils(void) {
-    char buffer[TAILLE];
-    ssize_t n;
-    int fd = open(TUBE, O_RDONLY);
-    if (fd == -1)
-        error("open");
-
-    n = read(fd, buffer, TAILLE - 1);
-    if (n == -1)
-        error("read");
-    buffer[n] = '\\0';
-    printf("Le fils a recu : %s\\n", buffer);
-    close(fd);
-}
-
-/* pere : ouvre le FIFO en ecriture et depose le message. */
-void pere(void) {
-    int fd = open(TUBE, O_WRONLY);
-    if (fd == -1)
-        error("open");
-
-    if (write(fd, "coucou", 6) == -1)
-        error("write");
-    close(fd);
-}
-
-int main(void) {
-    pid_t pid;
-
-    if (mkfifo(TUBE, 0666) == -1)
-        error("mkfifo");
-
-    pid = fork();
-    if (pid == -1)
-        error("fork");
-
-    if (pid == 0) {
-        fils();
-        exit(EXIT_SUCCESS);
-    }
-
-    pere();
-    if (wait(NULL) == -1)
-        error("wait");
-    unlink(TUBE);
-    return EXIT_SUCCESS;
-}`,
   },
   {
     type: "heading",
-    level: 4,
-    text: { fr: "Fin du flux et plusieurs écrivains", en: "End of stream and multiple writers" },
+    level: 3,
+    text: { fr: "3. Ouvrir un tube nommé : open", en: "3. Opening a named pipe: open" },
   },
   {
     type: "list",
     items: [
       {
         text: {
-          fr: "`read` renvoie **0 (EOF)** seulement quand **tous** les descripteurs d'écriture sont fermés.",
-          en: "`read` returns **0 (EOF)** only when **all** write descriptors are closed.",
+          fr: "`int open(const char *pathname, int flags);` renvoie un **descripteur de fichier**, ou **-1 si échec**.",
+          en: "`int open(const char *pathname, int flags);` returns a **file descriptor**, or **-1 on failure**.",
         },
       },
       {
         text: {
-          fr: "Plusieurs processus peuvent écrire dans le même FIFO : les écritures < `PIPE_BUF` restent **atomiques** (pas d'entrelacement).",
-          en: "Several processes may write to the same FIFO: writes < `PIPE_BUF` remain **atomic** (no interleaving).",
+          fr: "`flags` : `O_RDONLY`, `O_WRONLY`, `O_RDWR`, …",
+          en: "`flags`: `O_RDONLY`, `O_WRONLY`, `O_RDWR`, …",
         },
       },
       {
         text: {
-          fr: "Comme pour le tube anonyme, une écriture sans lecteur déclenche `SIGPIPE`.",
-          en: "As with the anonymous pipe, a write with no reader triggers `SIGPIPE`.",
+          fr: "**Ouverture par défaut bloquante :** une demande d'ouverture en **lecture** est bloquante s'il n'y a aucun **écrivain** sur le tube ; une demande d'ouverture en **écriture** est bloquante s'il n'y a aucun **lecteur** sur le tube.",
+          en: "**Default blocking open:** a request to open for **reading** blocks if there is no **writer** on the pipe; a request to open for **writing** blocks if there is no **reader** on the pipe.",
+        },
+      },
+      {
+        text: {
+          fr: "**Ouverture non bloquante (flag `O_NONBLOCK`) :** l'ouverture en lecture **réussit** même s'il n'y a aucun écrivain dans le tube ; l'ouverture en écriture **échoue** sur un tube sans lecteur.",
+          en: "**Non-blocking open (`O_NONBLOCK` flag):** opening for reading **succeeds** even if there is no writer on the pipe; opening for writing **fails** on a pipe with no reader.",
         },
       },
     ],
@@ -224,61 +164,192 @@ int main(void) {
     spec: {
       id: "fifo-trace",
       caption: {
-        fr: "L'ouverture d'un FIFO est un rendez-vous : le premier arrivé attend l'autre.",
-        en: "Opening a FIFO is a rendezvous: whoever arrives first waits for the other.",
+        fr: "L'ouverture d'un tube nommé est un rendez-vous : la première ouverture attend l'autre.",
+        en: "Opening a named pipe is a rendezvous: the first open waits for the other.",
       },
       events: [
         {
-          label: { fr: "Le père appelle `mkfifo`", en: "The parent calls `mkfifo`" },
-          detail: { fr: "Le chemin /tmp/tube apparaît.", en: "The path /tmp/tube appears." },
+          label: { fr: "Le processus 1 crée le tube nommé", en: "Process 1 creates the named pipe" },
+          detail: { fr: "`mkfifo` fait apparaître le nom physique du tube.", en: "`mkfifo` makes the pipe's physical name appear." },
         },
         {
-          label: { fr: "Le père ouvre en `O_WRONLY`", en: "The parent opens in `O_WRONLY`" },
-          detail: { fr: "Il se bloque : aucun lecteur encore.", en: "It blocks: no reader yet." },
+          label: { fr: "Le processus 1 ouvre en `O_WRONLY`", en: "Process 1 opens in `O_WRONLY`" },
+          detail: { fr: "`open` reste bloquée : aucun lecteur sur le tube.", en: "`open` stays blocked: no reader on the pipe." },
         },
         {
-          label: { fr: "Le fils ouvre en `O_RDONLY`", en: "The child opens in `O_RDONLY`" },
-          detail: { fr: "Le rendez-vous est établi, les deux repartent.", en: "The rendezvous happens, both resume." },
+          label: { fr: "Le processus 2 ouvre en `O_RDONLY`", en: "Process 2 opens in `O_RDONLY`" },
+          detail: { fr: "Le rendez-vous est établi, les deux `open` repartent.", en: "The rendezvous happens, both `open` calls return." },
         },
         {
-          label: { fr: "Le père écrit et ferme", en: "The parent writes and closes" },
-          detail: { fr: "6 octets déposés dans le tube.", en: "6 bytes placed in the pipe." },
+          label: { fr: "Le processus 1 écrit le message", en: "Process 1 writes the message" },
+          detail: { fr: "`write(fd12, msg, 5 * sizeof(char))`.", en: "`write(fd12, msg, 5 * sizeof(char))`." },
         },
         {
-          label: { fr: "Le fils lit puis voit l'EOF", en: "The child reads then sees EOF" },
-          detail: { fr: "`read` renvoie 0 après fermeture de l'écrivain.", en: "`read` returns 0 after the writer closes." },
+          label: { fr: "Le processus 2 lit puis répond", en: "Process 2 reads then replies" },
+          detail: { fr: "`read(fd12, …)` puis `write(fd21, &rep, sizeof(int))`.", en: "`read(fd12, …)` then `write(fd21, &rep, sizeof(int))`." },
         },
       ],
     },
   },
   {
     type: "checkpoint",
-    concept: { fr: "open bloquant sur un FIFO", en: "Blocking open on a FIFO" },
+    concept: { fr: "open bloquant sur un tube nommé", en: "Blocking open on a named pipe" },
     exercise: {
       kind: "mcq",
       prompt: {
-        fr: "Un processus fait `open(\"/tmp/tube\", O_WRONLY)` sur un FIFO, et aucun autre processus n'a ce FIFO ouvert. Que se passe-t-il ?",
-        en: "A process calls `open(\"/tmp/tube\", O_WRONLY)` on a FIFO, and no other process has this FIFO open. What happens?",
+        fr: "Un processus ouvre un tube nommé en écriture (`O_WRONLY`) et aucun autre processus ne l'a ouvert. Que se passe-t-il ?",
+        en: "A process opens a named pipe for writing (`O_WRONLY`) and no other process has opened it. What happens?",
       },
       options: [
         {
           text: { fr: "L'appel renvoie immédiatement un descripteur.", en: "The call immediately returns a descriptor." },
-        },
-        {
-          text: { fr: "L'appel échoue avec errno = ENXIO.", en: "The call fails with errno = ENXIO." },
           feedback: {
-            fr: "C'est le cas seulement avec `O_NONBLOCK`. Sans lui, on attend.",
-            en: "That happens only with `O_NONBLOCK`. Without it, we wait.",
+            fr: "Sans `O_NONBLOCK`, une ouverture en écriture attend l'arrivée d'un lecteur.",
+            en: "Without `O_NONBLOCK`, an open for writing waits for a reader to arrive.",
           },
         },
         {
-          text: { fr: "L'appel bloque jusqu'à ce qu'un lecteur ouvre le FIFO.", en: "The call blocks until a reader opens the FIFO." },
+          text: { fr: "L'appel bloque tant qu'aucun lecteur n'a ouvert le tube.", en: "The call blocks until a reader opens the pipe." },
+        },
+        {
+          text: { fr: "L'appel échoue systématiquement.", en: "The call always fails." },
+          feedback: {
+            fr: "L'échec de l'ouverture en écriture n'arrive qu'avec le flag `O_NONBLOCK`, sur un tube sans lecteur.",
+            en: "The failure of an open for writing only happens with the `O_NONBLOCK` flag, on a pipe with no reader.",
+          },
         },
       ],
-      answerIndex: 2,
+      answerIndex: 1,
       solution: {
-        fr: "Sans `O_NONBLOCK`, `open` en écriture **bloque** jusqu'à l'arrivée d'un lecteur (`O_RDONLY`). Avec `O_NONBLOCK`, il échouerait immédiatement avec `ENXIO`.",
-        en: "Without `O_NONBLOCK`, `open` for writing **blocks** until a reader arrives (`O_RDONLY`). With `O_NONBLOCK`, it would fail immediately with `ENXIO`.",
+        fr: "L'ouverture par défaut est bloquante : une demande d'ouverture en **écriture** est bloquante s'il n'y a aucun **lecteur** sur le tube. Avec le flag `O_NONBLOCK`, l'ouverture en écriture échouerait sur un tube sans lecteur.",
+        en: "The default open is blocking: a request to open for **writing** blocks if there is no **reader** on the pipe. With the `O_NONBLOCK` flag, the open for writing would fail on a pipe with no reader.",
+      },
+    },
+  },
+  {
+    type: "heading",
+    level: 3,
+    text: { fr: "4. Utiliser un tube nommé : read et write", en: "4. Using a named pipe: read and write" },
+  },
+  {
+    type: "list",
+    items: [
+      {
+        text: {
+          fr: "`int read(int fd, void *buf, int count)` : lit jusqu'à `count` octets depuis le descripteur `fd`.",
+          en: "`int read(int fd, void *buf, int count)`: reads up to `count` bytes from descriptor `fd`.",
+        },
+      },
+      {
+        text: {
+          fr: "`int write(int fd, const void *buf, int count)` : écrit `count` octets vers le descripteur `fd`.",
+          en: "`int write(int fd, const void *buf, int count)`: writes `count` bytes to descriptor `fd`.",
+        },
+      },
+    ],
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "**Exemple du cours :** deux programmes s'échangent **deux tubes** dont les noms sont passés en arguments. Le premier ouvre `argv[1]` en écriture (`fd12`) et `argv[2]` en lecture (`fd21`) ; le second fait l'inverse. Ils échangent un message `msg` et une réponse `rep`.",
+      en: "**Lecture example:** two programs exchange **two pipes** whose names are passed as arguments. The first opens `argv[1]` for writing (`fd12`) and `argv[2]` for reading (`fd21`); the second does the opposite. They exchange a message `msg` and a reply `rep`.",
+    },
+  },
+  {
+    type: "code",
+    lang: "c",
+    caption: {
+      fr: "Premier interlocuteur : fonction erreur, ouverture en écriture puis en lecture.",
+      en: "First peer: erreur function, opening for writing then for reading.",
+    },
+    text: `#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+/* Affiche l'erreur et arrete le programme. */
+void erreur(char *message) {
+    fprintf(stderr, "Erreur: %s\\n", message);
+    exit(1);
+}
+
+int main(int argc, char *argv[]) {
+    int fd12, fd21, rep;
+    char *msg = "hello";
+
+    if (argc != 3)
+        erreur("argc");
+
+    /* open bloquant : attend un lecteur sur argv[1] */
+    if ((fd12 = open(argv[1], O_WRONLY)) == -1)
+        erreur("open");
+    if ((fd21 = open(argv[2], O_RDONLY)) == -1)
+        erreur("open");
+
+    if (write(fd12, msg, 5 * sizeof(char)) == -1)
+        erreur("write");
+    printf("Pere %d: message %s envoye\\n", getpid(), msg);
+
+    if (read(fd21, &rep, sizeof(int)) == -1)
+        erreur("read");
+    printf("Pere %d: reponse %d recue\\n", getpid(), rep);
+
+    exit(0);
+}`,
+  },
+  {
+    type: "code",
+    lang: "c",
+    caption: {
+      fr: "Second interlocuteur : même fonction erreur, ouverture en lecture puis en écriture.",
+      en: "Second peer: same erreur function, opening for reading then for writing.",
+    },
+    text: `#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+void erreur(char *message) {
+    fprintf(stderr, "Erreur: %s\\n", message);
+    exit(1);
+}
+
+int main(int argc, char *argv[]) {
+    int fd12, fd21, rep = 17;
+    char msg[5];
+
+    if (argc != 3)
+        erreur("argc");
+
+    if ((fd12 = open(argv[1], O_RDONLY)) == -1)
+        erreur("open");
+    if ((fd21 = open(argv[2], O_WRONLY)) == -1)
+        erreur("open");
+
+    if (read(fd12, msg, 5 * sizeof(char)) == -1)
+        erreur("read");
+    printf("Pere %d: message %s recu\\n", getpid(), msg);
+
+    if (write(fd21, &rep, sizeof(int)) == -1)
+        erreur("write");
+    printf("Pere %d: reponse %d envoyee\\n", getpid(), rep);
+
+    exit(0);
+}`,
+  },
+  {
+    type: "checkpoint",
+    concept: { fr: "Ouverture non bloquante", en: "Non-blocking open" },
+    exercise: {
+      kind: "trueFalse",
+      prompt: {
+        fr: "Avec le flag `O_NONBLOCK`, une ouverture en écriture sur un tube sans lecteur échoue.",
+        en: "With the `O_NONBLOCK` flag, an open for writing on a pipe with no reader fails.",
+      },
+      answer: true,
+      justification: {
+        fr: "Oui : en non bloquant, l'ouverture en **lecture** réussit même s'il n'y a aucun écrivain dans le tube, mais l'ouverture en **écriture** échoue sur un tube sans lecteur.",
+        en: "Yes: in non-blocking mode, an open for **reading** succeeds even if there is no writer on the pipe, but an open for **writing** fails on a pipe with no reader.",
       },
     },
   },
@@ -292,59 +363,31 @@ int main(void) {
     type: "exercises",
     groups: [
       {
-        title: { fr: "Vrai / Faux sur les FIFO", en: "True / False on FIFOs" },
-        exercises: [
-          {
-            kind: "trueFalse",
-            prompt: {
-              fr: "Un tube nommé relie nécessairement deux processus ayant un lien de parenté.",
-              en: "A named pipe necessarily links two processes that are related.",
-            },
-            answer: false,
-            justification: {
-              fr: "Au contraire : sa raison d'être est justement de relier des processus **indépendants**, puisqu'il est repérable par un chemin. Une fois créé, on peut même l'utiliser depuis un shell.",
-              en: "On the contrary: its very purpose is to link **independent** processes, since it is addressable by a path. Once created, it can even be used from a shell.",
-            },
-          },
-          {
-            kind: "fillBlank",
-            prompt: {
-              fr: "On supprime un FIFO avec l'appel système ______.",
-              en: "A FIFO is removed with the system call ______.",
-            },
-            blanks: [
-              {
-                accepted: ["unlink", "unlink()", "remove", "remove()"],
-                mistakes: [
-                  {
-                    match: ["close", "fermer", "delete", "rm"],
-                    feedback: {
-                      fr: "`close` ferme un descripteur, il ne supprime pas le nœud du système de fichiers. `rm` est la commande shell, pas l'appel dans le programme.",
-                      en: "`close` closes a descriptor, it does not delete the file-system node. `rm` is the shell command, not the call in the program.",
-                    },
-                  },
-                ],
-              },
-            ],
-            solution: {
-              fr: "`unlink(path)` détruit le nœud FIFO (le nom). `remove` est équivalent et souvent accepté.",
-              en: "`unlink(path)` destroys the FIFO node (the name). `remove` is equivalent and often accepted.",
-            },
-          },
-        ],
-      },
-      {
-        title: { fr: "Rédaction — dialogue par FIFO", en: "Writing — dialog through a FIFO" },
+        title: { fr: "Fiche 2 – Question 2 : tubes nommés et signaux", en: "Sheet 2 – Question 2: named pipes and signals" },
         exercises: [
           {
             kind: "open",
             prompt: {
-              fr: "Décrivez les étapes pour faire communiquer deux programmes indépendants par un FIFO, en évitant tout interblocage à l'ouverture.",
-              en: "Describe the steps to have two independent programs communicate through a FIFO, avoiding any deadlock at opening.",
+              fr: "Écrire en langage C les programmes nécessaires à la réalisation des actions suivantes.",
+              en: "Write in C the programs needed to perform the following actions.",
             },
+            details: [
+              {
+                fr: "Le programme `fifo.c` doit créer un tube nommé. Le processus père doit ouvrir en écriture le tube nommé créé et envoyer le `pid` de son fils. Le fils devra attendre un signal `SIGUSR1`, afficher qu'il l'a bien reçu et se terminer.",
+                en: "The program `fifo.c` must create a named pipe. The parent process must open the created named pipe for writing and send the `pid` of its child. The child must wait for a `SIGUSR1` signal, print that it has received it and terminate.",
+              },
+              {
+                fr: "Le programme `fifo2.c` qui a reçu par le tube nommé le `pid` devra l'envoyer à son fils au travers d'un nouveau tube anonyme cette fois. Le fils enverra un signal `SIGUSR1` au processus dont le numéro est `pid`.",
+                en: "The program `fifo2.c`, which received the `pid` through the named pipe, must send it to its child through a new anonymous pipe this time. The child will send a `SIGUSR1` signal to the process whose number is `pid`.",
+              },
+              {
+                fr: "Conseil : Designer d'abord la communication entre les différents processus.",
+                en: "Advice: first design the communication between the different processes.",
+              },
+            ],
             solution: {
-              fr: "1) Un premier programme crée le FIFO avec `mkfifo` (ou la commande `mkfifo`). 2) Lancer **d'abord le lecteur** (`open` en `O_RDONLY`) qui se bloque ; puis l'**écrivain** (`open` en `O_WRONLY`) ce qui débloque le lecteur. 3) Écrire/lire et fermer. 4) `unlink` le FIFO. Alternative : ouvrir avec `O_NONBLOCK` et gérer `ENXIO`.",
-              en: "1) A first program creates the FIFO with `mkfifo` (or the `mkfifo` command). 2) Launch the **reader first** (`open` in `O_RDONLY`) which blocks; then the **writer** (`open` in `O_WRONLY`), which unblocks the reader. 3) Write/read and close. 4) `unlink` the FIFO. Alternative: open with `O_NONBLOCK` and handle `ENXIO`.",
+              fr: "**`fifo.c`** : le père crée le tube nommé (`mkfifo`), puis fait un `fork`. Le fils installe son traitement du signal (`signal(SIGUSR1, deroute)`) et attend (`pause`) ; le père ouvre le tube en écriture (`open(..., O_WRONLY)`) et y dépose le `pid` du fils (`write`).\n\n**`fifo2.c`** : il ouvre le même tube en lecture (`open(..., O_RDONLY)`), lit le `pid` (`read`), puis fait un `fork`. Le père de `fifo2.c` transmet le `pid` à son fils par un tube anonyme (`pipe`, `write`) ; le fils lit ce `pid` (`read`) et envoie le signal (`kill(pid, SIGUSR1)`), ce qui réveille le fils de `fifo.c` qui affiche la réception et se termine.",
+              en: "**`fifo.c`**: the parent creates the named pipe (`mkfifo`), then forks. The child installs its signal handling (`signal(SIGUSR1, deroute)`) and waits (`pause`); the parent opens the pipe for writing (`open(..., O_WRONLY)`) and writes its child's `pid` (`write`).\n\n**`fifo2.c`**: it opens the same pipe for reading (`open(..., O_RDONLY)`), reads the `pid` (`read`), then forks. The parent of `fifo2.c` passes the `pid` to its child through an anonymous pipe (`pipe`, `write`); the child reads this `pid` (`read`) and sends the signal (`kill(pid, SIGUSR1)`), which wakes the child of `fifo.c`, which prints the reception and terminates.",
             },
           },
         ],
@@ -362,8 +405,8 @@ int main(void) {
   {
     type: "quote",
     text: {
-      fr: "**Question type :** « Pourquoi l'ouverture d'un tube nommé peut-elle bloquer ? Comment l'éviter ? »",
-      en: "**Typical question:** “Why can opening a named pipe block? How to avoid it?”",
+      fr: "**Question type :** « Écrire deux programmes qui communiquent par un tube nommé. »",
+      en: "**Typical question:** “Write two programs that communicate through a named pipe.”",
     },
   },
   {
@@ -372,32 +415,26 @@ int main(void) {
     items: [
       {
         text: {
-          fr: "**Cause :** `open` sur un FIFO **synchronise** les deux extrémités. En `O_RDONLY` (resp. `O_WRONLY`), l'appel attend qu'un `O_WRONLY` (resp. `O_RDONLY`) survienne.",
-          en: "**Cause:** `open` on a FIFO **synchronizes** the two ends. With `O_RDONLY` (resp. `O_WRONLY`), the call waits for an `O_WRONLY` (resp. `O_RDONLY`) to occur.",
+          fr: "**Créer :** `int mkfifo(const char *nom, mode_t mode)` avec `#include <sys/stat.h>` ; renvoie -1 si échec, sinon 0.",
+          en: "**Create:** `int mkfifo(const char *nom, mode_t mode)` with `#include <sys/stat.h>`; returns -1 on failure, otherwise 0.",
         },
       },
       {
         text: {
-          fr: "**Conséquence :** si les deux processus s'attendent mutuellement (chacun espère que l'autre commence), c'est un **interblocage**.",
-          en: "**Consequence:** if both processes wait for each other (each hoping the other starts), it is a **deadlock**.",
+          fr: "**Ouvrir :** `int open(const char *pathname, int flags)` avec `O_RDONLY`, `O_WRONLY`, `O_RDWR` ; l'ouverture par défaut est **bloquante** (l'ouverture en lecture attend un écrivain, l'ouverture en écriture attend un lecteur).",
+          en: "**Open:** `int open(const char *pathname, int flags)` with `O_RDONLY`, `O_WRONLY`, `O_RDWR`; the default open is **blocking** (an open for reading waits for a writer, an open for writing waits for a reader).",
         },
       },
       {
         text: {
-          fr: "**Solution 1 :** imposer un **ordre** (un processus crée le FIFO et ouvre en premier, l'autre suit).",
-          en: "**Solution 1:** enforce an **order** (one process creates the FIFO and opens first, the other follows).",
+          fr: "**Échanger :** `read(fd, buf, count)` et `write(fd, buf, count)`, exactement comme sur un fichier.",
+          en: "**Exchange:** `read(fd, buf, count)` and `write(fd, buf, count)`, exactly as on a file.",
         },
       },
       {
         text: {
-          fr: "**Solution 2 :** ouvrir en mode **non bloquant** (`O_NONBLOCK`) et tester les erreurs (`ENXIO` en écriture sans lecteur).",
-          en: "**Solution 2:** open in **non-blocking** mode (`O_NONBLOCK`) and test for errors (`ENXIO` when writing with no reader).",
-        },
-      },
-      {
-        text: {
-          fr: "**À ne pas oublier :** fermer les descripteurs, et `unlink` le FIFO une fois terminé.",
-          en: "**Do not forget:** close descriptors, and `unlink` the FIFO once finished.",
+          fr: "**Supprimer :** `int remove(const char *pathname)` ; renvoie -1 si échec, sinon 0, comme la commande bash `rm nom`.",
+          en: "**Remove:** `int remove(const char *pathname)`; returns -1 on failure, otherwise 0, like the bash command `rm nom`.",
         },
       },
     ],

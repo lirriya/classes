@@ -22,21 +22,21 @@ export const chapterFive: Block[] = [
   {
     type: "paragraph",
     text: {
-      fr: "Deux processus partagent un compteur. Chacun l'incrémente mille fois. On attend 2000 ; on obtient 1873. Il ne manque rien : il y a une **course critique**. Ce chapitre explique pourquoi, puis construit les algorithmes qui garantissent l'**exclusion mutuelle**.",
-      en: "Two processes share a counter. Each increments it a thousand times. We expect 2000; we get 1873. Nothing is missing: there is a **race condition**. This chapter explains why, then builds the algorithms that guarantee **mutual exclusion**.",
+      fr: "**Deux processeurs** exécutent en parallèle, chacun, `b = a; b++; a = b;` sur une variable partagée `a`. Résultat attendu : `a = a + 2`. Résultat parfois obtenu : `a = a + 1`. Rien ne manque, personne ne s'est trompé : le résultat dépend de l'**ordre d'entrelacement** des instructions (le **non-déterminisme**). Ce chapitre explique pourquoi, puis construit les algorithmes de l'**exclusion mutuelle** : les stratégies du TD4 (`occ`, `tour`, `demande`, renonce, Dekker, Peterson) et la généralisation à n processus du CM2.",
+      en: "**Two processors** run in parallel, each executing `b = a; b++; a = b;` on a shared variable `a`. Expected result: `a = a + 2`. Result sometimes obtained: `a = a + 1`. Nothing is missing and nobody made a mistake: the result depends on the **interleaving order** of instructions (**non-determinism**). This chapter explains why, then builds the **mutual exclusion** algorithms: the TD4 strategies (`occ`, `tour`, `demande`, renounce, Dekker, Peterson) and the n-process generalization from lecture 2.",
     },
   },
   { type: "rule" },
   {
     type: "heading",
     level: 3,
-    text: { fr: "1. Course critique et non-déterminisme", en: "1. Race condition and non-determinism" },
+    text: { fr: "1. Du parallélisme au non-déterminisme", en: "1. From parallelism to non-determinism" },
   },
   {
     type: "paragraph",
     text: {
-      fr: "**Analogie :** deux personnes remplissent **le même formulaire** en même temps. Chacune lit la ligne « nombre de passagers : 12 », ajoute 1, puis **réécrit 13**. La seconde a lu avant que la première n'écrive : elle réécrit aussi 13. Une place a été vendue deux fois, sans que personne ne voie d'erreur.",
-      en: "**Analogy:** two people fill in **the same form** at the same time. Each reads the line “number of passengers: 12”, adds 1, then **writes back 13**. The second read before the first wrote: it also writes 13. One seat was sold twice, with nobody seeing an error.",
+      fr: "La **communication entre processus** recouvre trois situations : le **passage d'information** d'un processus à un autre (exemple : `ls | wc -l`), l'**accès aux ressources partagées** avec des processus en compétition, ce qui mène à l'**exclusion mutuelle** (exemple : la réservation de la dernière place d'un vol), et la **synchronisation**, annoncée comme prochaine séance (exemple : le modèle producteur-consommateur).",
+      en: "**Interprocess communication** covers three situations: **passing information** from one process to another (example: `ls | wc -l`), **access to shared resources** by competing processes, which leads to **mutual exclusion** (example: booking the last seat of a flight), and **synchronization**, announced as the next session (example: the producer-consumer model).",
     },
   },
   {
@@ -44,20 +44,20 @@ export const chapterFive: Block[] = [
     items: [
       {
         text: {
-          fr: "**Course critique (race condition) :** le résultat dépend de l'**ordre d'entrelacement** des instructions, non maîtrisé.",
-          en: "**Race condition:** the result depends on the **interleaving order** of instructions, which is not controlled.",
+          fr: "**Non-déterminisme :** quand plusieurs programmes s'exécutent en parallèle, on ne peut faire aucune hypothèse sur leur vitesse d'exécution ni sur leur entrelacement, qui peuvent être différents à chaque exécution.",
+          en: "**Non-determinism:** when several programs run in parallel, no hypothesis can be made about their execution speed or their interleaving, which may differ at every run.",
         },
       },
       {
         text: {
-          fr: "**Non-déterminisme :** relancer le programme peut donner un autre résultat. Pire : le bug peut ne jamais apparaître en test et surgir en production.",
-          en: "**Non-determinism:** rerunning the program may give a different result. Worse: the bug may never appear in testing and surface in production.",
+          fr: "Si l'accès n'est pas contrôlé, le résultat de l'exécution du programme **pourra dépendre de l'ordre d'entrelacement** des instructions.",
+          en: "If access is not controlled, the result of the program execution **may depend on the interleaving order** of instructions.",
         },
       },
       {
         text: {
-          fr: "**Cause racine :** les opérations *lire-modifier-écrire* ne sont pas **atomiques**.",
-          en: "**Root cause:** *read-modify-write* operations are not **atomic**.",
+          fr: "Un programme pourra à chaque exécution donner des **résultats différents et parfois indésirables**.",
+          en: "A program may give **different and sometimes undesirable results** at each execution.",
         },
       },
     ],
@@ -65,44 +65,13 @@ export const chapterFive: Block[] = [
   {
     type: "heading",
     level: 4,
-    text: { fr: "Visualiser la course : le compteur a++", en: "Visualizing the race: the counter a++" },
+    text: { fr: "Illustration : la réservation d'avion", en: "Illustration: the airline booking" },
   },
   {
     type: "paragraph",
     text: {
-      fr: "Les deux processus exécutent `b = a; b = b + 1; a = b;`. **Cliquez sur « étape suivante »** dans l'ordre que vous voulez : chaque « pas au hasard » simule un entrelacement possible. Essayez d'obtenir `a = 1` alors que le résultat attendu est 2 !",
-      en: "Both processes run `b = a; b = b + 1; a = b;`. **Click “next step”** in whatever order you like: each “random step” simulates a possible interleaving. Try to get `a = 1` when the expected result is 2!",
-    },
-  },
-  {
-    type: "interleaving",
-    spec: {
-      id: "race-counter",
-      caption: {
-        fr: "Course critique : entrelacez les deux incréments et observez le résultat final.",
-        en: "Race condition: interleave the two increments and watch the final result.",
-      },
-      variables: [
-        { name: "a", init: 0, scope: "shared" },
-        { name: "b", init: 0, scope: "local" },
-      ],
-      processes: [
-        { id: "P₁", label: { fr: "Processus P₁", en: "Process P₁" }, steps: lireIncrementerEcrire },
-        { id: "P₂", label: { fr: "Processus P₂", en: "Process P₂" }, steps: lireIncrementerEcrire },
-      ],
-      expected: { a: 2 },
-    },
-  },
-  {
-    type: "heading",
-    level: 4,
-    text: { fr: "Le cas de la compagnie aérienne", en: "The airline case" },
-  },
-  {
-    type: "paragraph",
-    text: {
-      fr: "Deux guichets réservent sur le même vol. Chacun lit le nombre de places, puis écrit le nombre + 1. Voici le même scénario, avec `n` = nombre de places réservées.",
-      en: "Two desks book on the same flight. Each reads the number of seats, then writes the number + 1. Here is the same scenario, with `n` = number of reserved seats.",
+      fr: "Alice demande une réservation : la base de données indique « fauteuil 6B disponible », puis « fauteuil 6B assigné à Alice et marqué occupé ». Bob demande à son tour une réservation : il lit lui aussi « fauteuil 6B disponible » avant qu'Alice n'ait écrit, puis marque le fauteuil occupé. La dernière place a été vendue deux fois.",
+      en: "Alice asks for a reservation: the database says “seat 6B available”, then “seat 6B assigned to Alice and marked occupied”. Bob then asks for a reservation: he also reads “seat 6B available” before Alice wrote, then marks the seat occupied. The last seat was sold twice.",
     },
   },
   {
@@ -141,71 +110,256 @@ export const chapterFive: Block[] = [
     },
   },
   {
+    type: "heading",
+    level: 4,
+    text: { fr: "Le compteur partagé : b = a; b++; a = b", en: "The shared counter: b = a; b++; a = b" },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Deux opérations en parallèle sur `a` (variable partagée) et `b` (variable privée à chaque processus). **Cliquez sur « étape suivante »** dans l'ordre que vous voulez : chaque pas simule un entrelacement possible. Résultat attendu : `a = a + 2` ; résultat obtenu parfois : `a = a + 1`.",
+      en: "Two parallel operations on `a` (shared variable) and `b` (variable private to each process). **Click “next step”** in whatever order you like: each step simulates a possible interleaving. Expected result: `a = a + 2`; result sometimes obtained: `a = a + 1`.",
+    },
+  },
+  {
+    type: "interleaving",
+    spec: {
+      id: "race-counter",
+      caption: {
+        fr: "Non-déterminisme : entrelacez les deux exécutions de b = a; b++; a = b; et observez le résultat final.",
+        en: "Non-determinism: interleave the two runs of b = a; b++; a = b; and watch the final result.",
+      },
+      variables: [
+        { name: "a", init: 0, scope: "shared" },
+        { name: "b", init: 0, scope: "local" },
+      ],
+      processes: [
+        { id: "P₁", label: { fr: "Processus P₁", en: "Process P₁" }, steps: lireIncrementerEcrire },
+        { id: "P₂", label: { fr: "Processus P₂", en: "Process P₂" }, steps: lireIncrementerEcrire },
+      ],
+      expected: { a: 2 },
+    },
+  },
+  {
     type: "checkpoint",
-    concept: { fr: "Définition d'une course critique", en: "Definition of a race condition" },
+    concept: { fr: "Non-déterminisme et i++", en: "Non-determinism and i++" },
     exercise: {
       kind: "mcq",
       prompt: {
-        fr: "Quelle est la cause directe d'une course critique sur `x++` ?",
-        en: "What is the direct cause of a race condition on `x++`?",
+        fr: "Pourquoi i++ peut-il produire i = 1 alors que deux processeurs ont chacun exécuté i++ ?",
+        en: "Why can i++ produce i = 1 although two processors each executed i++?",
       },
       options: [
-        { text: { fr: "Le processeur est trop lent.", en: "The processor is too slow." } },
         {
           text: {
-            fr: "L'opération se décompose en plusieurs instructions non atomiques.",
-            en: "The operation breaks into several non-atomic instructions.",
+            fr: "L'opération se décompose en plusieurs instructions non atomiques, dans un ordre d'entrelacement non maîtrisé.",
+            en: "The operation breaks into several non-atomic instructions, in an uncontrolled interleaving order.",
           },
         },
+        { text: { fr: "Le processeur est trop lent.", en: "The processor is too slow." } },
         { text: { fr: "La mémoire partagée est trop petite.", en: "Shared memory is too small." } },
       ],
-      answerIndex: 1,
+      answerIndex: 0,
       solution: {
-        fr: "`x++` = lire, incrémenter, écrire. Entre ces étapes, un autre processus peut s'intercaler et faire perdre une mise à jour. Une seule instruction atomique supprimerait la course.",
-        en: "`x++` = read, increment, write. Between these steps, another process can interleave and lose an update. A single atomic instruction would remove the race.",
+        fr: "i++ = lire, incrémenter, écrire. Si les deux processeurs lisent la valeur avant qu'aucun n'ait écrit, la seconde écriture écrase la première : résultat 1 au lieu de 2. C'est le non-déterminisme : le résultat dépend de l'ordre d'entrelacement.",
+        en: "i++ = read, increment, write. If both processors read the value before either has written, the second write overwrites the first: result 1 instead of 2. That is non-determinism: the result depends on the interleaving order.",
       },
     },
   },
   {
     type: "heading",
     level: 3,
-    text: { fr: "2. La section critique et ses quatre propriétés", en: "2. The critical section and its four properties" },
+    text: { fr: "2. Section critique et exclusion mutuelle", en: "2. Critical section and mutual exclusion" },
   },
   {
     type: "paragraph",
     text: {
-      fr: "On découpe le code de chaque processus en quatre zones : **entrée**, **section critique**, **sortie**, **reste**. L'objectif : au plus un processus dans la section critique, tout en évitant blocages et famine.",
-      en: "Each process's code is split into four zones: **entry**, **critical section**, **exit**, **remainder**. The goal: at most one process in the critical section, while avoiding deadlock and starvation.",
+      fr: "Une **section critique** est une partie d'un programme dont l'exécution ne doit pas s'entrelacer avec d'autres exécutions de ce même programme : indivisibilité ou **atomicité** de la section critique. Une fois qu'un processus y entre, il faut lui permettre de terminer cette section sans permettre à d'autres processus de modifier ces mêmes données : la section critique doit être **verrouillée** afin de devenir atomique.",
+      en: "A **critical section** is a part of a program whose execution must not interleave with other executions of the same program: indivisibility or **atomicity** of the critical section. Once a process enters it, it must be allowed to finish this section without letting other processes modify the same data: the critical section must be **locked** in order to become atomic.",
     },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "**Solution : l'exclusion mutuelle.** Méthode ou algorithme qui garantit qu'à tout instant **un processus au plus** exécute les instructions de sa section critique. Autrement dit, un algorithme d'exclusion mutuelle garantit l'**atomicité** des instructions de la section critique.",
+      en: "**Solution: mutual exclusion.** A method or algorithm that guarantees that at any time **at most one process** executes the instructions of its critical section. In other words, a mutual-exclusion algorithm guarantees the **atomicity** of the critical-section instructions.",
+    },
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: { fr: "Les quatre propriétés de l'exclusion mutuelle", en: "The four properties of mutual exclusion" },
   },
   {
     type: "list",
     items: [
       {
         text: {
-          fr: "**1. Exclusion mutuelle :** au plus **un** processus à la fois dans la section critique.",
-          en: "**1. Mutual exclusion:** at most **one** process at a time in the critical section.",
+          fr: "**1. Exclusion mutuelle :** par définition, au plus un seul processus en SC.",
+          en: "**1. Mutual exclusion:** by definition, at most one process in the SC.",
         },
       },
       {
         text: {
-          fr: "**2. Progrès (absence d'interblocage) :** si la section est libre et que des processus veulent entrer, l'un d'eux finit par y entrer. Le choix ne peut être reporté indéfiniment.",
-          en: "**2. Progress (no deadlock):** if the section is free and processes want to enter, one of them eventually enters. The choice cannot be postponed indefinitely.",
+          fr: "**2. Absence de blocage permanent :** si plusieurs processus attendent pour entrer en SC, et si aucun processus n'est déjà en SC, alors un des processus qui attend doit pouvoir entrer en SC au bout d'un temps fini (pas d'interblocage).",
+          en: "**2. Absence of permanent blocking:** if several processes wait to enter the SC, and no process is already in the SC, then one of the waiting processes must be able to enter the SC within finite time (no deadlock).",
         },
       },
       {
         text: {
-          fr: "**3. Attente bornée (absence de famine) :** après qu'un processus a manifesté son intention, il ne peut y avoir qu'un **nombre borné** de passages d'autres processus avant le sien.",
-          en: "**3. Bounded waiting (no starvation):** after a process has announced its intention, only a **bounded number** of other processes may go before it.",
+          fr: "**3. Condition de progression :** un processus qui se trouve hors de sa SC et hors du protocole contrôlant l'accès à la SC ne doit pas empêcher un autre processus d'entrer dans sa SC.",
+          en: "**3. Progress condition:** a process that is outside its SC and outside the protocol controlling access to the SC must not prevent another process from entering its SC.",
         },
       },
       {
         text: {
-          fr: "**4. Absence d'attente active (idéal) :** un processus en attente devrait être **bloqué** (retiré du processeur), pas en train de scruter une variable en boucle.",
-          en: "**4. No busy waiting (ideal):** a waiting process should be **blocked** (taken off the CPU), not spinning on a variable in a loop.",
+          fr: "**4. Équité :** un processus qui veut entrer en SC ne doit pas attendre son tour indéfiniment (absence de famine).",
+          en: "**4. Fairness:** a process that wants to enter the SC must not wait for its turn indefinitely (no starvation).",
         },
       },
     ],
+  },
+  {
+    type: "checkpoint",
+    concept: { fr: "Identifier une propriété", en: "Identify a property" },
+    exercise: {
+      kind: "mcq",
+      prompt: {
+        fr: "Quelle propriété garantit qu'un processus qui veut entrer en SC ne doit pas attendre son tour indéfiniment ?",
+        en: "Which property guarantees that a process wanting to enter the SC must not wait for its turn indefinitely?",
+      },
+      options: [
+        { text: { fr: "Équité (absence de famine).", en: "Fairness (no starvation)." } },
+        { text: { fr: "Exclusion mutuelle.", en: "Mutual exclusion." } },
+        { text: { fr: "Absence d'attente active.", en: "No busy waiting." } },
+      ],
+      answerIndex: 0,
+      solution: {
+        fr: "C'est la propriété 4, l'Équité (absence de famine). L'exclusion mutuelle se limite à « au plus un processus en SC » ; l'attente active n'est pas une propriété exigée, c'est un inconvénient des solutions logicielles.",
+        en: "It is property 4, Fairness (no starvation). Mutual exclusion is only “at most one process in the SC”; busy waiting is not a required property, it is a drawback of software solutions.",
+      },
+    },
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: { fr: "L'exclusion mutuelle n'est pas garantie si...", en: "Mutual exclusion is not guaranteed if..." },
+  },
+  {
+    type: "list",
+    items: [
+      {
+        text: {
+          fr: "un processus peut entrer en SC alors qu'un autre s'y trouve déjà ;",
+          en: "a process can enter the SC while another is already in it;",
+        },
+      },
+      {
+        text: {
+          fr: "un processus désirant entrer en SC ne peut pas y entrer alors qu'il n'y a aucun processus en SC ;",
+          en: "a process wanting to enter the SC cannot enter although no process is in the SC;",
+        },
+      },
+      {
+        text: {
+          fr: "un processus désirant entrer en SC n'y entrera jamais car il ne sera jamais sélectionné lorsqu'il est en concurrence avec d'autres processus.",
+          en: "a process wanting to enter the SC will never enter because it will never be selected when competing with other processes.",
+        },
+      },
+    ],
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: { fr: "Protocoles d'entrée et de sortie", en: "Entry and exit protocols" },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Il faut définir un **protocole d'entrée en SC** (ensemble d'instructions qui permet de vérifier qu'aucun autre processus n'est en SC puis d'entrer) et un **protocole de sortie de SC** (ensemble d'instructions qui permet à un processus ayant terminé sa SC d'avertir les autres processus en attente que la voie est libre). Structure d'un processus : Début → Section non critique → Protocole d'entrée → Section Critique → Protocole de sortie → Section non critique → Fin.",
+      en: "An **entry protocol into the SC** must be defined (a set of instructions that checks that no other process is in the SC, then enters) and an **exit protocol from the SC** (a set of instructions that lets a process that finished its SC warn waiting processes that the way is free). Process structure: Start → Non-critical section → Entry protocol → Critical Section → Exit protocol → Non-critical section → End.",
+    },
+  },
+  {
+    type: "code",
+    lang: "c",
+    caption: {
+      fr: "Forme générale (TD4) : entreeSC(), Section Critique, sortieSC().",
+      en: "General shape (TD4): entreeSC(), Critical Section, sortieSC().",
+    },
+    text: `entreeSC ();
+<Section Critique>
+sortieSC ();`,
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: { fr: "Trois grandes familles d'algorithmes", en: "Three families of algorithms" },
+  },
+  {
+    type: "list",
+    items: [
+      {
+        text: {
+          fr: "**Solutions logicielles** avec attente active, sans arbitrage ;",
+          en: "**Software solutions** with busy waiting, without arbitration;",
+        },
+      },
+      {
+        text: {
+          fr: "**Solutions matérielles** avec attente active, sans arbitrage (exemple : masquage des interruptions) ;",
+          en: "**Hardware solutions** with busy waiting, without arbitration (example: masking interrupts);",
+        },
+      },
+      {
+        text: {
+          fr: "**Solutions avec blocage et attente passive, avec arbitrage** (exemple : sémaphores).",
+          en: "**Solutions with blocking and passive wait, with arbitration** (example: semaphores).",
+        },
+      },
+    ],
+  },
+  {
+    type: "checkpoint",
+    concept: { fr: "Les trois familles", en: "The three families" },
+    exercise: {
+      kind: "trueFalse",
+      prompt: {
+        fr: "Les solutions avec blocage et attente passive nécessitent un arbitrage (par exemple les sémaphores).",
+        en: "Solutions with blocking and passive wait require arbitration (for example semaphores).",
+      },
+      answer: true,
+      justification: {
+        fr: "C'est la troisième famille du CM2 : blocage et attente passive avec arbitrage, dont l'exemple est les sémaphores. Les deux premières familles fonctionnent avec attente active et sans arbitrage.",
+        en: "That is the third family from lecture 2: blocking and passive wait with arbitration, whose example is semaphores. The first two families work with busy waiting and without arbitration.",
+      },
+    },
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: { fr: "L'attente active (busy waiting)", en: "Busy waiting" },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Principe général de l'attente active : le processus scrute en boucle une condition qui indique si la SC est libre. **Inconvénient : consommation inutile de temps CPU.**",
+      en: "General principle of busy waiting: the process spins in a loop on a condition that tells whether the SC is free. **Drawback: useless CPU time consumption.**",
+    },
+  },
+  {
+    type: "code",
+    lang: "c",
+    caption: {
+      fr: "Principe général de l'attente active (CM2).",
+      en: "General busy-waiting principle (lecture 2).",
+    },
+    text: `entreeSC ();
+while (condition indique SC non libre)
+    attente;
+<Section Critique>
+modifier la condition pour refléter SC libre;
+sortieSC ();`,
   },
   {
     type: "diagram",
@@ -213,8 +367,8 @@ export const chapterFive: Block[] = [
       {
         id: "process-states",
         caption: {
-          fr: "Les trois états d'un processus : élu, prêt, bloqué. L'attente active gaspille le processeur ; le blocage le libère.",
-          en: "The three process states: running, ready, blocked. Busy waiting wastes the CPU; blocking frees it.",
+          fr: "États d'un processus : élu, prêt, bloqué. En attente active, le processus reste actif et consomme le processeur ; dans les solutions avec blocage, le processus est retiré du processeur jusqu'à l'événement attendu.",
+          en: "Process states: running, ready, blocked. With busy waiting, the process stays active and consumes the CPU; in blocking solutions, the process is removed from the CPU until the awaited event.",
         },
         nodes: [
           { id: "elu", label: { fr: "Élu", en: "Running" }, x: 220, y: 0, shape: "circle", tone: "primary" },
@@ -224,7 +378,7 @@ export const chapterFive: Block[] = [
         edges: [
           { from: "pret", to: "elu", label: { fr: "élection", en: "scheduled" } },
           { from: "elu", to: "pret", label: { fr: "quantum écoulé", en: "quantum expired" } },
-          { from: "elu", to: "bloque", label: { fr: "E/S / verrou", en: "I/O / lock" } },
+          { from: "elu", to: "bloque", label: { fr: "E/S / ressource", en: "I/O / resource" } },
           { from: "bloque", to: "pret", label: { fr: "réveil", en: "wake-up" } },
         ],
       },
@@ -232,226 +386,413 @@ export const chapterFive: Block[] = [
   },
   {
     type: "heading",
-    level: 3,
-    text: { fr: "3. Tentatives incorrectes", en: "3. Incorrect attempts" },
-  },
-  {
-    type: "paragraph",
-    text: {
-      fr: "Avant les bonnes solutions, on a imaginé des protocoles séduisants… et faux. Les comprendre, c'est comprendre **pourquoi** les 4 propriétés comptent.",
-      en: "Before the correct solutions, attractive but flawed protocols were devised. Understanding them means understanding **why** the 4 properties matter.",
-    },
-  },
-  {
-    type: "list",
-    items: [
-      {
-        text: {
-          fr: "**Tentative « chacun son drapeau, puis j'attends » :** chaque processus lève son drapeau puis attend que celui de l'autre soit baissé. Si les deux lèvent leur drapeau en même temps, **les deux attendent** : interblocage.",
-          en: "**The “each raises a flag, then waits” attempt:** each process raises its flag then waits for the other's to come down. If both raise simultaneously, **both wait**: deadlock.",
-        },
-      },
-      {
-        text: {
-          fr: "**Tentative « drapeaux dans un ordre différent » :** P1 lève `drapeau1` puis attend `drapeau2`, P2 fait l'inverse. Les deux peuvent entrer : **exclusion violée**.",
-          en: "**The “flags in a different order” attempt:** P1 raises `flag1` then waits for `flag2`, P2 does the opposite. Both can enter: **mutual exclusion violated**.",
-        },
-      },
-      {
-        text: {
-          fr: "**Tentative « à tour de rôle » (variable `tour`) :** P1 attend `tour = 1`, P2 attend `tour = 2`. Correct pour l'exclusion, mais si P1 ne veut pas entrer, `tour` reste à 1 et P2 est **bloqué pour rien** : **progrès violé**, et alternance forcée non souhaitable.",
-          en: "**The “take turns” attempt (`turn` variable):** P1 waits for `turn = 1`, P2 for `turn = 2`. Correct for exclusion, but if P1 does not want to enter, `turn` stays 1 and P2 is **blocked for nothing**: **progress violated**, and forced alternation is undesirable.",
-        },
-      },
-    ],
-  },
-  {
-    type: "checkpoint",
-    concept: { fr: "Propriété violée par le tour de rôle", en: "Property violated by taking turns" },
-    exercise: {
-      kind: "trueFalse",
-      prompt: {
-        fr: "Le protocole « à tour de rôle » avec une seule variable `tour` garantit le progrès.",
-        en: "The “take turns” protocol with a single `tour` variable guarantees progress.",
-      },
-      answer: false,
-      justification: {
-        fr: "Si le processus dont c'est le tour ne veut pas entrer, son partenaire reste bloqué en attente : il faudrait pouvoir **passer** la main. L'exclusion mutuelle est respectée, mais le progrès ne l'est pas.",
-        en: "If the process whose turn it is does not want to enter, its partner stays blocked waiting: it should be able to **skip** its turn. Mutual exclusion holds, but progress does not.",
-      },
-    },
-  },
-  {
-    type: "heading",
-    level: 3,
-    text: { fr: "4. Algorithmes corrects : Dekker et Peterson", en: "4. Correct algorithms: Dekker and Peterson" },
-  },
-  {
-    type: "heading",
     level: 4,
-    text: { fr: "A. L'algorithme de Dekker", en: "A. Dekker's algorithm" },
+    text: { fr: "Exemple simple et incorrect : la variable libre", en: "Simple and incorrect example: the libre variable" },
   },
   {
     type: "paragraph",
     text: {
-      fr: "Dekker combine **les deux idées** : une variable `tour` **et** des drapeaux. Le drapeau annonce l'intention ; en cas de conflit, `tour` départage. Si on découvre qu'on perd le tour, on baisse momentanément son drapeau, on attend, puis on le relève.",
-      en: "Dekker combines **both ideas**: a `tour` variable **and** flags. The flag announces the intention; in case of conflict, `tour` breaks the tie. If one discovers they are losing the turn, they momentarily lower their flag, wait, then raise it again.",
+      fr: "Utilisation d'une variable partagée `libre` : le test puis l'écriture ne sont pas atomiques. Les deux processus peuvent voir `libre == true` en même temps et entrer tous les deux. **Même problème que avant !**",
+      en: "Use of a shared variable `libre`: the test then the write are not atomic. Both processes may see `libre == true` at the same time and both enter. **Same problem as before!**",
     },
   },
   {
     type: "code",
     lang: "c",
     caption: {
-      fr: "Dekker, du point de vue du processus i (l'autre étant j = 1 - i).",
-      en: "Dekker, from the viewpoint of process i (the other being j = 1 - i).",
+      fr: "Variable libre : exemple simple et incorrect (CM2).",
+      en: "The libre variable: simple and incorrect example (lecture 2).",
     },
-    text: `bool veut[2] = { false, false };
-int tour = 0;
+    text: `bool libre = true;   /* variable partagée */
 
-/* ---- entree du processus i ---- */
-veut[i] = true;
-while (veut[j]) {
-    if (tour == j) {
-        veut[i] = false;
-        while (tour == j) { /* attendre */ }
-        veut[i] = true;
-    }
-}
-/* section critique */
-
-/* ---- sortie ---- */
-tour = j;
-veut[i] = false;`,
+/* processus A, et processus B à l'identique */
+while (libre == false)
+    attente;
+libre = false;
+<Section Critique>
+libre = true;`,
   },
   {
     type: "heading",
     level: 4,
-    text: { fr: "B. L'algorithme de Peterson", en: "B. Peterson's algorithm" },
+    text: { fr: "Deuxième tentative : à tour de rôle (tour)", en: "Second attempt: taking turns (tour)" },
   },
   {
     type: "paragraph",
     text: {
-      fr: "Peterson réalise la même chose en **deux lignes**. C'est le joyau des algorithmes d'exclusion mutuelle pour deux processus.",
-      en: "Peterson achieves the same in **two lines**. It is the jewel of mutual-exclusion algorithms for two processes.",
+      fr: "`tour` est une variable partagée qui indique le processus qui doit entrer en SC : quand `tour = i`, le processus i peut entrer. Exclusion mutuelle : **OK !** Problème : la propriété 3 — aucun processus suspendu en dehors d'une SC ne doit bloquer les autres.",
+      en: "`tour` is a shared variable that tells which process must enter the SC: when `tour = i`, process i may enter. Mutual exclusion: **OK!** Problem: property 3 — no process suspended outside an SC may block the others.",
     },
   },
   {
     type: "code",
     lang: "c",
-    caption: { fr: "Peterson, processus i.", en: "Peterson, process i." },
-    text: `bool veut[2] = { false, false };
-int tour;
-
-/* ---- entree ---- */
-veut[i] = true;
-tour = j;                     /* on donne poliment la priorite a l'autre */
-while (veut[j] && tour == j) { /* attente active */ }
-
-/* section critique */
-
-/* ---- sortie ---- */
-veut[i] = false;`,
-  },
-  {
-    type: "paragraph",
-    text: {
-      fr: "**Pourquoi c'est correct :** si les deux veulent entrer, `tour` prend la valeur **du dernier** qui l'a écrite. Le dernier arrivé **cède** donc la place : au moins un processus franchit le `while`. Et comme les deux n'y entrent pas ensemble, l'exclusion mutuelle tient. L'attente est bornée.",
-      en: "**Why it is correct:** if both want to enter, `tour` takes the value **of the last** one that wrote it. The last arrival therefore **yields**: at least one process passes the `while`. And since both do not enter together, mutual exclusion holds. The wait is bounded.",
+    caption: {
+      fr: "À tour de rôle : tour = i, le processus i peut entrer (CM2).",
+      en: "Taking turns: tour = i, process i may enter (lecture 2).",
     },
-  },
-  {
-    type: "heading",
-    level: 4,
-    text: { fr: "C. Généralisation à n processus", en: "C. Generalization to n processes" },
-  },
-  {
-    type: "paragraph",
-    text: {
-      fr: "Peterson se généralise à **n processus** avec deux tableaux : `niveau[i]` (le niveau courant du processus i, initialisé à −1) et `dernier[k]` (le dernier processus arrivé au niveau k). Chaque processus doit franchir **n − 1 niveaux**.",
-      en: "Peterson generalizes to **n processes** with two arrays: `niveau[i]` (process i's current level, initialized to −1) and `dernier[k]` (the last process to reach level k). Each process must clear **n − 1 levels**.",
-    },
-  },
-  {
-    type: "code",
-    lang: "c",
-    caption: { fr: "Peterson généralisé, processus i (n processus) — d'après le CM2.", en: "Generalized Peterson, process i (n processes) — from lecture 2." },
-    text: `int niveau[n];                /* initialise a -1 pour tous */
-int dernier[n - 1];
+    text: `int tour = A;   /* indique le processus qui doit entrer en SC */
 
-for (int k = 0; k < n - 1; k++) {
-    niveau[i] = k;            /* j'arrive au niveau k  */
-    dernier[k] = i;           /* et je suis le dernier */
-    while (dernier[k] == i &&
-           (existe j != i avec niveau[j] >= k)) { /* attente */ }
-}
-/* section critique */
-niveau[i] = -1;`,
-  },
-  {
-    type: "paragraph",
-    text: {
-      fr: "**Pour aller plus loin (hors support de cours) :** l'algorithme de la **boulangerie** (Lamport) est une autre généralisation à n processus. Comme dans une boulangerie, chaque client prend un **ticket** croissant ; le plus petit ticket passe d'abord. En cas d'égalité, on départage par le plus petit identifiant.",
-      en: "**Going further (beyond the lecture notes):** the **bakery** algorithm (Lamport) is another generalization to n processes. As in a bakery, each customer takes an increasing **ticket**; the smallest ticket goes first. On a tie, the smallest identifier breaks it.",
-    },
-  },
-  {
-    type: "code",
-    lang: "c",
-    caption: { fr: "Boulangerie de Lamport, processus i (n processus).", en: "Lamport's bakery, process i (n processes)." },
-    text: `bool choisi[n];          /* un processus est en train de prendre un ticket */
-int ticket[n];           /* son numero                              */
+/* processus A */
+while (tour != A)
+    attente;
+<Section Critique>
+tour = B;
 
-/* ---- entree ---- */
-choisi[i] = true;
-ticket[i] = 1 + max(ticket[0..n-1]);
-choisi[i] = false;
-
-for (int j = 0; j < n; j++) {
-    while (choisi[j]) { }
-    while (ticket[j] != 0 &&
-          (ticket[j] < ticket[i] ||
-          (ticket[j] == ticket[i] && j < i))) { }
-}
-
-/* section critique */
-ticket[i] = 0;           /* sortie : on rend son ticket */`,
+/* processus B */
+while (tour != B)
+    attente;
+<Section Critique>
+tour = A;`,
   },
   {
     type: "checkpoint",
-    concept: { fr: "Propriété de Peterson", en: "Property of Peterson" },
+    concept: { fr: "Le tour de rôle et la condition de progression", en: "Taking turns and the progress condition" },
     exercise: {
-      kind: "mcq",
+      kind: "trueFalse",
       prompt: {
-        fr: "Dans l'algorithme de Peterson, que garantit l'affectation `tour = j` juste après `veut[i] = true` ?",
-        en: "In Peterson's algorithm, what does the assignment `tour = j` right after `veut[i] = true` guarantee?",
+        fr: "Le protocole « chacun son tour » (variable tour) garantit la condition de progression.",
+        en: "The “taking turns” protocol (variable tour) guarantees the progress condition.",
       },
-      options: [
-        {
-          text: {
-            fr: "Que le dernier processus à être arrivé cède la priorité : au moins un entre.",
-            en: "That the last process to arrive yields priority: at least one enters.",
-          },
-        },
-        { text: { fr: "Que le processus i entre toujours en premier.", en: "That process i always enters first." } },
-        { text: { fr: "Que personne n'entre jamais.", en: "That nobody ever enters." } },
-      ],
-      answerIndex: 0,
-      solution: {
-        fr: "Si les deux écrivent `veut = true` puis `tour = j`, le dernier à écrire `tour` est celui dont l'attente échoue. Chacun cède la place à l'autre : il ne peut pas y avoir **deux perdants** bloqués, donc le progrès est assuré. Et comme un seul franchit le `while`, l'exclusion tient.",
-        en: "If both write `veut = true` then `tour = j`, the last to write `tour` is the one whose wait fails. Each yields to the other: there cannot be **two blocked losers**, so progress is ensured. And since only one passes the `while`, exclusion holds.",
+      answer: false,
+      justification: {
+        fr: "Si le processus dont c'est le tour ne veut pas entrer en SC, tour ne change pas et l'autre attend indéfiniment : un processus hors SC et hors protocole bloque les autres. La propriété 3 (Condition de progression) est violée.",
+        en: "If the process whose turn it is does not want to enter the SC, tour never changes and the other waits forever: a process outside the SC and outside the protocol blocks the others. Property 3 (progress condition) is violated.",
       },
     },
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: { fr: "Critique des solutions par logiciel", en: "Criticism of software solutions" },
+  },
+  {
+    type: "list",
+    items: [
+      { text: { fr: "Difficiles à programmer ! Et à comprendre !", en: "Hard to program! And to understand!" } },
+      {
+        text: {
+          fr: "Les processus qui requièrent l'entrée dans leur SC sont actifs, consommant ainsi du temps de processeur.",
+          en: "Processes requesting entry into their SC are active, thus consuming processor time.",
+        },
+      },
+      {
+        text: {
+          fr: "Pour de longues sections critiques, il serait préférable de bloquer les processus qui doivent attendre (solutions avec blocage et attente passive).",
+          en: "For long critical sections, it would be preferable to block the processes that must wait (solutions with blocking and passive wait).",
+        },
+      },
+    ],
   },
   {
     type: "heading",
     level: 3,
-    text: { fr: "5. Le producteur-consommateur et son tampon", en: "5. The producer-consumer and its buffer" },
+    text: { fr: "3. Les stratégies du TD4 : l'exclusion mutuelle logicielle", en: "3. The TD4 strategies: software mutual exclusion" },
   },
   {
     type: "paragraph",
     text: {
-      fr: "Un **producteur** dépose des éléments dans un tampon borné ; un **consommateur** les retire. Sans synchronisation, le producteur **écrase** des données non lues, ou le consommateur **lit du vide**. Essayez :",
-      en: "A **producer** drops items into a bounded buffer; a **consumer** removes them. Without synchronization, the producer **overwrites** unread data, or the consumer **reads nothing**. Try it:",
+      fr: "Modèle de machine (TD4) : deux processeurs identiques, chacun exécutant son propre flot d'instructions, accédant directement à la même mémoire physique ; on ne prend pas en compte caches, protection ou mémoire virtuelle. Il faut résoudre l'exclusion mutuelle **sans support matériel autre que l'ordre des écritures en mémoire**. On différencie les processeurs dans le pseudo-code par la valeur **i** pour le premier et la valeur **j** pour l'autre.",
+      en: "Machine model (TD4): two identical processors, each running its own instruction flow, directly accessing the same physical memory; caches, access protection and virtual memory are ignored. Mutual exclusion must be solved **with no hardware support other than the order of memory writes**. In pseudo-code, the processors are told apart by the value **i** for the first one and **j** for the other.",
+    },
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: { fr: "2.2 Utilisation d'un booléen d'occupation", en: "2.2 Using an occupation boolean" },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Un processeur qui rentre dans la section critique modifie un booléen nommé `occ` pour indiquer qu'il l'utilise.",
+      en: "A processor entering the critical section modifies a boolean named `occ` to indicate that it uses it.",
+    },
+  },
+  {
+    type: "code",
+    lang: "c",
+    caption: {
+      fr: "TD4 2.2 : le booléen d'occupation occ.",
+      en: "TD4 2.2: the occupation boolean occ.",
+    },
+    text: `bool occ = false;   /* booléen d'occupation partagé */
+
+entreeSC(i) {
+    while (occ) attente;   /* la SC est occupée */
+    occ = true;
+}
+sortieSC(i) {
+    occ = false;
+}`,
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: { fr: "2.3 Chacun son tour", en: "2.3 Each in his turn" },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Un processeur qui veut rentrer dans la section critique doit attendre que ce soit son tour. Une fois la section critique exécutée, il donne la main à l'autre.",
+      en: "A processor that wants to enter the critical section must wait until it is its turn. Once the critical section is executed, it hands over to the other.",
+    },
+  },
+  {
+    type: "code",
+    lang: "c",
+    caption: {
+      fr: "TD4 2.3 : chacun son tour, avec i et j.",
+      en: "TD4 2.3: each in his turn, with i and j.",
+    },
+    text: `int tour = i;   /* le processus qui doit entrer en SC */
+
+entreeSC(i) {
+    while (tour != i) attente;   /* j'attends mon tour */
+}
+sortieSC(i) {
+    tour = j;   /* je donne la main à l'autre */
+}`,
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: { fr: "2.4 Annonce de sa volonté d'entrer en SC", en: "2.4 Announcing one's will to enter the SC" },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Au lieu de dire que l'on est dans la section critique, on indique que l'on **veut y entrer** : un tableau de 2 booléens indexé par i et j. On attend que l'autre processeur n'ait plus la volonté d'entrer pour y entrer.",
+      en: "Instead of saying one is in the critical section, one indicates one **wants to enter** it: an array of 2 booleans indexed by i and j. One waits until the other processor no longer wants to enter, then enters.",
+    },
+  },
+  {
+    type: "code",
+    lang: "c",
+    caption: {
+      fr: "TD4 2.4 : annonce de sa volonté, tableau demande[2].",
+      en: "TD4 2.4: announcing one's will, the array demande[2].",
+    },
+    text: `bool demande[2] = { false, false };
+
+entreeSC(i) {
+    demande[i] = true;           /* j'annonce ma volonté d'entrer */
+    while (demande[j]) attente;  /* je n'entre pas tant que l'autre veut */
+}
+sortieSC(i) {
+    demande[i] = false;
+}`,
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: { fr: "2.5 Annonce de sa volonté, avec renonce", en: "2.5 Announcing one's will, with renounce" },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Comme au 2.4, un processeur annonce sa volonté de rentrer dans la section critique. Mais un processeur n'ayant pas réussi à rentrer (car l'autre a également fait l'annonce de sa volonté) **annule son annonce et recommence**.",
+      en: "As in 2.4, a processor announces its will to enter the critical section. But a processor that failed to enter (because the other also announced its will) **withdraws its announcement and starts over**.",
+    },
+  },
+  {
+    type: "code",
+    lang: "c",
+    caption: {
+      fr: "TD4 2.5 : annonce avec renonce — je renonce puis je réannonce.",
+      en: "TD4 2.5: announcement with renounce — I renounce then announce again.",
+    },
+    text: `bool demande[2] = { false, false };
+
+entreeSC(i) {
+    demande[i] = true;
+    while (demande[j]) {
+        demande[i] = false;   /* je renonce */
+        attente;              /* un instant */
+        demande[i] = true;    /* je réannonce ma volonté */
+    }
+}
+sortieSC(i) {
+    demande[i] = false;
+}`,
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: { fr: "2.6 Demande et renonce si ce n'est pas mon tour", en: "2.6 Request and renounce if it is not my turn" },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "On utilise à la fois la notion de **demande** (tableau de booléens) et la notion de **tour**. Le processeur fait une demande pour entrer en section critique et renonce si l'autre processeur a également fait la demande et qu'il ne s'agit pas de son tour. Sinon, le processeur rentre.",
+      en: "Both the notion of **request** (array of booleans) and the notion of **turn** are used. The processor requests entry into the critical section and renounces if the other processor has also requested and it is not its turn. Otherwise, the processor enters.",
+    },
+  },
+  {
+    type: "code",
+    lang: "c",
+    caption: {
+      fr: "TD4 2.6 : demande + tour — je renonce et je redemande aussitôt.",
+      en: "TD4 2.6: request + turn — I renounce and request again right away.",
+    },
+    text: `bool demande[2] = { false, false };
+int tour = i;
+
+entreeSC(i) {
+    demande[i] = true;
+    while (demande[j]) {
+        if (tour != i) {          /* l'autre veut et ce n'est pas mon tour */
+            demande[i] = false;   /* je renonce */
+            demande[i] = true;    /* et je redemande aussitôt */
+        }
+    }
+}
+sortieSC(i) {
+    demande[i] = false;
+}`,
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: { fr: "2.7 Dekker 1966", en: "2.7 Dekker 1966" },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Les deux points importants de la solution proposée par Dekker en 1966 : **si on renonce, on attend son tour avant de redemander** ; **si c'est son tour, on attend que l'autre ait renoncé avant d'entrer**.",
+      en: "The two important points of the solution proposed by Dekker in 1966: **if one renounces, one waits for one's turn before requesting again**; **if it is one's turn, one waits for the other to have renounced before entering**.",
+    },
+  },
+  {
+    type: "code",
+    lang: "c",
+    caption: {
+      fr: "TD4 2.7 : Dekker 1966 — on attend son tour avant de redemander.",
+      en: "TD4 2.7: Dekker 1966 — one waits for one's turn before requesting again.",
+    },
+    text: `bool demande[2] = { false, false };
+int tour = i;
+
+entreeSC(i) {
+    demande[i] = true;
+    while (demande[j]) {
+        if (tour != i) {                /* ce n'est pas mon tour */
+            demande[i] = false;         /* je renonce */
+            while (tour != i) attente;  /* j'attends mon tour avant de redemander */
+            demande[i] = true;          /* puis je redemande */
+        }
+    }
+}
+sortieSC(i) {
+    tour = j;          /* je donne la main à l'autre */
+    demande[i] = false;
+}`,
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: { fr: "2.8 Peterson 1981", en: "2.8 Peterson 1981" },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "En 1981, Peterson a proposé une solution avec un code plus simple. L'idée : utiliser une variable **`dernier`** qui est à la valeur du dernier à vouloir entrer dans la section critique. C'est alors à lui d'attendre. **On se détache de la notion de tour.**",
+      en: "In 1981, Peterson proposed a solution with simpler code. The idea: use a variable **`dernier`** holding the value of the last one to want to enter the critical section. Then it is up to him to wait. **We move away from the notion of turn.**",
+    },
+  },
+  {
+    type: "code",
+    lang: "c",
+    caption: {
+      fr: "TD4 2.8 / CM2 : Peterson 1981, avec demande et dernier.",
+      en: "TD4 2.8 / lecture 2: Peterson 1981, with demande and dernier.",
+    },
+    text: `bool demande[2] = { false, false };
+int dernier;   /* le dernier à vouloir entrer en SC */
+
+entreeSC(i) {
+    demande[i] = true;   /* je demande à entrer */
+    dernier = i;         /* je suis le dernier demandeur */
+    while (demande[j] && dernier == i) attente;  /* c'est donc à moi d'attendre */
+}
+sortieSC(i) {
+    demande[i] = false;
+}`,
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "**Pourquoi c'est correct :** si les deux veulent entrer, `dernier` prend la valeur **du dernier** qui l'a écrit. Le dernier arrivé **cède** donc la place : au moins un processus franchit le `while`. Comme les deux ne peuvent pas satisfaire en même temps `dernier == i` et `dernier == j`, l'exclusion mutuelle tient, et personne n'attend indéfiniment.",
+      en: "**Why it is correct:** if both want to enter, `dernier` takes the value **of the last one** who wrote it. The last arrival therefore **yields**: at least one process passes the `while`. Since both cannot satisfy `dernier == i` and `dernier == j` at the same time, mutual exclusion holds, and nobody waits indefinitely.",
+    },
+  },
+  {
+    type: "checkpoint",
+    concept: { fr: "La variable dernier de Peterson", en: "Peterson's dernier variable" },
+    exercise: {
+      kind: "mcq",
+      prompt: {
+        fr: "Dans l'algorithme de Peterson, que signifie l'affectation `dernier = i` juste après `demande[i] = true` ?",
+        en: "In Peterson's algorithm, what does the assignment `dernier = i` right after `demande[i] = true` mean?",
+      },
+      options: [
+        {
+          text: {
+            fr: "i est le dernier à vouloir entrer en SC : c'est donc à lui d'attendre, et l'autre peut entrer.",
+            en: "i is the last one wanting to enter the SC: so it is up to him to wait, and the other can enter.",
+          },
+        },
+        { text: { fr: "Le processus i entre toujours en premier.", en: "Process i always enters first." } },
+        { text: { fr: "Personne ne peut plus entrer.", en: "Nobody can enter anymore." } },
+      ],
+      answerIndex: 0,
+      solution: {
+        fr: "dernier = i indique que i est le dernier demandeur : la condition while (demande[j] && dernier == i) bloque i, et j peut entrer. On se détache de la notion de tour.",
+        en: "dernier = i says that i is the last requester: the condition while (demande[j] && dernier == i) blocks i, and j can enter. We move away from the notion of turn.",
+      },
+    },
+  },
+  {
+    type: "heading",
+    level: 4,
+    text: { fr: "Généralisation de Peterson pour n processus", en: "Peterson's generalization for n processes" },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Pour n processus, `dernier` est un tableau de **n − 1 entiers** qui représente une file d'attente avec **n − 1 niveaux** : `dernier[k]` est le dernier processus arrivé au niveau k. `niveau` est un tableau de n entiers initialisés à **−1** : `niveau[i]` est le niveau du processus i. Chaque processus doit franchir n − 1 niveaux.",
+      en: "For n processes, `dernier` is an array of **n − 1 integers** representing a queue with **n − 1 levels**: `dernier[k]` is the last process that reached level k. `niveau` is an array of n integers initialized to **−1**: `niveau[i]` is the level of process i. Each process must clear n − 1 levels.",
+    },
+  },
+  {
+    type: "code",
+    lang: "c",
+    caption: {
+      fr: "CM2 : Peterson généralisé à n processus, pour le processus i.",
+      en: "Lecture 2: Peterson generalized to n processes, for process i.",
+    },
+    text: `int niveau[n];     /* niveau[i] : le niveau du processus i, initialisés à -1 */
+int dernier[n-1];  /* dernier[k] : le dernier processus arrivé au niveau k */
+
+for (int k = 0; k < n - 1; k++) {
+    niveau[i] = k;   /* j'arrive au niveau k */
+    dernier[k] = i;  /* et je suis le dernier au niveau k */
+    while (dernier[k] == i &&
+           il existe j != i avec niveau[j] >= k)
+        attente;
+}
+/* Section Critique */
+niveau[i] = -1;`,
+  },
+  {
+    type: "heading",
+    level: 3,
+    text: { fr: "4. Synchronisation : le modèle producteur-consommateur", en: "4. Synchronization: the producer-consumer model" },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "Le modèle **producteur-consommateur** est l'exemple de synchronisation annoncé au CM2 (« Synchronisation — prochaine séance »). Un **producteur** dépose des éléments dans un tampon borné ; un **consommateur** les retire. Essayez :",
+      en: "The **producer-consumer** model is the synchronization example announced in lecture 2 (“Synchronization — next session”). A **producer** drops items into a bounded buffer; a **consumer** removes them. Try it:",
     },
   },
   {
@@ -470,8 +811,8 @@ ticket[i] = 0;           /* sortie : on rend son ticket */`,
   {
     type: "paragraph",
     text: {
-      fr: "Rappelons les deux conditions à respecter : le producteur ne doit **jamais** déposer dans un tampon **plein** (sinon il écrase), le consommateur ne doit **jamais** retirer d'un tampon **vide** (sinon il lit n'importe quoi). Il faut de la synchronisation : sémaphores ou moniteurs (chapitre 6).",
-      en: "Recall the two conditions to respect: the producer must **never** deposit into a **full** buffer (otherwise it overwrites), the consumer must **never** remove from an **empty** buffer (otherwise it reads garbage). Synchronization is required: semaphores or monitors (chapter 6).",
+      fr: "Le producteur ne doit **jamais** déposer dans un tampon **plein** (sinon il écrase des données non lues) et le consommateur ne doit **jamais** retirer d'un tampon **vide** (sinon il lit n'importe quoi). Ce problème relève de la **synchronisation**, c'est-à-dire de la famille des solutions avec **blocage et attente passive avec arbitrage** (exemple : sémaphores), vue en fin de CM2.",
+      en: "The producer must **never** deposit into a **full** buffer (otherwise it overwrites unread data) and the consumer must **never** remove from an **empty** buffer (otherwise it reads garbage). This problem belongs to **synchronization**, that is, the family of solutions with **blocking and passive wait with arbitration** (example: semaphores), seen at the end of lecture 2.",
     },
   },
   {
@@ -484,78 +825,271 @@ ticket[i] = 0;           /* sortie : on rend son ticket */`,
     type: "exercises",
     groups: [
       {
-        title: { fr: "Diagnostiquer une propriété violée", en: "Diagnose a violated property" },
+        title: { fr: "1. Introduction", en: "1. Introduction" },
         exercises: [
           {
-            kind: "mcq",
+            kind: "open",
             prompt: {
-              fr: "Un protocole fait toujours entrer le même processus dès qu'il le demande, affamant les autres. Quelle propriété est violée ?",
-              en: "A protocol always lets the same process in whenever it asks, starving the others. Which property is violated?",
+              fr: "Quel est le code pseudo-assembleur de l'instruction i++ ?",
+              en: "What is the pseudo-assembly code of the instruction i++?",
             },
-            options: [
-              { text: { fr: "L'exclusion mutuelle.", en: "Mutual exclusion." } },
-              { text: { fr: "L'attente bornée (absence de famine).", en: "Bounded waiting (no starvation)." } },
-              { text: { fr: "Aucune : c'est correct.", en: "None: it is correct." } },
-            ],
-            answerIndex: 1,
             solution: {
-              fr: "L'exclusion peut tenir (un seul à la fois) et le progrès aussi, mais un processus peut attendre **indéfiniment** : l'attente bornée est violée. C'est le cas du « tour de rôle » mal conçu qui favorise toujours le même.",
-              en: "Exclusion may hold (one at a time) and progress too, but a process may wait **forever**: bounded waiting is violated. This is the case of a poorly designed “taking turns” that always favours the same one.",
+              fr: "i++ se décompose en trois instructions élémentaires : lire la valeur de i dans un registre, l'incrémenter de 1, puis écrire le registre dans i.\n\nLOAD R, i\nADD R, 1\nSTORE i, R",
+              en: "i++ breaks down into three elementary instructions: load the value of i into a register, increment it by 1, then write the register into i.\n\nLOAD R, i\nADD R, 1\nSTORE i, R",
             },
           },
           {
-            kind: "fillBlank",
+            kind: "open",
             prompt: {
-              fr: "En attendant dans une boucle `while` (attente active), un processus consomme du ______ sans progresser.",
-              en: "While waiting in a `while` loop (busy waiting), a process consumes ______ without progressing.",
+              fr: "Dans le cas général, si un des processeurs fait i++ la valeur de la variable est incrémentée de 1. Si chacun des deux processeurs fait i++, on s'attendrait à ce que la variable soit incrémentée de deux. Quel scénario d'exécution de i++ produit un résultat inconsistant ? On pourra expliciter 2 exécutions différentes.",
+              en: "In the general case, if one of the processors does i++ the variable value is incremented by 1. If each of the two processors does i++, one would expect the variable to be incremented by two. Which execution scenario of i++ yields an inconsistent result? One may spell out 2 different executions.",
             },
-            blanks: [
+            solution: {
+              fr: "Tout entrelacement où les deux processeurs lisent i avant que l'un des deux n'ait écrit aboutit à i = 1 au lieu de i = 2 : un des deux écrits écrase l'autre.",
+              en: "Any interleaving in which both processors read i before either has written ends with i = 1 instead of i = 2: one of the two writes overwrites the other.",
+            },
+            solutionItems: [
               {
-                accepted: ["processeur", "cpu", "temps processeur", "temps de calcul", "cycles"],
-                mistakes: [
-                  {
-                    match: ["memoire", "mémoire", "ram"],
-                    feedback: {
-                      fr: "L'attente active n'occupe presque pas de mémoire ; elle gaspille en revanche le **processeur**.",
-                      en: "Busy waiting uses almost no memory; it wastes the **CPU** instead.",
-                    },
-                  },
-                ],
+                fr: "Exécution 1 : P1 lit i (0), P2 lit i (0), P1 incrémente et écrit (i = 1), P2 incrémente et écrit (i = 1) → résultat 1 au lieu de 2.",
+                en: "Execution 1: P1 reads i (0), P2 reads i (0), P1 increments and writes (i = 1), P2 increments and writes (i = 1) → result 1 instead of 2.",
+              },
+              {
+                fr: "Exécution 2 : P1 lit i (0), P1 incrémente, P2 lit i (0), P1 écrit (i = 1), P2 incrémente et écrit (i = 1) → résultat 1 au lieu de 2.",
+                en: "Execution 2: P1 reads i (0), P1 increments, P2 reads i (0), P1 writes (i = 1), P2 increments and writes (i = 1) → result 1 instead of 2.",
+              },
+              {
+                fr: "Dans les deux cas, l'un des processeurs lit l'ancienne valeur de i avant que l'autre ne l'ait écrite : une mise à jour est perdue.",
+                en: "In both cases, one processor reads the old value of i before the other has written it: one update is lost.",
               },
             ],
+          },
+          {
+            kind: "open",
+            prompt: {
+              fr: "Quelle solution envisager pour éviter ce problème ?",
+              en: "What solution can be considered to avoid this problem?",
+            },
             solution: {
-              fr: "Le **processeur** (temps CPU). Un processus bloqué, lui, est retiré de l'ordonnanceur et laisse le processeur aux autres.",
-              en: "The **CPU** (CPU time). A blocked process, by contrast, is removed from the scheduler and leaves the CPU to others.",
+              fr: "Isoler la zone de code concernée (par exemple i++) dans une section critique exécutée en exclusion mutuelle : un seul processeur à la fois. On encadre la section critique par un protocole d'entrée et un protocole de sortie (entreeSC() / sortieSC()) afin de la rendre atomique.",
+              en: "Isolate the code zone concerned (for example i++) into a critical section executed under mutual exclusion: only one processor at a time. The critical section is framed by an entry protocol and an exit protocol (entreeSC() / sortieSC()) to make it atomic.",
+            },
+          },
+          {
+            kind: "open",
+            prompt: {
+              fr: "Quel est l'équivalent d'une structure while et GOTO ?",
+              en: "What is the equivalent of a while structure and GOTO?",
+            },
+            solution: {
+              fr: "Une boucle while (condition) corps; équivaut à un test suivi d'un saut :\n\ndebut : if (!condition) goto fin;\n       corps;\n       goto debut;\nfin :",
+              en: "A while (condition) body; loop is equivalent to a test followed by a jump:\n\nstart: if (!condition) goto end;\n       body;\n       goto start;\nend:",
+            },
+          },
+          {
+            kind: "open",
+            prompt: {
+              fr: "Pour cette seule question, on utilisera une fonction atomique bool scUsed() qui renvoie false uniquement pour le premier processeur appelant. La fonction leaveSC() réinitialise cette fonction. Écrire entreeSC() et sortieSC().",
+              en: "For this question only, an atomic function bool scUsed() is used, which returns false only for the first calling processor. The function leaveSC() resets this function. Write entreeSC() and sortieSC().",
+            },
+            solution: {
+              fr: "Le premier qui appelle scUsed() lit false et entre ; les suivants attendent activement jusqu'à ce qu'un sortieSC() appelle leaveSC().",
+              en: "The first caller of scUsed() reads false and enters; the following ones wait actively until a sortieSC() calls leaveSC().",
+            },
+            solutionItems: [
+              {
+                fr: "entreeSC() : while (scUsed()) attente;",
+                en: "entreeSC(): while (scUsed()) attente;",
+              },
+              {
+                fr: "sortieSC() : leaveSC();",
+                en: "sortieSC(): leaveSC();",
+              },
+            ],
+          },
+          {
+            kind: "open",
+            prompt: {
+              fr: "Quel est le nom de la stratégie que vous avez utilisé dans entreeSC() de la question précédente ?",
+              en: "What is the name of the strategy you used in entreeSC() of the previous question?",
+            },
+            solution: {
+              fr: "L'attente active (busy waiting) : le processus scrute en boucle une condition (ici scUsed()) en consommant du temps de processeur, sans se bloquer.",
+              en: "Busy waiting: the process repeatedly checks a condition (here scUsed()) while consuming CPU time, without blocking.",
             },
           },
         ],
       },
       {
-        title: { fr: "Rédaction — rédiger Peterson", en: "Writing — write out Peterson" },
+        title: { fr: "2.2 Utilisation d'un booléen d'occupation", en: "2.2 Using an occupation boolean" },
         exercises: [
           {
             kind: "open",
+            prompt: { fr: "Écrire entreeSC et sortieSC.", en: "Write entreeSC and sortieSC." },
+            solution: {
+              fr: "Un processeur qui rentre dans la section critique modifie un booléen occ pour indiquer qu'il l'utilise.\n\nentreeSC(i) : while (occ) attente; occ = true;\nsortieSC(i) : occ = false;",
+              en: "A processor entering the critical section modifies a boolean occ to indicate that it uses it.\n\nentreeSC(i): while (occ) attente; occ = true;\nsortieSC(i): occ = false;",
+            },
+          },
+          {
+            kind: "open",
             prompt: {
-              fr: "Rédigez l'entrée et la sortie de la section critique du processus i avec l'algorithme de Peterson, et justifiez l'exclusion mutuelle.",
-              en: "Write the entry and exit of the critical section for process i with Peterson's algorithm, and justify mutual exclusion.",
+              fr: "Ce cahier des charges permet-il d'avoir une exclusion mutuelle ? Justifier.",
+              en: "Does this specification allow mutual exclusion? Justify.",
+            },
+            solution: {
+              fr: "Non : le test puis l'écriture de occ ne sont pas atomiques. Les deux processeurs peuvent lire occ == false en même temps, puis entrer tous les deux : même problème que la variable libre du CM2 (« Même problème que avant ! »).",
+              en: "No: the test then the write of occ are not atomic. Both processors can read occ == false at the same time, then both enter: same problem as the libre variable from lecture 2 (“Same problem as before!”).",
+            },
+          },
+        ],
+      },
+      {
+        title: { fr: "2.3 Chacun son tour", en: "2.3 Each in his turn" },
+        exercises: [
+          {
+            kind: "open",
+            prompt: { fr: "Écrire entreeSC et sortieSC.", en: "Write entreeSC and sortieSC." },
+            solution: {
+              fr: "Un processeur attend que ce soit son tour, puis donne la main à l'autre en sortant.\n\nentreeSC(i) : while (tour != i) attente;\nsortieSC(i) : tour = j;",
+              en: "A processor waits until it is its turn, then hands over to the other on exit.\n\nentreeSC(i): while (tour != i) attente;\nsortieSC(i): tour = j;",
+            },
+          },
+          {
+            kind: "open",
+            prompt: {
+              fr: "Ce cahier des charges permet-il d'avoir une exclusion mutuelle ? Existe-t-il d'autres problèmes dans cette stratégie ? Justifier.",
+              en: "Does this specification allow mutual exclusion? Are there other problems in this strategy? Justify.",
+            },
+            solution: {
+              fr: "Oui, l'exclusion mutuelle est garantie : un seul processeur a le tour, donc un seul entre à la fois. Autre problème : si un processeur ne veut pas entrer (hors SC et hors protocole), tour ne change pas et l'autre attend indéfiniment : la propriété 3 (Condition de progression) est violée — aucun processus suspendu hors SC ne doit bloquer les autres.",
+              en: "Yes, mutual exclusion is guaranteed: only one processor has the turn, so only one enters at a time. Other problem: if a processor does not want to enter (outside the SC and outside the protocol), tour never changes and the other waits forever: property 3 (progress condition) is violated — no process suspended outside the SC may block the others.",
+            },
+          },
+        ],
+      },
+      {
+        title: { fr: "2.4 Annonce de sa volonté d'entrer en SC", en: "2.4 Announcing one's will to enter the SC" },
+        exercises: [
+          {
+            kind: "open",
+            prompt: { fr: "Écrire entreeSC et sortieSC.", en: "Write entreeSC and sortieSC." },
+            solution: {
+              fr: "On annonce sa volonté d'entrer dans un tableau de 2 booléens indexé par i et j, puis on attend que l'autre n'ait plus la volonté d'entrer.\n\nentreeSC(i) : demande[i] = true; while (demande[j]) attente;\nsortieSC(i) : demande[i] = false;",
+              en: "One announces one's will to enter in an array of 2 booleans indexed by i and j, then waits until the other no longer wants to enter.\n\nentreeSC(i): demande[i] = true; while (demande[j]) attente;\nsortieSC(i): demande[i] = false;",
+            },
+          },
+          {
+            kind: "open",
+            prompt: {
+              fr: "Ce cahier des charges permet-il d'avoir une exclusion mutuelle ? Existe-t-il d'autres problèmes dans cette stratégie ? Justifier.",
+              en: "Does this specification allow mutual exclusion? Are there other problems in this strategy? Justify.",
+            },
+            solution: {
+              fr: "Oui, l'exclusion mutuelle est garantie : le premier qui annonce sa volonté bloque l'entrée de l'autre. Autre problème : si les deux annoncent leur volonté en même temps, chacun attend que l'autre renonce : attente mutuelle infinie — la propriété 2 (Absence de blocage permanent) est violée (interblocage).",
+              en: "Yes, mutual exclusion is guaranteed: the first one to announce its will blocks the other's entry. Other problem: if both announce their will at the same time, each waits for the other to renounce: infinite mutual wait — property 2 (absence of permanent blocking) is violated (deadlock).",
+            },
+          },
+        ],
+      },
+      {
+        title: { fr: "2.5 Annonce de sa volonté, avec renonce", en: "2.5 Announcing one's will, with renounce" },
+        exercises: [
+          {
+            kind: "open",
+            prompt: { fr: "Écrire entreeSC et sortieSC.", en: "Write entreeSC and sortieSC." },
+            solution: {
+              fr: "Un processeur n'ayant pas réussi à rentrer (car l'autre a aussi annoncé sa volonté) annule son annonce et recommence.\n\nentreeSC(i) : demande[i] = true; while (demande[j]) { demande[i] = false; attente; demande[i] = true; }\nsortieSC(i) : demande[i] = false;",
+              en: "A processor that failed to enter (because the other also announced its will) withdraws its announcement and starts over.\n\nentreeSC(i): demande[i] = true; while (demande[j]) { demande[i] = false; attente; demande[i] = true; }\nsortieSC(i): demande[i] = false;",
+            },
+          },
+          {
+            kind: "open",
+            prompt: {
+              fr: "Ce cahier des charges permet-il d'avoir une exclusion mutuelle ? Existe-t-il d'autres problèmes dans cette stratégie ? Justifier.",
+              en: "Does this specification allow mutual exclusion? Are there other problems in this strategy? Justify.",
+            },
+            solution: {
+              fr: "Oui, l'exclusion mutuelle est garantie : l'annonce reste posée pendant tout le protocole d'entrée. Autre problème : si les deux renoncent et réannoncent en même temps, ils peuvent boucler sans que l'un n'entre jamais : famine possible — la propriété 4 (Équité) est violée.",
+              en: "Yes, mutual exclusion is guaranteed: the announcement stays set throughout the entry protocol. Other problem: if both renounce and announce again at the same time, they may loop with neither ever entering: possible starvation — property 4 (fairness) is violated.",
+            },
+          },
+        ],
+      },
+      {
+        title: { fr: "2.6 Demande et renonce si ce n'est pas mon tour", en: "2.6 Request and renounce if it is not my turn" },
+        exercises: [
+          {
+            kind: "open",
+            prompt: { fr: "Écrire entreeSC et sortieSC.", en: "Write entreeSC and sortieSC." },
+            solution: {
+              fr: "On fait une demande pour entrer en SC et on renonce si l'autre a aussi fait la demande et que ce n'est pas son tour.\n\nentreeSC(i) : demande[i] = true; while (demande[j]) { if (tour != i) { demande[i] = false; demande[i] = true; } }\nsortieSC(i) : demande[i] = false;",
+              en: "One requests entry into the SC and renounces if the other has also requested and it is not one's turn.\n\nentreeSC(i): demande[i] = true; while (demande[j]) { if (tour != i) { demande[i] = false; demande[i] = true; } }\nsortieSC(i): demande[i] = false;",
+            },
+          },
+          {
+            kind: "open",
+            prompt: {
+              fr: "Ce cahier des charges permet-il d'avoir une exclusion mutuelle ? Existe-t-il d'autres problèmes dans cette stratégie ? Justifier.",
+              en: "Does this specification allow mutual exclusion? Are there other problems in this strategy? Justify.",
+            },
+            solution: {
+              fr: "Oui, l'exclusion mutuelle est garantie : l'annonce reste posée tant qu'on n'est pas entré. Autre problème : en renonçant puis en redemandant aussitôt, sans attendre son tour, les deux processeurs peuvent renoncer en même temps et boucler sans entrer : famine possible — la propriété 4 (Équité) est violée. C'est ce que corrige Dekker, en attendant son tour avant de redemander.",
+              en: "Yes, mutual exclusion is guaranteed: the announcement stays set until one has entered. Other problem: by renouncing then requesting again right away, without waiting for one's turn, both processors may renounce at the same time and loop without entering: possible starvation — property 4 (fairness) is violated. This is what Dekker fixes, by waiting for one's turn before requesting again.",
+            },
+          },
+        ],
+      },
+      {
+        title: { fr: "2.7 Dekker 1966", en: "2.7 Dekker 1966" },
+        exercises: [
+          {
+            kind: "open",
+            prompt: { fr: "Écrire entreeSC et sortieSC.", en: "Write entreeSC and sortieSC." },
+            solution: {
+              fr: "Voir le code du cahier des charges 2.7 ci-dessus : on renonce, on attend son tour avant de redemander, et on transmet le tour en sortie (tour = j).",
+              en: "See the code of specification 2.7 above: one renounces, waits for one's turn before requesting again, and hands the turn over on exit (tour = j).",
             },
             solutionItems: [
-              { fr: "`veut[i] = true;` — annonce l'intention.", en: "`veut[i] = true;` — announce the intention." },
-              { fr: "`tour = j;` — laisse la priorité à l'autre.", en: "`tour = j;` — leave priority to the other." },
               {
-                fr: "`while (veut[j] && tour == j) { }` — attend tant que l'autre veut ET que c'est son tour.",
-                en: "`while (veut[j] && tour == j) { }` — wait while the other wants AND it is their turn.",
+                fr: "Si on renonce, on attend son tour avant de redemander : while (tour != i) attente; puis demande[i] = true;",
+                en: "If one renounces, one waits for one's turn before requesting again: while (tour != i) attente; then demande[i] = true;",
               },
               {
-                fr: "Justification : si i et j veulent entrer, `tour` vaut la valeur écrite en dernier ; un seul des deux satisfait `tour == j`, donc un seul reste bloqué, l'autre entre.",
-                en: "Justification: if i and j want to enter, `tour` holds the last-written value; only one of the two satisfies `tour == j`, so only one stays blocked and the other enters.",
+                fr: "Si c'est son tour, on attend que l'autre ait renoncé avant d'entrer : le while (demande[j]) ne se termine que lorsque l'autre a renoncé.",
+                en: "If it is one's turn, one waits for the other to have renounced before entering: the while (demande[j]) only ends when the other has renounced.",
               },
-              { fr: "Sortie : `veut[i] = false;`.", en: "Exit: `veut[i] = false;`." },
+              {
+                fr: "sortieSC(i) : tour = j; demande[i] = false; — on donne la main à l'autre.",
+                en: "sortieSC(i): tour = j; demande[i] = false; — one hands over to the other.",
+              },
             ],
+          },
+        ],
+      },
+      {
+        title: { fr: "2.8 Peterson 1981", en: "2.8 Peterson 1981" },
+        exercises: [
+          {
+            kind: "open",
+            prompt: { fr: "Écrire entreeSC et sortieSC.", en: "Write entreeSC and sortieSC." },
             solution: {
-              fr: "Voir le code encadré ci-dessus : `veut[i] = true; tour = j; while (veut[j] && tour == j);`. L'exclusion vient du fait qu'ils ne peuvent pas avoir simultanément `tour = j` et `tour = i`.",
-              en: "See the boxed code above: `veut[i] = true; tour = j; while (veut[j] && tour == j);`. Exclusion follows from the fact that they cannot simultaneously have `tour = j` and `tour = i`.",
+              fr: "Voir le code du cahier des charges 2.8 ci-dessus (celui du CM2, adapté à i et j) : dernier est le dernier à vouloir entrer, c'est lui qui attend. On se détache de la notion de tour.",
+              en: "See the code of specification 2.8 above (the one from lecture 2, adapted to i and j): dernier is the last one wanting to enter, it is up to him to wait. We move away from the notion of turn.",
             },
+            solutionItems: [
+              {
+                fr: "entreeSC(i) : demande[i] = true; dernier = i; while (demande[j] && dernier == i) attente;",
+                en: "entreeSC(i): demande[i] = true; dernier = i; while (demande[j] && dernier == i) attente;",
+              },
+              {
+                fr: "sortieSC(i) : demande[i] = false;",
+                en: "sortieSC(i): demande[i] = false;",
+              },
+              {
+                fr: "dernier indique le dernier qui fait la demande d'entrer en SC : c'est alors à lui d'attendre (l'autre peut entrer).",
+                en: "dernier tells who last requested entry into the SC: it is then up to him to wait (the other may enter).",
+              },
+            ],
           },
         ],
       },
@@ -565,8 +1099,8 @@ ticket[i] = 0;           /* sortie : on rend son ticket */`,
     type: "heading",
     level: 3,
     text: {
-      fr: "Fiche Réflexe Examen : Modèle de Rédaction",
-      en: "Exam Quick-Reference Sheet: Writing Template",
+      fr: "Fiche Réflexe Examen : prouver Peterson",
+      en: "Exam Quick-Reference Sheet: proving Peterson",
     },
   },
   {
@@ -577,113 +1111,43 @@ ticket[i] = 0;           /* sortie : on rend son ticket */`,
     },
   },
   {
-    type: "code",
-    lang: "c",
-    caption: {
-      fr: "Programme complet : compteur partagé par mmap, protégé par Peterson (error, pere, fils).",
-      en: "Complete program: counter shared via mmap, protected by Peterson (error, pere, fils).",
-    },
-    text: `#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/mman.h>
-#include <sys/wait.h>
-
-#define TOURS 100000
-
-typedef struct {
-    volatile int veut[2];      /* intention d'entrer en SC */
-    volatile int tour;         /* a qui le tour            */
-    volatile long compteur;    /* ressource partagee       */
-} Partage;
-
-void error(const char *message) {
-    perror(message);
-    exit(EXIT_FAILURE);
-}
-
-/* Processus i : Peterson, puis incrementation en section critique. */
-void processus(int i, Partage *p) {
-    int j = 1 - i;
-    for (int n = 0; n < TOURS; n++) {
-        p->veut[i] = 1;                        /* j'annonce mon intention */
-        p->tour = j;                           /* je cede la priorite     */
-        while (p->veut[j] && p->tour == j) {   /* attente active          */
-        }
-        p->compteur++;                         /* SECTION CRITIQUE        */
-        p->veut[i] = 0;                        /* je sors                 */
-    }
-}
-
-void fils(Partage *p) {
-    processus(1, p);
-}
-
-void pere(Partage *p) {
-    processus(0, p);
-    if (wait(NULL) == -1)
-        error("wait");
-    printf("compteur = %ld (attendu %d)\\n", p->compteur, 2 * TOURS);
-    if (munmap(p, sizeof(Partage)) == -1)
-        error("munmap");
-}
-
-int main(void) {
-    Partage *p = mmap(NULL, sizeof(Partage),
-                      PROT_READ | PROT_WRITE,
-                      MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-    if (p == MAP_FAILED)
-        error("mmap");
-    p->veut[0] = 0;
-    p->veut[1] = 0;
-    p->tour = 0;
-    p->compteur = 0;
-
-    pid_t pid = fork();
-    if (pid == -1)
-        error("fork");
-
-    if (pid == 0) {
-        fils(p);
-        exit(EXIT_SUCCESS);
-    }
-
-    pere(p);
-    return EXIT_SUCCESS;
-}`,
-  },
-  {
     type: "list",
     ordered: true,
     items: [
       {
         text: {
-          fr: "**Recopier le code :** `veut[i] = true; tour = j; while (veut[j] && tour == j);` puis `veut[i] = false;` en sortie.",
-          en: "**Copy the code:** `veut[i] = true; tour = j; while (veut[j] && tour == j);` then `veut[i] = false;` on exit.",
+          fr: "**Recopier le code :** `demande[i] = true; dernier = i; while (demande[j] && dernier == i) attente;` puis `demande[i] = false;` en sortie.",
+          en: "**Copy the code:** `demande[i] = true; dernier = i; while (demande[j] && dernier == i) attente;` then `demande[i] = false;` on exit.",
         },
       },
       {
         text: {
-          fr: "**Exclusion mutuelle :** supposer que i et j sont simultanément en section critique. Pour que i y soit, il fallait `tour = i` au moment du test ; pour j, `tour = j`. Contradiction (une variable ne peut valoir deux choses).",
-          en: "**Mutual exclusion:** suppose i and j are simultaneously in the critical section. For i to be there, `tour = i` was needed at the test; for j, `tour = j`. Contradiction (a variable cannot hold two values).",
+          fr: "**Exclusion mutuelle (propriété 1) :** pour entrer, i doit avoir `demande[j] == false` ou `dernier == j` ; pour j, `demande[i] == false` ou `dernier == i`. Les deux conditions ne peuvent être vraies ensemble : au plus un entre.",
+          en: "**Mutual exclusion (property 1):** to enter, i must have `demande[j] == false` or `dernier == j`; for j, `demande[i] == false` or `dernier == i`. Both conditions cannot hold at once: at most one enters.",
         },
       },
       {
         text: {
-          fr: "**Progrès :** si la section est libre, celui qui a écrit `tour` en dernier cède ; au moins un des deux franchit le `while`.",
-          en: "**Progress:** if the section is free, the one who wrote `tour` last yields; at least one of the two passes the `while`.",
+          fr: "**Absence de blocage permanent (propriété 2) :** si les deux demandent en même temps, le dernier à écrire `dernier` cède la place : au moins un des deux franchit le `while` au bout d'un temps fini.",
+          en: "**Absence of permanent blocking (property 2):** if both request at the same time, the last one to write `dernier` yields: at least one of the two passes the `while` within finite time.",
         },
       },
       {
         text: {
-          fr: "**Attente bornée :** après que j a cédé, i entre ; j n'attend qu'un seul passage de i.",
-          en: "**Bounded waiting:** after j yields, i enters; j waits for only one pass of i.",
+          fr: "**Condition de progression (propriété 3) :** un processus hors SC et hors protocole n'écrit ni `demande` ni `dernier` : il ne peut empêcher personne d'entrer.",
+          en: "**Progress condition (property 3):** a process outside the SC and outside the protocol writes neither `demande` nor `dernier`: it cannot prevent anyone from entering.",
         },
       },
       {
         text: {
-          fr: "**Phrase de conclusion :** « Peterson satisfait l'exclusion mutuelle, le progrès et l'attente bornée, mais utilise l'attente active. »",
-          en: "**Concluding sentence:** “Peterson satisfies mutual exclusion, progress and bounded waiting, but uses busy waiting.”",
+          fr: "**Équité (propriété 4) :** après avoir cédé, un processus n'attend qu'un passage de l'autre avant d'entrer à son tour : il n'attend pas indéfiniment.",
+          en: "**Fairness (property 4):** after yielding, a process only waits for one pass of the other before entering in turn: it does not wait indefinitely.",
+        },
+      },
+      {
+        text: {
+          fr: "**Phrase de conclusion :** « Peterson satisfait l'exclusion mutuelle, l'absence de blocage permanent, la condition de progression et l'équité, mais utilise l'attente active. »",
+          en: "**Concluding sentence:** “Peterson satisfies mutual exclusion, absence of permanent blocking, progress condition and fairness, but uses busy waiting.”",
         },
       },
     ],

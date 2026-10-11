@@ -4,8 +4,8 @@ export const chapterThree: Block[] = [
   {
     type: "paragraph",
     text: {
-      fr: "Un signal est une **notification asynchrone** envoyée à un processus : le noyau interrompt son déroulement normal pour lui faire exécuter une fonction particulière. C'est le mécanisme d'interruption logicielle du système Unix.",
-      en: "A signal is an **asynchronous notification** sent to a process: the kernel interrupts its normal flow to make it run a particular function. It is Unix's software interrupt mechanism.",
+      fr: "Un **signal** est un **message sans aucun contenu**, émis par le noyau ou par un processus vers un processus. Son but est de **mettre fin** à un processus ou de le **relancer** : c'est de là que vient la **synchronisation**. À sa réception, le processus cible doit immédiatement prendre une mesure spécifique.",
+      en: "A **signal** is a **message with no content at all**, sent by the kernel or by a process to a process. Its purpose is to **end** a process or to **restart** it: that is where **synchronization** comes from. On receiving it, the target process must immediately take a specific action.",
     },
   },
   { type: "rule" },
@@ -17,8 +17,8 @@ export const chapterThree: Block[] = [
   {
     type: "paragraph",
     text: {
-      fr: "**Analogie :** le signal est un **coup de sonnette**. Le facteur (le noyau ou un autre processus) appuie sur le bouton ; le processus interrompt ce qu'il fait, va ouvrir (exécute son **gestionnaire**), puis reprend là où il s'était arrêté. S'il n'y a personne (aucun gestionnaire), le comportement par défaut s'applique : souvent, terminer le processus.",
-      en: "**Analogy:** a signal is a **doorbell**. The mail carrier (the kernel or another process) presses the button; the process interrupts what it is doing, goes to open the door (runs its **handler**), then resumes where it left off. If nobody is home (no handler), the default behaviour applies: often, terminate the process.",
+      fr: "**Analogie :** un signal est une **sonnerie de porte** : elle n'apporte aucun message, mais elle oblige à réagir. Le noyau (ou un autre processus) appuie sur le bouton ; le processus interrompt ce qu'il fait, puis choisit de **laisser le comportement par défaut**, d'**ignorer** la sonnerie, ou de l'**intercepter** en exécutant une **fonction de déroutement**.",
+      en: "**Analogy:** a signal is a **doorbell**: it carries no message, but it forces a reaction. The kernel (or another process) presses the button; the process interrupts what it is doing, then chooses to **let the default behaviour apply**, to **ignore** the ring, or to **catch** it by running a **handler function**.",
     },
   },
   {
@@ -27,13 +27,13 @@ export const chapterThree: Block[] = [
       {
         id: "signal-flow",
         caption: {
-          fr: "Le noyau délivre le signal au processus ; le gestionnaire s'exécute puis le déroulement reprend.",
-          en: "The kernel delivers the signal to the process; the handler runs, then execution resumes.",
+          fr: "Le processus reçoit le signal, exécute sa fonction de déroutement, puis reprend au point d'interruption.",
+          en: "The process receives the signal, runs its handler function, then resumes at the point of interruption.",
         },
         nodes: [
           { id: "src", label: { fr: "Source (noyau / kill)", en: "Source (kernel / kill)" }, x: 0, y: 0, shape: "box", tone: "soft" },
           { id: "proc", label: { fr: "Processus", en: "Process" }, x: 210, y: 0, shape: "circle", tone: "primary" },
-          { id: "handler", label: { fr: "Gestionnaire", en: "Handler" }, x: 400, y: -90, shape: "box" },
+          { id: "handler", label: { fr: "Déroutement", en: "Handler" }, x: 400, y: -90, shape: "box" },
           { id: "resume", label: { fr: "Reprise", en: "Resume" }, x: 400, y: 40, shape: "box" },
         ],
         edges: [
@@ -49,92 +49,152 @@ export const chapterThree: Block[] = [
     items: [
       {
         text: {
-          fr: "**Signal :** entier symbolique (ex. `SIGINT`). Envoyé par le noyau (E/S, faute) ou par un processus (`kill`).",
-          en: "**Signal:** symbolic integer (e.g. `SIGINT`). Sent by the kernel (I/O, fault) or by a process (`kill`).",
+          fr: "Un signal est **numéroté de 0 à 31** et possède un **nom symbolique** commençant par `SIG` (ex. `SIGINT`).",
+          en: "A signal is **numbered from 0 to 31** and has a **symbolic name** starting with `SIG` (e.g. `SIGINT`).",
         },
       },
       {
         text: {
-          fr: "Le processus peut **ignorer**, **capturer** (gestionnaire) ou subir le **comportement par défaut**. `SIGKILL` et `SIGSTOP` **ne peuvent pas** être capturés ni ignorés.",
-          en: "A process may **ignore**, **catch** (handler) or suffer the **default behaviour**. `SIGKILL` and `SIGSTOP` **cannot** be caught or ignored.",
+          fr: "`strsignal(sig)`, déclaré dans `<string.h>`, renvoie la **description** du signal `sig`.",
+          en: "`strsignal(sig)`, declared in `<string.h>`, returns the **description** of signal `sig`.",
+        },
+      },
+      {
+        text: {
+          fr: "Trois réactions possibles : **laisser le comportement par défaut**, **ignorer** le signal, ou le **capturer** en déroutant l'exécution vers une **routine gestionnaire** (fonction de déroutement).",
+          en: "Three possible reactions: **let the default behaviour apply**, **ignore** the signal, or **catch** it by routing execution to a **handler routine** (handler function).",
         },
       },
     ],
   },
   {
     type: "heading",
-    level: 4,
-    text: { fr: "Quelques signaux classiques", en: "A few classic signals" },
+    level: 3,
+    text: { fr: "2. Les signaux classiques", en: "2. The classic signals" },
   },
   {
     type: "list",
     items: [
-      { text: { fr: "`SIGINT` (2) — interruption clavier (Ctrl-C).", en: "`SIGINT` (2) — keyboard interrupt (Ctrl-C)." } },
-      { text: { fr: "`SIGKILL` (9) — terminaison forcée, non capturable.", en: "`SIGKILL` (9) — forced termination, cannot be caught." } },
-      { text: { fr: "`SIGTERM` (15) — demande de terminaison « propre ».", en: "`SIGTERM` (15) — request for “clean” termination." } },
-      { text: { fr: "`SIGSEGV` (11) — défaut de segmentation (accès mémoire illégal).", en: "`SIGSEGV` (11) — segmentation fault (illegal memory access)." } },
-      { text: { fr: "`SIGPIPE` (13) — écriture dans un tube sans lecteur.", en: "`SIGPIPE` (13) — write to a pipe with no reader." } },
-      { text: { fr: "`SIGCHLD` (17) — un fils s'est terminé ou arrêté.", en: "`SIGCHLD` (17) — a child has terminated or stopped." } },
-      { text: { fr: "`SIGALRM` (14) — expiration d'une alarme (`alarm()`).", en: "`SIGALRM` (14) — an alarm has expired (`alarm()`)." } },
-      { text: { fr: "`SIGUSR1`, `SIGUSR2` — signaux libres pour l'application.", en: "`SIGUSR1`, `SIGUSR2` — free signals for the application." } },
+      {
+        text: {
+          fr: "`SIGINT` (2) — émis par le terminal lors de la frappe de **Ctrl-C** ; défaut : arrêt du processus.",
+          en: "`SIGINT` (2) — sent by the terminal when **Ctrl-C** is pressed; default: terminate the process.",
+        },
+      },
+      {
+        text: {
+          fr: "`SIGQUIT` (3) — émis par le terminal lors de la frappe de **Ctrl-\\** ; défaut : arrêt du processus et **core dump**.",
+          en: "`SIGQUIT` (3) — sent by the terminal when **Ctrl-\\** is pressed; default: terminate the process and **core dump**.",
+        },
+      },
+      {
+        text: {
+          fr: "`SIGFPE` (8) — émis lors d'une **erreur de calcul** ou d'une **division par 0** ; défaut : arrêt du processus.",
+          en: "`SIGFPE` (8) — sent on an **invalid arithmetic operation** or a **division by 0**; default: terminate the process.",
+        },
+      },
+      {
+        text: {
+          fr: "`SIGKILL` (9) — tout processus est **immédiatement arrêté** à sa réception ; il ne peut être **ni ignoré, ni intercepté**. Seul `init` (pid=1) ne peut pas le recevoir et un processus **zombie** n'y est pas sensible.",
+          en: "`SIGKILL` (9) — any process is **immediately terminated** on receipt; it can be **neither ignored nor caught**. Only `init` (pid=1) cannot receive it, and a **zombie** process is not affected by it.",
+        },
+      },
+      {
+        text: {
+          fr: "`SIGSEGV` (11) — émis par le noyau pour une **violation de segmentation** ; défaut : arrêt du processus.",
+          en: "`SIGSEGV` (11) — sent by the kernel for a **segmentation violation**; default: terminate the process.",
+        },
+      },
+      {
+        text: {
+          fr: "`SIGPIPE` (13) — émis par le noyau quand un processus **écrit dans un tube qui n'a plus de lecteur** ; défaut : arrêt du processus.",
+          en: "`SIGPIPE` (13) — sent by the kernel when a process **writes into a pipe that no longer has a reader**; default: terminate the process.",
+        },
+      },
+      {
+        text: {
+          fr: "`SIGTERM` (15) — **demande « gentille »** de terminaison ; défaut : arrêt du processus (signal par défaut de la commande `kill` sous `bash`).",
+          en: "`SIGTERM` (15) — a **“gentle” request** to terminate; default: terminate the process (the default signal of the `kill` command under `bash`).",
+        },
+      },
+      {
+        text: {
+          fr: "`SIGCHLD` (17) — émis par le noyau vers un processus dont **un fils vient de terminer** ; défaut : **ignorer** le signal.",
+          en: "`SIGCHLD` (17) — sent by the kernel to a process whose **child has just finished**; default: **ignore** the signal.",
+        },
+      },
+      {
+        text: {
+          fr: "`SIGUSR1` (10) et `SIGUSR2` (12) — signaux **à la disposition de l'utilisateur** ; défaut : arrêt du processus.",
+          en: "`SIGUSR1` (10) and `SIGUSR2` (12) — signals **available to the user**; default: terminate the process.",
+        },
+      },
     ],
   },
   {
     type: "checkpoint",
-    concept: { fr: "Signaux non capturables", en: "Uncatchable signals" },
+    concept: { fr: "Signal non interceptable", en: "Uncatchable signal" },
     exercise: {
       kind: "mcq",
       prompt: {
-        fr: "Quels signaux ne peuvent **jamais** être ni capturés, ni ignorés ?",
-        en: "Which signals can **never** be caught or ignored?",
+        fr: "Quel signal **ne peut être ni ignoré, ni intercepté** ?",
+        en: "Which signal can be **neither ignored nor caught**?",
       },
       options: [
-        { text: { fr: "SIGINT et SIGTERM", en: "SIGINT and SIGTERM" } },
-        { text: { fr: "SIGKILL et SIGSTOP", en: "SIGKILL and SIGSTOP" } },
-        { text: { fr: "SIGCHLD et SIGALRM", en: "SIGCHLD and SIGALRM" } },
+        { text: { fr: "`SIGINT`", en: "`SIGINT`" } },
+        { text: { fr: "`SIGTERM`", en: "`SIGTERM`" } },
+        { text: { fr: "`SIGKILL`", en: "`SIGKILL`" } },
       ],
-      answerIndex: 1,
+      answerIndex: 2,
       solution: {
-        fr: "`SIGKILL` et `SIGSTOP` sont les deux seuls signaux que l'on ne peut pas intercepter : ils garantissent au noyau un moyen toujours disponible d'arrêter ou de suspendre un processus récalcitrant.",
-        en: "`SIGKILL` and `SIGSTOP` are the only two signals that cannot be intercepted: they guarantee the kernel an always-available means to stop or suspend a misbehaving process.",
+        fr: "`SIGKILL` (9) arrête immédiatement le processus à sa réception et ne peut être **ni ignoré, ni intercepté**. Seul `init` (pid=1) ne peut pas le recevoir.",
+        en: "`SIGKILL` (9) immediately terminates the process on receipt and can be **neither ignored nor caught**. Only `init` (pid=1) cannot receive it.",
       },
     },
   },
   {
     type: "heading",
     level: 3,
-    text: { fr: "2. Installer un gestionnaire : signal()", en: "2. Installing a handler: signal()" },
+    text: { fr: "3. Recevoir un signal : signal()", en: "3. Receiving a signal: signal()" },
+  },
+  {
+    type: "paragraph",
+    text: {
+      fr: "L'appel `signal(int sig, void (*gestionnaire)(int))` **spécifie le comportement** à la réception du signal `sig`. Le paramètre `gestionnaire` est un **pointeur sur une routine de gestion de signal**.",
+      en: "The call `signal(int sig, void (*gestionnaire)(int))` **specifies the behaviour** on receipt of signal `sig`. The `gestionnaire` parameter is a **pointer to a signal-handling routine**.",
+    },
   },
   {
     type: "code",
     lang: "c",
     caption: {
-      fr: "Programme complet : installer un gestionnaire, puis en ignorer un autre.",
-      en: "Complete program: install a handler, then ignore another.",
+      fr: "Programme complet : intercepter la violation de segmentation avec deroute().",
+      en: "Complete program: catching the segmentation violation with deroute().",
     },
     text: `#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#include <string.h>
 
-void error(const char *message) {
-    perror(message);
-    exit(EXIT_FAILURE);
+void erreur(char *message) {
+    fprintf(stderr, "Erreur: %s\\n", message);
+    exit(1);
 }
 
-void handler(int sig) {
-    printf("Signal %d recu\\n", sig);
+/* Fonction de deroutement : executee a la reception du signal. */
+void deroute(int sig) {
+    printf("Proc. %d: signal %d (%s) recu\\n",
+           getpid(), sig, strsignal(sig));
+    exit(1);
 }
 
-int main(void) {
-    if (signal(SIGINT, handler) == SIG_ERR)    /* capturer Ctrl-C            */
-        error("signal");
-    if (signal(SIGTERM, SIG_IGN) == SIG_ERR)   /* ignorer la demande d'arret */
-        error("signal");
-
-    while (1)
-        pause();                               /* attendre un signal         */
-    return EXIT_SUCCESS;
+int main(int argc, char *argv[]) {
+    char *s;
+    if (signal(SIGSEGV, deroute) == SIG_ERR)
+        erreur("signal");
+    s = (char *) 30000;
+    printf("Chaine = %s\\n", s);
 }`,
   },
   {
@@ -142,54 +202,44 @@ int main(void) {
     items: [
       {
         text: {
-          fr: "**`signal(int signum, handler)`** associe `handler` au signal. Valeurs spéciales : `SIG_DFL` (défaut) et `SIG_IGN` (ignorer).",
-          en: "**`signal(int signum, handler)`** binds `handler` to the signal. Special values: `SIG_DFL` (default) and `SIG_IGN` (ignore).",
+          fr: "`signal(int sig, void (*gestionnaire)(int))` : `sig` est le **numéro du signal à traiter**, `gestionnaire` un pointeur sur la routine de gestion.",
+          en: "`signal(int sig, void (*gestionnaire)(int))`: `sig` is the **number of the signal to handle**, `gestionnaire` a pointer to the handling routine.",
         },
       },
       {
         text: {
-          fr: "**`void (*)(int)`** : un gestionnaire reçoit le numéro du signal en argument.",
-          en: "**`void (*)(int)`**: a handler receives the signal number as its argument.",
+          fr: "`SIG_DFL` : demande au noyau de **réinstaller le comportement par défaut**.",
+          en: "`SIG_DFL`: asks the kernel to **restore the default behaviour**.",
         },
       },
       {
         text: {
-          fr: "**`int kill(pid_t pid, int sig)`** : envoie `sig` à `pid`. `raise(sig)` s'envoie un signal à soi-même.",
-          en: "**`int kill(pid_t pid, int sig)`**: sends `sig` to `pid`. `raise(sig)` sends a signal to oneself.",
+          fr: "`SIG_IGN` : demande au noyau d'**ignorer** le signal.",
+          en: "`SIG_IGN`: asks the kernel to **ignore** the signal.",
         },
       },
       {
         text: {
-          fr: "**`int pause(void)`** : endort le processus jusqu'à la réception d'un signal.",
-          en: "**`int pause(void)`**: puts the process to sleep until a signal is received.",
-        },
-      },
-    ],
-  },
-  {
-    type: "heading",
-    level: 4,
-    text: { fr: "Héritage et masquage", en: "Inheritance and masking" },
-  },
-  {
-    type: "list",
-    items: [
-      {
-        text: {
-          fr: "Après un `fork`, le fils **hérite** des gestionnaires installés et du masque de signaux.",
-          en: "After a `fork`, the child **inherits** the installed handlers and the signal mask.",
+          fr: "Sinon, on fournit une **fonction de déroutement** écrite par nous, par exemple `void deroute(int sig)`.",
+          en: "Otherwise, we supply a **handler function** written by us, for example `void deroute(int sig)`.",
         },
       },
       {
         text: {
-          fr: "Après un `exec`, les gestionnaires sont **réinitialisés à `SIG_DFL`** (le nouveau programme ne sait pas les gérer), mais le masque est conservé.",
-          en: "After an `exec`, handlers are **reset to `SIG_DFL`** (the new program does not know how to handle them), but the mask is kept.",
+          fr: "Si la fonction de déroutement **retourne**, le traitement **reprend au point d'interruption**.",
+          en: "If the handler function **returns**, execution **resumes at the point of interruption**.",
         },
       },
       {
         text: {
-          fr: "Le **masque** (`sigprocmask`) bloque temporairement un signal : il est **mis en attente** et délivré dès qu'on le débloque.",
-          en: "The **mask** (`sigprocmask`) temporarily blocks a signal: it is **held pending** and delivered as soon as it is unblocked.",
+          fr: "Un **fils hérite du comportement du père** vis-à-vis d'un signal.",
+          en: "A **child inherits the parent's behaviour** towards a signal.",
+        },
+      },
+      {
+        text: {
+          fr: "**Les signaux ne sont pas mémorisés, sauf `SIGCHLD`.**",
+          en: "**Signals are not memorised, except `SIGCHLD`.**",
         },
       },
     ],
@@ -197,71 +247,117 @@ int main(void) {
   {
     type: "heading",
     level: 3,
-    text: { fr: "3. Les signaux ne sont pas « empilés »", en: "3. Signals are not “stacked”" },
+    text: { fr: "4. Attendre un signal : pause()", en: "4. Waiting for a signal: pause()" },
   },
   {
-    type: "paragraph",
-    text: {
-      fr: "Un signal standard envoyé **plusieurs fois avant d'être traité** n'est délivré **qu'une seule fois** : les signaux ne sont pas mis en file d'attente (à l'exception de certains signaux temps réel et de `SIGCHLD`, qui peut être compté).",
-      en: "A standard signal sent **several times before being handled** is delivered **only once**: signals are not queued (except some real-time signals and `SIGCHLD`, which can be counted).",
-    },
+    type: "list",
+    items: [
+      {
+        text: {
+          fr: "`int pause(void)` : **endort** le processus demandeur jusqu'à la réception d'un signal ; il **retourne toujours -1**.",
+          en: "`int pause(void)`: **puts the requesting process to sleep** until a signal is received; it **always returns -1**.",
+        },
+      },
+    ],
   },
   {
     type: "heading",
-    level: 4,
-    text: { fr: "Piège classique — l'interblocage par signal perdu", en: "Classic trap — deadlock from a lost signal" },
+    level: 3,
+    text: { fr: "5. Émettre un signal : kill()", en: "5. Sending a signal: kill()" },
+  },
+  {
+    type: "list",
+    items: [
+      {
+        text: {
+          fr: "`int kill(int pid, int num_signal)` : **envoie** le signal `num_signal` au processus `pid` ; retourne **-1** en cas d'échec.",
+          en: "`int kill(int pid, int num_signal)`: **sends** signal `num_signal` to process `pid`; returns **-1** on failure.",
+        },
+      },
+      {
+        text: {
+          fr: "But : **relancer** un processus (d'où la **synchronisation**) ou **y mettre fin**.",
+          en: "Purpose: **restart** a process (hence **synchronization**) or **terminate** it.",
+        },
+      },
+    ],
+  },
+  {
+    type: "heading",
+    level: 3,
+    text: { fr: "6. Interblocage : le signal perdu", en: "6. Deadlock: the lost signal" },
   },
   {
     type: "paragraph",
     text: {
-      fr: "Scénario : le père teste une condition (`if (!pret)`) puis appelle `pause()`. Si un signal (`SIGCHLD`, `SIGUSR1`) arrive **entre** le test et le `pause`, il est traité immédiatement… puis le `pause` attend un signal qui ne reviendra jamais : **blocage définitif**. C'est le classique **deep sleep**.",
-      en: "Scenario: the parent tests a condition (`if (!ready)`) then calls `pause()`. If a signal (`SIGCHLD`, `SIGUSR1`) arrives **between** the test and the `pause`, it is handled immediately… then the `pause` waits for a signal that will never come back: **permanent block**. This is the classic **deep sleep**.",
-    },
-  },
-  {
-    type: "paragraph",
-    text: {
-      fr: "**Solution :** bloquer le signal avec `sigprocmask`, tester l'état, puis attendre atomiquement avec `sigsuspend(&mask)`. On combine ainsi le test et l'attente en une seule opération indivisible.",
-      en: "**Solution:** block the signal with `sigprocmask`, test the state, then wait atomically with `sigsuspend(&mask)`. This combines the test and the wait into a single indivisible operation.",
+      fr: "**Les signaux ne sont pas mémorisés** (sauf `SIGCHLD`) : si `SIGUSR1` est envoyé **avant** que le fils n'ait installé son gestionnaire ou **avant** son `pause()`, le signal est **perdu**. Le père attend alors la réponse par le tube, tandis que le fils attend un signal qui ne viendra plus : **interblocage**. Le père attend en lecture, le fils attend un signal perdu.",
+      en: "**Signals are not memorised** (except `SIGCHLD`): if `SIGUSR1` is sent **before** the child has installed its handler or **before** its `pause()`, the signal is **lost**. The parent then waits for the reply through the pipe, while the child waits for a signal that will never come: **deadlock**. The parent waits on a read, the child waits for a lost signal.",
     },
   },
   {
     type: "code",
     lang: "c",
     caption: {
-      fr: "Compteur de signaux robuste (pour aller plus loin) : test et attente atomiques.",
-      en: "Robust signal counter (going further): atomic test and wait.",
+      fr: "Programme complet : deroute(), pere() (kill + read) et fils() (signal + pause + write).",
+      en: "Complete program: deroute(), pere() (kill + read) and fils() (signal + pause + write).",
     },
     text: `#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#include <string.h>
+#include <sys/wait.h>
 
-void error(const char *message) {
-    perror(message);
-    exit(EXIT_FAILURE);
+void erreur(char *message) {
+    fprintf(stderr, "Erreur: %s\\n", message);
+    exit(1);
 }
 
-volatile sig_atomic_t recus = 0;
-
-void handler(int sig) {
-    (void) sig;
-    recus++;
+/* Fonction de deroutement du fils. */
+void deroute(int sig) {
+    printf("Fils: signal %d (%s) recu\\n", sig, strsignal(sig));
 }
 
-int main(void) {
-    sigset_t vide;
+/* pere : envoie le signal puis attend la reponse par le tube. */
+void pere(int pid, int *pfd) {
+    char message[5];
+    if (kill(pid, SIGUSR1) == -1)
+        erreur("kill");
+    printf("Pere: signal SIGUSR1 envoye a fils %d\\n", pid);
+    if (read(pfd[0], message, 5) == -1)
+        erreur("read");
+    printf("Pere: message %s recu\\n", message);
+    if (wait(NULL) == -1)
+        erreur("wait");
+    exit(0);
+}
 
-    if (signal(SIGUSR1, handler) == SIG_ERR)
-        error("signal");
-    if (sigemptyset(&vide) == -1)
-        error("sigemptyset");
+/* fils : installe le gestionnaire, attend le signal puis repond. */
+void fils(int *pfd) {
+    char message[5] = "Hello";
+    if (signal(SIGUSR1, deroute) == SIG_ERR)
+        erreur("signal");
+    pause();
+    if (write(pfd[1], message, 5) == -1)
+        erreur("write");
+    printf("Fils: message %s envoye\\n", message);
+    exit(0);
+}
 
-    while (recus == 0)
-        sigsuspend(&vide);              /* test + attente atomiques */
-
-    printf("recu !\\n");
-    return EXIT_SUCCESS;
+int main(int argc, char *argv[]) {
+    int pfd[2];
+    int pid;
+    if (pipe(pfd) == -1)
+        erreur("pipe");
+    pid = fork();
+    if (pid == -1)
+        erreur("fork");
+    if (pid == 0) {
+        close(pfd[0]);
+        fils(pfd);
+    }
+    close(pfd[1]);
+    pere(pid, pfd);
 }`,
   },
   {
@@ -269,41 +365,46 @@ int main(void) {
     spec: {
       id: "signal-trace",
       caption: {
-        fr: "Le déroulé « signal perdu » : le signal arrive juste avant le pause.",
-        en: "The “lost signal” walkthrough: the signal arrives just before the pause.",
+        fr: "Interblocage : le signal est perdu parce qu'il est arrivé trop tôt.",
+        en: "Deadlock: the signal is lost because it arrived too early.",
       },
       events: [
         {
-          label: { fr: "Le père teste : « pas encore prêt »", en: "The parent tests: “not ready yet”" },
+          label: { fr: "Le père appelle `kill(pid, SIGUSR1)`", en: "The parent calls `kill(pid, SIGUSR1)`" },
+          detail: { fr: "Le signal part vers le fils.", en: "The signal is sent to the child." },
         },
         {
-          label: { fr: "SIGCHLD arrive maintenant", en: "SIGCHLD arrives now" },
-          detail: { fr: "Il est traité aussitôt : l'état devient prêt.", en: "It is handled at once: the state becomes ready." },
+          label: { fr: "Le signal est perdu", en: "The signal is lost" },
+          detail: { fr: "Le fils n'a pas encore installé son gestionnaire : les signaux ne sont pas mémorisés.", en: "The child has not yet installed its handler: signals are not memorised." },
         },
         {
-          label: { fr: "Le père appelle `pause()`", en: "The parent calls `pause()`" },
-          detail: { fr: "Il dort en attendant un prochain signal.", en: "It sleeps awaiting a next signal." },
+          label: { fr: "Le père appelle `read(pfd[0], ...)`", en: "The parent calls `read(pfd[0], ...)`" },
+          detail: { fr: "Il se bloque en attendant la réponse du fils.", en: "It blocks waiting for the child's reply." },
         },
         {
-          label: { fr: "Aucun autre signal ne viendra", en: "No other signal will come" },
-          detail: { fr: "Blocage définitif : le réveil a été perdu.", en: "Permanent block: the wake-up was lost." },
+          label: { fr: "Le fils appelle `pause()`", en: "The child calls `pause()`" },
+          detail: { fr: "Il attend un signal qui ne viendra plus.", en: "It waits for a signal that will never come." },
+        },
+        {
+          label: { fr: "Interblocage", en: "Deadlock" },
+          detail: { fr: "Le père attend en lecture, le fils attend un signal perdu.", en: "The parent waits on a read, the child waits for a lost signal." },
         },
       ],
     },
   },
   {
     type: "checkpoint",
-    concept: { fr: "Signaux non mis en file", en: "Signals are not queued" },
+    concept: { fr: "Signaux non mémorisés", en: "Signals are not memorised" },
     exercise: {
       kind: "trueFalse",
       prompt: {
-        fr: "Si l'on envoie 3 fois SIGUSR1 à un processus avant qu'il ne soit traité, le gestionnaire s'exécute 3 fois.",
-        en: "If SIGUSR1 is sent 3 times to a process before it is handled, the handler runs 3 times.",
+        fr: "Si l'on envoie plusieurs fois `SIGUSR1` avant qu'il ne soit traité, le gestionnaire s'exécute chaque fois.",
+        en: "If `SIGUSR1` is sent several times before it is handled, the handler runs each time.",
       },
       answer: false,
       justification: {
-        fr: "Un signal standard **non mis en file** : les trois envois fusionnent en **un seul** traitement. Pour ne rien perdre, le gestionnaire doit incrémenter un compteur et l'appelant boucler, ou utiliser `sigaction` avec `SA_SIGINFO` et des signaux temps réel.",
-        en: "A standard signal is **not queued**: the three sends merge into **a single** handling. To lose nothing, the handler must increment a counter and the caller loop, or use `sigaction` with `SA_SIGINFO` and real-time signals.",
+        fr: "Un signal n'est **pas mémorisé** (sauf `SIGCHLD`) : les envois répétés avant traitement **fusionnent** en **un seul** déroutement.",
+        en: "A signal is **not memorised** (except `SIGCHLD`): repeated sends before handling **merge** into **a single** handling.",
       },
     },
   },
@@ -317,48 +418,17 @@ int main(void) {
     type: "exercises",
     groups: [
       {
-        title: { fr: "SIGCHLD et wait", en: "SIGCHLD and wait" },
-        exercises: [
-          {
-            kind: "mcq",
-            prompt: {
-              fr: "Pourquoi associer `SIGCHLD` à `wait` dans le père est-il une bonne pratique ?",
-              en: "Why is binding `SIGCHLD` to `wait` in the parent good practice?",
-            },
-            options: [
-              {
-                text: { fr: "Pour empêcher le fils de devenir orphelin.", en: "To prevent the child from becoming an orphan." },
-              },
-              {
-                text: {
-                  fr: "Pour récupérer les fils terminés et éviter l'accumulation de zombies.",
-                  en: "To reap finished children and avoid accumulating zombies.",
-                },
-              },
-              {
-                text: { fr: "Pour envoyer un signal au fils.", en: "To send a signal to the child." },
-              },
-            ],
-            answerIndex: 1,
-            solution: {
-              fr: "Quand un fils se termine, le noyau envoie `SIGCHLD`. Le gestionnaire appelle `wait` (souvent en boucle `while (waitpid(-1, NULL, WNOHANG) > 0)`) pour **récolter** le code de sortie et libérer la table des processus : plus de zombies.",
-              en: "When a child finishes, the kernel sends `SIGCHLD`. The handler calls `wait` (often in a loop `while (waitpid(-1, NULL, WNOHANG) > 0)`) to **reap** the exit code and free the process table entry: no more zombies.",
-            },
-          },
-        ],
-      },
-      {
-        title: { fr: "Rédaction — éviter le signal perdu", en: "Writing — avoiding the lost signal" },
+        title: { fr: "Fiche 2 – Question 1 : Première utilisation de signaux", en: "Sheet 2 – Question 1: A first use of signals" },
         exercises: [
           {
             kind: "open",
             prompt: {
-              fr: "Un processus doit attendre un signal pouvant survenir à tout instant. Expliquez pourquoi une attente naïve `if (...) pause();` peut bloquer, et donnez le remède.",
-              en: "A process must wait for a signal that may occur at any moment. Explain why a naive `if (...) pause();` wait can block, and give the remedy.",
+              fr: "Écrire en langage C un programme qui résout une équation du second degré de la façon suivante :\n\nLes coefficients de l'équation du second degré sont les arguments du programme. Le processus père va calculer la valeur discriminant de l'équation.\n\n— Si le discriminant est strictement négatif alors le processus père va envoyer le signal `SIGUSR1` à son fils, le fils notifiera par une impression à l'écran que le signal est bien reçu et se terminera.\n\n— Si le discriminant est positif, le fils doit récupérer grâce à un tube les coefficients de l'équation envoyés par le père et afficher les racines de l'équation.",
+              en: "Write, in C, a program that solves a quadratic equation as follows:\n\nThe coefficients of the quadratic equation are the program's arguments. The parent process computes the value of the discriminant of the equation.\n\n— If the discriminant is strictly negative, then the parent process sends the `SIGUSR1` signal to its child; the child will report, by printing to the screen, that the signal has indeed been received, and will terminate.\n\n— If the discriminant is positive, the child must retrieve, through a pipe, the coefficients of the equation sent by the parent, and display the roots of the equation.",
             },
             solution: {
-              fr: "Si le signal arrive **entre** le test et `pause`, il est consommé avant l'endormissement : `pause` attend alors un signal perdu → blocage définitif. Remède : bloquer le signal (`sigprocmask`), faire le test, puis `sigsuspend(&mask)` qui **débloque et endort atomiquement**. Le signal en attente est délivré pendant l'appel, sans fenêtre de perte.",
-              en: "If the signal arrives **between** the test and `pause`, it is consumed before sleeping: `pause` then waits for a lost signal → permanent block. Remedy: block the signal (`sigprocmask`), do the test, then `sigsuspend(&mask)`, which **unblocks and sleeps atomically**. The pending signal is delivered during the call, with no loss window.",
+              fr: "Le père calcule le discriminant `d = b*b - 4*a*c`. Si `d < 0`, il envoie `SIGUSR1` à son fils avec `kill(pid, SIGUSR1)` ; le fils a installé `signal(SIGUSR1, deroute)` et attend avec `pause()` ; le gestionnaire imprime qu'il a bien reçu le signal, puis le fils se termine. Sinon (`d` positif), le père écrit les coefficients dans un tube (`write(pfd[1], ...)`) et le fils les lit (`read(pfd[0], ...)`) avant d'afficher les racines. On crée le tube avec `pipe(pfd)` et le processus avec `fork()`.",
+              en: "The parent computes the discriminant `d = b*b - 4*a*c`. If `d < 0`, it sends `SIGUSR1` to its child with `kill(pid, SIGUSR1)`; the child has installed `signal(SIGUSR1, deroute)` and waits with `pause()`; the handler prints that it received the signal, then the child terminates. Otherwise (`d` positive), the parent writes the coefficients into a pipe (`write(pfd[1], ...)`) and the child reads them (`read(pfd[0], ...)`) before printing the roots. The pipe is created with `pipe(pfd)` and the process with `fork()`.",
             },
           },
         ],
@@ -381,85 +451,43 @@ int main(void) {
     },
   },
   {
-    type: "code",
-    lang: "c",
-    caption: {
-      fr: "Programme complet : error(), deroute(), fils() (gestionnaire + pause) et pere() (kill).",
-      en: "Complete program: error(), deroute(), fils() (handler + pause) and pere() (kill).",
-    },
-    text: `#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
-#include <string.h>
-#include <sys/wait.h>
-
-void error(const char *message) {
-    perror(message);
-    exit(EXIT_FAILURE);
-}
-
-/* Fonction de deroutement : executee a la reception du signal. */
-void deroute(int sig) {
-    printf("Fils : signal %d (%s) recu\\n", sig, strsignal(sig));
-}
-
-/* fils : installe le gestionnaire puis attend le signal. */
-void fils(void) {
-    if (signal(SIGUSR1, deroute) == SIG_ERR)
-        error("signal");
-    pause();                            /* endormi jusqu'au signal */
-}
-
-/* pere : laisse au fils le temps de s'installer, puis envoie le signal. */
-void pere(pid_t pid) {
-    sleep(1);                           /* evite une course avec signal() */
-    if (kill(pid, SIGUSR1) == -1)
-        error("kill");
-    if (wait(NULL) == -1)
-        error("wait");
-}
-
-int main(void) {
-    pid_t pid = fork();
-    if (pid == -1)
-        error("fork");
-
-    if (pid == 0) {
-        fils();
-        exit(EXIT_SUCCESS);
-    }
-
-    pere(pid);
-    return EXIT_SUCCESS;
-}`,
-  },
-  {
     type: "list",
     ordered: true,
     items: [
       {
         text: {
-          fr: "**Déclarer** la fonction gestionnaire `void handler(int sig)` avant `main`.",
-          en: "**Declare** the handler function `void handler(int sig)` before `main`.",
+          fr: "**Déclarer** la fonction de déroutement `void deroute(int sig)` avant `main`.",
+          en: "**Declare** the handler function `void deroute(int sig)` before `main`.",
         },
       },
       {
         text: {
-          fr: "**Installer** le gestionnaire : `signal` (simple) ou `sigaction` (préféré, plus portable et plus sûr).",
-          en: "**Install** the handler: `signal` (simple) or `sigaction` (preferred, more portable and safer).",
+          fr: "**Installer** le gestionnaire avec `signal(sig, deroute)` et tester `== SIG_ERR` ; on dispose aussi de `SIG_DFL` et `SIG_IGN`.",
+          en: "**Install** the handler with `signal(sig, deroute)` and test `== SIG_ERR`; `SIG_DFL` and `SIG_IGN` are also available.",
         },
       },
       {
         text: {
-          fr: "**Attendre** : boucle avec `pause()` ou `sigsuspend()` (jamais un test suivi d'un `pause` nu).",
-          en: "**Wait**: loop with `pause()` or `sigsuspend()` (never a test followed by a bare `pause`).",
+          fr: "**Attendre** : `pause()` endort le processus jusqu'à un signal et retourne toujours -1.",
+          en: "**Wait**: `pause()` puts the process to sleep until a signal and always returns -1.",
         },
       },
       {
         text: {
-          fr: "**Dans le handler :** uniquement des opérations **async-signal-safe**. Éviter `printf` ; préférer `write` ; manipuler des `volatile sig_atomic_t`.",
-          en: "**In the handler:** only **async-signal-safe** operations. Avoid `printf`; prefer `write`; manipulate `volatile sig_atomic_t`.",
+          fr: "**Émettre** : `kill(pid, num_signal)` envoie un signal à un autre processus (père vers fils).",
+          en: "**Send**: `kill(pid, num_signal)` sends a signal to another process (parent to child).",
+        },
+      },
+      {
+        text: {
+          fr: "**Afficher** la description d'un signal avec `strsignal(sig)` (dans `<string.h>`).",
+          en: "**Display** a signal's description with `strsignal(sig)` (in `<string.h>`).",
+        },
+      },
+      {
+        text: {
+          fr: "**Se souvenir** que les signaux ne sont pas mémorisés (sauf `SIGCHLD`) : un signal envoyé trop tôt est **perdu**, d'où l'**interblocage**.",
+          en: "**Remember** that signals are not memorised (except `SIGCHLD`): a signal sent too early is **lost**, hence the **deadlock**.",
         },
       },
     ],
