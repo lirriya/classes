@@ -6,10 +6,12 @@ import { algorithms } from "./algorithms";
 import { langagesFormels } from "./langages-formels";
 import { systeme2 } from "./systeme-2";
 import { conceptionBd } from "./conception-bd";
+import { conceptionAppsWeb } from "./conception-apps-web";
 
 export const subjects: Subject[] = [
   memoryManagement,
   webDev,
+  conceptionAppsWeb,
   database,
   algorithms,
   langagesFormels,
